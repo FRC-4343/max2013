@@ -33,16 +33,4 @@ void CommandBase::init() {
 	sonar = new Rangefinder();
 	solenoid = new Solenoids();
 	oi = new OI();
-
-	oi->getDashboard()->PutData(Scheduler::GetInstance());
-	
-	oi->getDashboard()->PutData(arm);
-	oi->getDashboard()->PutData(pickup);
-	oi->getDashboard()->PutData(camera);
-	oi->getDashboard()->PutData(catapult);
-	oi->getDashboard()->PutData(chassis);
-	oi->getDashboard()->PutData(gyroscope);
-	oi->getDashboard()->PutData(kinect);
-	oi->getDashboard()->PutData(sonar);
-	oi->getDashboard()->PutData(solenoid);
 }

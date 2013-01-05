@@ -28,7 +28,6 @@ private:
 public:
 	OI();
 	Joystick *getJoystick();
-	SmartDashboard *getDashboard();
 };
 
 #endif

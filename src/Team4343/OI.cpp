@@ -44,7 +44,3 @@ OI::OI() {
 Joystick * OI::getJoystick() {
 	return stick;
 }
-
-SmartDashboard * OI::getDashboard() {
-	return SmartDashboard::GetInstance();
-}
