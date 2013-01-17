@@ -10,12 +10,10 @@ MSKinect::MSKinect()
 	{
 	printf("Initializing Kinect.\n");
 }
-    
+
 void MSKinect::InitDefaultCommand() {
 }
 
 void MSKinect::moveWithKinect() {
 	CommandBase::chassis->tankDrive(leftArm.GetY()*3, rightArm.GetY()*3);
-	//SmartDashboard::GetInstance()->Log(leftArm.GetY(), "LeftArm");
-	//SmartDashboard::GetInstance()->Log(rightArm.GetY(), "RightArm");
 }
