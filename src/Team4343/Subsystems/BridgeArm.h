@@ -5,7 +5,6 @@
 
 class BridgeArm: public Subsystem {
 private:
-	//RobotDrive *bridgeDrive; // Used to wind the catapult.
 	Jaguar *bridgeMotor;
 public:
 	BridgeArm();
