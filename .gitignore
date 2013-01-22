@@ -6,3 +6,6 @@
 *.class
 MANIFEST.MF
 *.jar
+
+*suite*
+*sym
