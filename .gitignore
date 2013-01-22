@@ -2,3 +2,7 @@
 *.out
 *.c
 *.d
+
+*.class
+MANIFEST.MF
+*.jar
