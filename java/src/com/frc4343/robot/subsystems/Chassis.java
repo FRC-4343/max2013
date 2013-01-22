@@ -3,8 +3,6 @@ package com.frc4343.robot.subsystems;
 import com.frc4343.robot.Constants;
 import com.frc4343.robot.Mappings;
 import com.frc4343.robot.commands.DriveWithJoystick;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.command.Subsystem;
