@@ -1,7 +1,7 @@
 package com.frc4343.robot.subsystems;
 
 import com.frc4343.robot.Constants;
-import com.frc4343.robot.RobotMap;
+import com.frc4343.robot.Mappings;
 import com.frc4343.robot.commands.BallPickupDoNothing;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -13,9 +13,9 @@ public class BallPickup extends Subsystem {
     public BallPickup() {
         super("BallPickup");
 
-        System.out.print("Initializing ball pickup.");
+        System.out.println("Initializing ball pickup.");
 
-        pickupMotor = new Jaguar(RobotMap.PICKUP_MOTOR);
+        pickupMotor = new Jaguar(Mappings.PICKUP_MOTOR);
 
         pickupMotor.setSafetyEnabled(Constants.SAFETY_ENABLED);
         pickupMotor.setExpiration(Constants.EXPIRATION);

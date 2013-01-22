@@ -1,7 +1,7 @@
 package com.frc4343.robot.subsystems;
 
 import com.frc4343.robot.Constants;
-import com.frc4343.robot.RobotMap;
+import com.frc4343.robot.Mappings;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.camera.AxisCamera;
 import edu.wpi.first.wpilibj.camera.AxisCameraException;
@@ -23,10 +23,10 @@ public class Camera extends Subsystem {
     public Camera() {
         super("Camera");
 
-        System.out.print("Initializing camera.");
+        System.out.println("Initializing camera.");
 
         axis = AxisCamera.getInstance("10.43.43.11");
-        relay = new Relay(RobotMap.CAMERA_LIGHT_RELAY);
+        relay = new Relay(Mappings.CAMERA_LIGHT_RELAY);
 
         axis.writeResolution(AxisCamera.ResolutionT.k320x240);
         axis.writeCompression(Constants.CAMERA_COMPRESSION);

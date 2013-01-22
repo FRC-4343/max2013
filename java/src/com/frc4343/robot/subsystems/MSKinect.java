@@ -1,7 +1,7 @@
 package com.frc4343.robot.subsystems;
 
 import com.frc4343.robot.Constants;
-import com.frc4343.robot.RobotMap;
+import com.frc4343.robot.Mappings;
 import com.frc4343.robot.CommandBase;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.KinectStick;
@@ -16,8 +16,8 @@ public class MSKinect extends Subsystem {
 
         System.out.print("Initializing kinect.");
 
-        leftArm = new KinectStick(RobotMap.LEFT_KINECT_ARM);
-        rightArm = new KinectStick(RobotMap.RIGHT_KINECT_ARM);
+        leftArm = new KinectStick(Mappings.LEFT_KINECT_ARM);
+        rightArm = new KinectStick(Mappings.RIGHT_KINECT_ARM);
     }
 
     public void initDefaultCommand() {

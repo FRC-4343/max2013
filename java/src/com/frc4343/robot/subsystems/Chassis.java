@@ -1,7 +1,7 @@
 package com.frc4343.robot.subsystems;
 
 import com.frc4343.robot.Constants;
-import com.frc4343.robot.RobotMap;
+import com.frc4343.robot.Mappings;
 import com.frc4343.robot.commands.DriveWithJoystick;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Jaguar;
@@ -18,7 +18,7 @@ public class Chassis extends Subsystem {
 
         System.out.println("Initializing chassis.");
 
-        drive = new RobotDrive(RobotMap.LEFT_MOTOR, RobotMap.RIGHT_MOTOR);
+        drive = new RobotDrive(Mappings.LEFT_MOTOR, Mappings.RIGHT_MOTOR);
 
         drive.setSafetyEnabled(Constants.SAFETY_ENABLED);
         drive.setExpiration(Constants.EXPIRATION);

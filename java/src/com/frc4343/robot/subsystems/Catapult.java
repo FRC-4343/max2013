@@ -1,7 +1,7 @@
 package com.frc4343.robot.subsystems;
 
 import com.frc4343.robot.Constants;
-import com.frc4343.robot.RobotMap;
+import com.frc4343.robot.Mappings;
 import com.frc4343.robot.commands.CatapultDoNothing;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Jaguar;
@@ -19,12 +19,12 @@ public class Catapult extends Subsystem {
 
         System.out.println("Initializing catapult.");
 
-        catapultMotor = new Jaguar(RobotMap.WINDER_MOTOR);
-        triggerMotor = new Jaguar(RobotMap.TRIGGER_MOTOR);
+        catapultMotor = new Jaguar(Mappings.WINDER_MOTOR);
+        triggerMotor = new Jaguar(Mappings.TRIGGER_MOTOR);
 
-        hasBallSwitch = new DigitalInput(RobotMap.BALL_SWITCH_PORT);
-        isRotatedSwitch = new DigitalInput(RobotMap.ROTATE_SWITCH_PORT);
-        triggerSwitch = new DigitalInput(RobotMap.TRIGGER_SWITCH_PORT);
+        hasBallSwitch = new DigitalInput(Mappings.BALL_SWITCH_PORT);
+        isRotatedSwitch = new DigitalInput(Mappings.ROTATE_SWITCH_PORT);
+        triggerSwitch = new DigitalInput(Mappings.TRIGGER_SWITCH_PORT);
 
         catapultMotor.setSafetyEnabled(Constants.SAFETY_ENABLED);
         catapultMotor.setExpiration(Constants.EXPIRATION);

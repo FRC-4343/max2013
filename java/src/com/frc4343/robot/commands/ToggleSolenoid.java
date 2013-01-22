@@ -2,7 +2,7 @@ package com.frc4343.robot.commands;
 
 import com.frc4343.robot.CommandBase;
 import com.frc4343.robot.Constants;
-import com.frc4343.robot.RobotMap;
+import com.frc4343.robot.Mappings;
 import edu.wpi.first.wpilibj.command.Command;
 import java.util.Vector;
 

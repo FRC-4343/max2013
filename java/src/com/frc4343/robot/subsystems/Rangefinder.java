@@ -1,7 +1,7 @@
 package com.frc4343.robot.subsystems;
 
 import com.frc4343.robot.Constants;
-import com.frc4343.robot.RobotMap;
+import com.frc4343.robot.Mappings;
 import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Jaguar;
@@ -15,7 +15,7 @@ public class Rangefinder extends Subsystem {
 
         System.out.print("Initializing rangefinder.");
 
-        sonic = new AnalogChannel(RobotMap.RANGE_FINDER_PORT);
+        sonic = new AnalogChannel(Mappings.RANGE_FINDER_PORT);
     }
 
     public void initDefaultCommand() {

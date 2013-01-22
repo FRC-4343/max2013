@@ -1,7 +1,7 @@
 package com.frc4343.robot.commands;
 
 import com.frc4343.robot.CommandBase;
-import com.frc4343.robot.RobotMap;
+import com.frc4343.robot.Mappings;
 import java.util.Vector;
 
 public class DriveWithJoystick extends CommandBase {

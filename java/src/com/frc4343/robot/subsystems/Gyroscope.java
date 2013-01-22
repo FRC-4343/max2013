@@ -1,13 +1,13 @@
 package com.frc4343.robot.subsystems;
 
 import com.frc4343.robot.Constants;
-import com.frc4343.robot.RobotMap;
+import com.frc4343.robot.Mappings;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class Gyroscope extends Subsystem {
-    Gyro gyro;
+    Gyro gyro = new Gyro(Mappings.GYRO_PORT);
 
     public Gyroscope() {
         super("Gyroscope");

@@ -1,14 +1,14 @@
 package com.frc4343.robot;
 
 /**
- * The RobotMap is a mapping from the ports sensors and actuators are wired into
+ * The Mappings is a mapping from the ports sensors and actuators are wired into
  * to a variable name. This provides flexibility changing wiring, makes checking
  * the wiring easier and significantly reduces the number of magic numbers
  * floating around.
  */
-public class RobotMap {
+public class Mappings {
     // Prevents instantiation.
-    private RobotMap() {
+    private Mappings() {
     }
     // Define the motors used to move the robot.
     public static final byte LEFT_MOTOR = 1;
