@@ -12,7 +12,7 @@ public class Gyroscope extends Subsystem {
     public Gyroscope() {
         super("Gyroscope");
 
-        System.out.print("Initializing gyroscope.");
+        System.out.println("Initializing gyroscope.");
 
         gyro.reset();
     }

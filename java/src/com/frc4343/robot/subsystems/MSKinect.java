@@ -14,7 +14,7 @@ public class MSKinect extends Subsystem {
     public MSKinect() {
         super("MSKinect");
 
-        System.out.print("Initializing kinect.");
+        System.out.println("Initializing kinect.");
 
         leftArm = new KinectStick(Mappings.LEFT_KINECT_ARM);
         rightArm = new KinectStick(Mappings.RIGHT_KINECT_ARM);

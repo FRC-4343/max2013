@@ -14,7 +14,7 @@ public class Solenoids extends Subsystem {
     public Solenoids() {
         super("Solenoids");
 
-        System.out.print("Initializing solenoids.");
+        System.out.println("Initializing solenoids.");
 
         for (int i = 0; i < 8; i++) {
             solenoids[i] = new Solenoid(i + 1);

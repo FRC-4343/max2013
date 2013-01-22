@@ -13,7 +13,7 @@ public class Rangefinder extends Subsystem {
     public Rangefinder() {
         super("Rangefinder");
 
-        System.out.print("Initializing rangefinder.");
+        System.out.println("Initializing rangefinder.");
 
         sonic = new AnalogChannel(Mappings.RANGE_FINDER_PORT);
     }
