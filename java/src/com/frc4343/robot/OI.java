@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 public class OI {
     // Sets stick to a new joystick at JOYSTICK_PORT
     Joystick stick = new Joystick(Constants.JOYSTICK_PORT); // Instance of the current joystick.
-
     JoystickButton CATAPULT_WIND = new JoystickButton(stick, Constants.CATAPULT_WIND_BUTTON);
     JoystickButton CATAPULT_UNWIND = new JoystickButton(stick, Constants.CATAPULT_UNWIND_BUTTON);
     //JoystickButton SOLENOID_ONE_TOGGLE = new JoystickButton(stick, SOLENOID_ONE_BUTTON);

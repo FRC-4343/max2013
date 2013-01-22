@@ -83,7 +83,7 @@ public class Camera extends Subsystem {
 
         if (highestY != 0) {
             centers.addElement(new Double(largestParticle.center_mass_x_normalized));
-            System.out.println(Constants.combineStringWithDouble("Center mass X: " , largestParticle.center_mass_x));
+            System.out.println(Constants.combineStringWithDouble("Center mass X: ", largestParticle.center_mass_x));
             System.out.println(Constants.combineStringWithDouble("Center mass X normalized: ", largestParticle.center_mass_x_normalized));
         }
 

@@ -49,10 +49,10 @@ public final class Constants {
     public static final int SOLENOID_TWO_BUTTON = 11;
 
     public static String combineStringWithDouble(String string, double doubleVal) {
-        return  string.concat(Double.toString(doubleVal));
+        return string.concat(Double.toString(doubleVal));
     }
 
     public static double getDoubleFromVector(Vector vector, int index) {
-        return ((Double)vector.elementAt(index)).doubleValue();
+        return ((Double) vector.elementAt(index)).doubleValue();
     }
 }
