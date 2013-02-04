@@ -1,5 +1,7 @@
 package com.frc4343.robot;
 
+import edu.wpi.first.wpilibj.camera.AxisCamera;
+import edu.wpi.first.wpilibj.camera.AxisCamera.ResolutionT;
 import java.util.Vector;
 
 public final class Constants {
@@ -8,6 +10,7 @@ public final class Constants {
     }
 
     // CAMERA
+    public static final ResolutionT CAMERA_RESOLUTION = AxisCamera.ResolutionT.k320x240;
     public static final int CAMERA_BRIGHTNESS = 50;
     public static final int CAMERA_COMPRESSION = 80;
     public static final int CAMERA_COLOUR_LEVEL = 100;

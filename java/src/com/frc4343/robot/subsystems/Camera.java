@@ -17,7 +17,7 @@ import java.util.Vector;
 public class Camera extends Subsystem {
     AxisCamera axis;
     Relay relay;
-    boolean lightState;
+    boolean isLightOn;
 
     public Camera() {
         super("Camera");
@@ -27,12 +27,12 @@ public class Camera extends Subsystem {
         axis = AxisCamera.getInstance("10.43.43.11");
         relay = new Relay(Mappings.CAMERA_LIGHT_RELAY);
 
-        axis.writeResolution(AxisCamera.ResolutionT.k320x240);
+        axis.writeResolution(Constants.CAMERA_RESOLUTION);
         axis.writeCompression(Constants.CAMERA_COMPRESSION);
         axis.writeBrightness(Constants.CAMERA_BRIGHTNESS);
         axis.writeColorLevel(Constants.CAMERA_COLOUR_LEVEL);
 
-        lightState = true;
+        isLightOn = true;
     }
 
     public void initDefaultCommand() {
@@ -90,15 +90,14 @@ public class Camera extends Subsystem {
     }
 
     public void toggleLight() {
-        if (lightState) {
+        isLightOn = !isLightOn;
+
+        if (isLightOn) {
+            System.out.println("Setting light on.");
+            relay.set(Relay.Value.kForward);
+        } else {
             System.out.println("Setting light off.");
             relay.set(Relay.Value.kOff);
-        } else {
-            System.out.println("Setting light on.");
-            relay.set(Relay.Value.kOn);
-            relay.set(Relay.Value.kForward);
         }
-
-        lightState = !lightState;
     }
 }
