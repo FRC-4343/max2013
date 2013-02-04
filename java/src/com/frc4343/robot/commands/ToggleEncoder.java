@@ -2,31 +2,32 @@ package com.frc4343.robot.commands;
 
 import com.frc4343.robot.CommandBase;
 
-public class BridgeRotate extends CommandBase {
+public class ToggleEncoder extends CommandBase {
     double m_speed;
-    double m_timeout;
 
-    public BridgeRotate(double timeout, double speed) {
+    public ToggleEncoder(double speed) {
         m_speed = speed;
-        m_timeout = timeout;
-
-        requires(arm);
+        requires(encoder);
     }
 
     protected void initialize() {
-        setTimeout(m_timeout);
+        encoder.setEnabled(!encoder.isEnabled());
     }
 
     protected void execute() {
-        arm.drive(m_speed);
+        if (encoder.isEnabled()) {
+            encoder.drive(m_speed);
+        } else {
+            cancel();
+        }
     }
 
     protected boolean isFinished() {
-        return isTimedOut();
+        return false;
     }
 
     protected void end() {
-        arm.drive(0.0);
+        encoder.drive(0.0);
     }
 
     protected void interrupted() {

@@ -6,6 +6,7 @@ public final class Constants {
     // Prevents instantiation of the class.
     private Constants() {
     }
+
     // CAMERA
     public static final int CAMERA_BRIGHTNESS = 50;
     public static final int CAMERA_COMPRESSION = 80;

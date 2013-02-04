@@ -2,17 +2,16 @@ package com.frc4343.robot.commands;
 
 import com.frc4343.robot.CommandBase;
 
-public class CatapultDoNothing extends CommandBase {
-    public CatapultDoNothing() {
-        requires(catapult);
+public class LoaderDoNothing extends CommandBase {
+    public LoaderDoNothing() {
+        requires(loader);
     }
 
     protected void initialize() {
     }
 
     protected void execute() {
-        catapult.triggerRelease(0.0);
-        catapult.windMotor(0.0);
+        loader.drive(0.0);
     }
 
     protected boolean isFinished() {

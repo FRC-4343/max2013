@@ -2,19 +2,19 @@ package com.frc4343.robot.subsystems;
 
 import com.frc4343.robot.Constants;
 import com.frc4343.robot.Mappings;
-import com.frc4343.robot.commands.CatapultDoNothing;
+import com.frc4343.robot.commands.LauncherDoNothing;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
-public class Catapult extends Subsystem {
+public class Launcher extends Subsystem {
     Jaguar catapultMotor;
     Jaguar triggerMotor;
     DigitalInput hasBallSwitch;
     DigitalInput isRotatedSwitch;
     DigitalInput triggerSwitch;
 
-    public Catapult() {
+    public Launcher() {
         super("Catapult");
 
         System.out.println("Initializing catapult.");
@@ -35,7 +35,7 @@ public class Catapult extends Subsystem {
 
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        setDefaultCommand(new CatapultDoNothing());
+        setDefaultCommand(new LauncherDoNothing());
     }
 
     public void windMotor(double speed) {

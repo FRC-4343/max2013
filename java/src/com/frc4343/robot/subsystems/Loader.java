@@ -2,14 +2,14 @@ package com.frc4343.robot.subsystems;
 
 import com.frc4343.robot.Constants;
 import com.frc4343.robot.Mappings;
-import com.frc4343.robot.commands.BridgeDoNothing;
+import com.frc4343.robot.commands.LoaderDoNothing;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
-public class BridgeArm extends Subsystem {
+public class Loader extends Subsystem {
     Jaguar bridgeMotor;
 
-    public BridgeArm() {
+    public Loader() {
         super("BridgeArm");
 
         System.out.println("Initializing bridge arm.");
@@ -22,7 +22,7 @@ public class BridgeArm extends Subsystem {
 
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        setDefaultCommand(new BridgeDoNothing());
+        setDefaultCommand(new LoaderDoNothing());
     }
 
     public void drive(double speed) {

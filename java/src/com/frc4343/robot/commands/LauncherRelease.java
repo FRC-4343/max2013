@@ -2,18 +2,18 @@ package com.frc4343.robot.commands;
 
 import com.frc4343.robot.CommandBase;
 
-public class CatapultRelease extends CommandBase {
+public class LauncherRelease extends CommandBase {
     boolean reachedSwitch;
     boolean finished;
 
-    public CatapultRelease() {
-        requires(catapult);
+    public LauncherRelease() {
+        requires(launcher);
     }
 
     protected void initialize() {
         finished = false;
         reachedSwitch = false;
-        if (!catapult.hasBall()) {
+        if (!launcher.hasBall()) {
             System.out.println("Catapult does not have ball.");
             finished = true;
         } else {
@@ -22,18 +22,18 @@ public class CatapultRelease extends CommandBase {
     }
 
     protected void execute() {
-        if (catapult.triggerState()) {
+        if (launcher.triggerState()) {
             reachedSwitch = true;
             System.out.println("Trigger switch pressed.\n");
         }
         if (reachedSwitch == true) {
-            if (!catapult.triggerState()) {
+            if (!launcher.triggerState()) {
                 System.out.println("Trigger switch not pressed.\n");
                 finished = true;
             }
         }
 
-        catapult.triggerRelease(-1.0);
+        launcher.triggerRelease(-1.0);
     }
 
     protected boolean isFinished() {
@@ -41,7 +41,7 @@ public class CatapultRelease extends CommandBase {
     }
 
     protected void end() {
-        catapult.triggerRelease(0.0);
+        launcher.triggerRelease(0.0);
     }
 
     protected void interrupted() {

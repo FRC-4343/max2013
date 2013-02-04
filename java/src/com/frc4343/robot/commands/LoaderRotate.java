@@ -2,32 +2,31 @@ package com.frc4343.robot.commands;
 
 import com.frc4343.robot.CommandBase;
 
-public class TogglePickup extends CommandBase {
+public class LoaderRotate extends CommandBase {
     double m_speed;
+    double m_timeout;
 
-    public TogglePickup(double speed) {
+    public LoaderRotate(double timeout, double speed) {
         m_speed = speed;
-        requires(pickup);
+        m_timeout = timeout;
+
+        requires(loader);
     }
 
     protected void initialize() {
-        pickup.setEnabled(!pickup.isEnabled());
+        setTimeout(m_timeout);
     }
 
     protected void execute() {
-        if (pickup.isEnabled()) {
-            pickup.drive(m_speed);
-        } else {
-            cancel();
-        }
+        loader.drive(m_speed);
     }
 
     protected boolean isFinished() {
-        return false;
+        return isTimedOut();
     }
 
     protected void end() {
-        pickup.drive(0.0);
+        loader.drive(0.0);
     }
 
     protected void interrupted() {

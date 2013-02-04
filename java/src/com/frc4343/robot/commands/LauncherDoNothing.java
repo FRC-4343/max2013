@@ -2,16 +2,17 @@ package com.frc4343.robot.commands;
 
 import com.frc4343.robot.CommandBase;
 
-public class BridgeDoNothing extends CommandBase {
-    public BridgeDoNothing() {
-        requires(arm);
+public class LauncherDoNothing extends CommandBase {
+    public LauncherDoNothing() {
+        requires(launcher);
     }
 
     protected void initialize() {
     }
 
     protected void execute() {
-        arm.drive(0.0);
+        launcher.triggerRelease(0.0);
+        launcher.windMotor(0.0);
     }
 
     protected boolean isFinished() {

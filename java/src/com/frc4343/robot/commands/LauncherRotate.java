@@ -2,15 +2,15 @@ package com.frc4343.robot.commands;
 
 import com.frc4343.robot.CommandBase;
 
-public class CatapultRotate extends CommandBase {
+public class LauncherRotate extends CommandBase {
     double m_speed;
     boolean resting;
     boolean finished;
 
-    public CatapultRotate(double speed) {
+    public LauncherRotate(double speed) {
         resting = true;
         m_speed = speed;
-        requires(catapult);
+        requires(launcher);
     }
 
     protected void initialize() {
@@ -18,19 +18,19 @@ public class CatapultRotate extends CommandBase {
     }
 
     protected void execute() {
-        if (!catapult.isRotated()) {
+        if (!launcher.isRotated()) {
             resting = false;
             System.out.println("Catapult: Not resting.\n");
         }
         if (resting == false) {
-            if (catapult.isRotated()) {
+            if (launcher.isRotated()) {
                 System.out.println("Catapult: resting.\n");
                 resting = true;
                 finished = true;
             }
         }
 
-        catapult.windMotor(m_speed);
+        launcher.windMotor(m_speed);
     }
 
     protected boolean isFinished() {
@@ -38,7 +38,7 @@ public class CatapultRotate extends CommandBase {
     }
 
     protected void end() {
-        catapult.windMotor(0.0);
+        launcher.windMotor(0.0);
     }
 
     protected void interrupted() {

@@ -25,16 +25,16 @@ public class OI {
     JoystickButton AUTO_FIRE = new JoystickButton(stick, Constants.AUTO_FIRE_BUTTON);
 
     public OI() {
-        CATAPULT_WIND.whenPressed(new CatapultRotate(-1.0));
-        CATAPULT_UNWIND.whenPressed(new CatapultRotate(1.0));
+        CATAPULT_WIND.whenPressed(new LauncherRotate(-1.0));
+        CATAPULT_UNWIND.whenPressed(new LauncherRotate(1.0));
         //SOLENOID_ONE_TOGGLE.whenPressed(new ToggleSolenoid(Constants.SOLENOID_ONE));
         SOLENOID_TWO_TOGGLE.whenPressed(new ToggleSolenoid(Constants.SOLENOID_TWO));
-        BRIDGE_RAISE.whenPressed(new BridgeRotate(Constants.BRIDGE_TIME, -0.25));
-        BRIDGE_LOWER.whenPressed(new BridgeRotate(Constants.BRIDGE_TIME, 0.25));
-        TRIGGER_RELEASE.whenPressed(new CatapultRelease());
+        BRIDGE_RAISE.whenPressed(new LoaderRotate(Constants.BRIDGE_TIME, -0.25));
+        BRIDGE_LOWER.whenPressed(new LoaderRotate(Constants.BRIDGE_TIME, 0.25));
+        TRIGGER_RELEASE.whenPressed(new LauncherRelease());
         AUTO_FIRE.whenPressed(new Fire());
-        BALL_PICKUP.whenPressed(new TogglePickup(1.0));
-        BALL_RELEASE.whenPressed(new TogglePickup(-1.0));
+        BALL_PICKUP.whenPressed(new ToggleEncoder(1.0));
+        BALL_RELEASE.whenPressed(new ToggleEncoder(-1.0));
         CAMERA_LIGHT.whenPressed(new ToggleLight());
         CAMERA_TARGET.whileHeld(new TargetWithCamera());
     }

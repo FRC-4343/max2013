@@ -2,15 +2,15 @@ package com.frc4343.robot.subsystems;
 
 import com.frc4343.robot.Constants;
 import com.frc4343.robot.Mappings;
-import com.frc4343.robot.commands.BallPickupDoNothing;
+import com.frc4343.robot.commands.EncoderDoNothing;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
-public class BallPickup extends Subsystem {
+public class Encoder extends Subsystem {
     Jaguar pickupMotor; // Used to wind the ball pickup.
     boolean enabledMotor;
 
-    public BallPickup() {
+    public Encoder() {
         super("BallPickup");
 
         System.out.println("Initializing ball pickup.");
@@ -25,7 +25,7 @@ public class BallPickup extends Subsystem {
 
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        setDefaultCommand(new BallPickupDoNothing());
+        setDefaultCommand(new EncoderDoNothing());
     }
 
     public void drive(double speed) {

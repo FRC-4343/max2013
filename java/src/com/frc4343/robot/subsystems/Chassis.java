@@ -11,6 +11,9 @@ public class Chassis extends Subsystem {
     RobotDrive drive; // Used to drive the robot.
     double speed; // Holds the current speed of the robot.
 
+    private double previousXVal = 0.0;
+    private double previousYVal = 0.0;
+
     public Chassis() {
         super("Chassis");
 
@@ -39,16 +42,16 @@ public class Chassis extends Subsystem {
         drive.tankDrive(left, right);
     }
 
-    public void driveWithJoystick(Joystick stick, double previousXVal, double previousYVal) {
-        double currentXVal = stick.getAxis(Joystick.AxisType.kX);
-        double currentYVal = stick.getAxis(Joystick.AxisType.kY);
+    public void driveWithJoystick(Joystick stick) {
+        double currentXVal = stick.getAxis(Joystick.AxisType.kY);
+        double currentYVal = stick.getAxis(Joystick.AxisType.kX);
 
         double accelerationRate = 0.2;
 
-        previousXVal = previousXVal + (currentXVal - previousXVal) * accelerationRate;
-        previousYVal = previousYVal + (currentYVal - previousYVal) * accelerationRate;
+        previousXVal = getCurrentXVal() + (currentXVal - getCurrentXVal()) * accelerationRate;
+        previousYVal = getCurrentYVal() + (currentYVal - getCurrentYVal()) * accelerationRate;
 
-        drive.arcadeDrive(previousXVal, previousYVal);
+        drive.arcadeDrive(getCurrentXVal(), getCurrentYVal());
     }
 
     public void driveWithTurn(double distance, double turnVal) {
@@ -57,5 +60,13 @@ public class Chassis extends Subsystem {
 
     public boolean isMoving() {
         return drive.isAlive();
+    }
+
+    public double getCurrentXVal() {
+        return previousXVal;
+    }
+
+    public double getCurrentYVal() {
+        return previousYVal;
     }
 }
