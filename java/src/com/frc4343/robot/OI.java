@@ -10,31 +10,17 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
  */
 public class OI {
     // Sets stick to a new joystick at JOYSTICK_PORT
-    Joystick stick = new Joystick(Constants.JOYSTICK_PORT); // Instance of the current joystick.
-    JoystickButton CATAPULT_WIND = new JoystickButton(stick, Constants.CATAPULT_WIND_BUTTON);
-    JoystickButton CATAPULT_UNWIND = new JoystickButton(stick, Constants.CATAPULT_UNWIND_BUTTON);
-    //JoystickButton SOLENOID_ONE_TOGGLE = new JoystickButton(stick, SOLENOID_ONE_BUTTON);
-    JoystickButton SOLENOID_TWO_TOGGLE = new JoystickButton(stick, Constants.SOLENOID_TWO_BUTTON);
-    JoystickButton BRIDGE_RAISE = new JoystickButton(stick, Constants.BRIDGE_RAISE_BUTTON);
-    JoystickButton BRIDGE_LOWER = new JoystickButton(stick, Constants.BRIDGE_LOWER_BUTTON);
+    Joystick stick = new Joystick(Mappings.JOYSTICK_PORT); // Instance of the current joystick.
+    JoystickButton SOLENOID_ONE_TOGGLE = new JoystickButton(stick, Mappings.SOLENOID_ONE_BUTTON);
+    JoystickButton SOLENOID_TWO_TOGGLE = new JoystickButton(stick, Mappings.SOLENOID_TWO_BUTTON);
     JoystickButton TRIGGER_RELEASE = new JoystickButton(stick, Joystick.ButtonType.kTrigger.value);
-    JoystickButton BALL_PICKUP = new JoystickButton(stick, Constants.PICKUP_BUTTON);
-    JoystickButton BALL_RELEASE = new JoystickButton(stick, Constants.UNPICKUP_BUTTON);
-    JoystickButton CAMERA_LIGHT = new JoystickButton(stick, Constants.CAMERA_LIGHT_BUTTON);
-    JoystickButton CAMERA_TARGET = new JoystickButton(stick, Constants.CAMERA_TARGET_BUTTON);
-    JoystickButton AUTO_FIRE = new JoystickButton(stick, Constants.AUTO_FIRE_BUTTON);
+    JoystickButton CAMERA_LIGHT = new JoystickButton(stick, Mappings.CAMERA_LIGHT_BUTTON);
+    JoystickButton CAMERA_TARGET = new JoystickButton(stick, Mappings.CAMERA_TARGET_BUTTON);
 
     public OI() {
-        CATAPULT_WIND.whenPressed(new LauncherRotate(-1.0));
-        CATAPULT_UNWIND.whenPressed(new LauncherRotate(1.0));
-        //SOLENOID_ONE_TOGGLE.whenPressed(new ToggleSolenoid(Constants.SOLENOID_ONE));
-        SOLENOID_TWO_TOGGLE.whenPressed(new ToggleSolenoid(Constants.SOLENOID_TWO));
-        BRIDGE_RAISE.whenPressed(new LoaderRotate(Constants.BRIDGE_TIME, -0.25));
-        BRIDGE_LOWER.whenPressed(new LoaderRotate(Constants.BRIDGE_TIME, 0.25));
-        TRIGGER_RELEASE.whenPressed(new LauncherRelease());
-        AUTO_FIRE.whenPressed(new Fire());
-        BALL_PICKUP.whenPressed(new ToggleEncoder(1.0));
-        BALL_RELEASE.whenPressed(new ToggleEncoder(-1.0));
+        SOLENOID_ONE_TOGGLE.whenPressed(new ToggleSolenoid(Mappings.SOLENOID_ONE));
+        SOLENOID_TWO_TOGGLE.whenPressed(new ToggleSolenoid(Mappings.SOLENOID_TWO));
+        TRIGGER_RELEASE.whenPressed(new LauncherFire());
         CAMERA_LIGHT.whenPressed(new ToggleLight());
         CAMERA_TARGET.whileHeld(new TargetWithCamera());
     }

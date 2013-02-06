@@ -7,17 +7,17 @@ import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class Loader extends Subsystem {
-    Jaguar bridgeMotor;
+    Jaguar loaderMotor;
 
     public Loader() {
-        super("BridgeArm");
+        super("Loader");
 
-        System.out.println("Initializing bridge arm.");
+        System.out.println("Initializing loader.");
 
-        bridgeMotor = new Jaguar(Mappings.BRIDGE_MOTOR);
+        loaderMotor = new Jaguar(Mappings.LOADER_MOTOR);
 
-        bridgeMotor.setSafetyEnabled(Constants.SAFETY_ENABLED);
-        bridgeMotor.setExpiration(Constants.EXPIRATION);
+        loaderMotor.setSafetyEnabled(Constants.SAFETY_ENABLED);
+        loaderMotor.setExpiration(Constants.EXPIRATION);
     }
 
     public void initDefaultCommand() {
@@ -26,10 +26,10 @@ public class Loader extends Subsystem {
     }
 
     public void drive(double speed) {
-        bridgeMotor.set(speed);
+        loaderMotor.set(speed);
     }
 
-    public boolean getBridgeDriveState() {
-        return bridgeMotor.isAlive();
+    public boolean getLoaderDriveState() {
+        return loaderMotor.isAlive();
     }
 }

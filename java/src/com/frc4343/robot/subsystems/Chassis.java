@@ -19,7 +19,7 @@ public class Chassis extends Subsystem {
 
         System.out.println("Initializing chassis.");
 
-        drive = new RobotDrive(Mappings.LEFT_MOTOR, Mappings.RIGHT_MOTOR);
+        drive = new RobotDrive(Mappings.LEFT_MOTORS, Mappings.RIGHT_MOTORS);
 
         drive.setSafetyEnabled(Constants.SAFETY_ENABLED);
         drive.setExpiration(Constants.EXPIRATION);

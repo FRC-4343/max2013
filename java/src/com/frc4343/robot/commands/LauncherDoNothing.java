@@ -11,8 +11,7 @@ public class LauncherDoNothing extends CommandBase {
     }
 
     protected void execute() {
-        launcher.triggerRelease(0.0);
-        launcher.windMotor(0.0);
+        launcher.launcherMotor(0.0);
     }
 
     protected boolean isFinished() {

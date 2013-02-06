@@ -10,25 +10,34 @@ public class Mappings {
     // Prevents instantiation.
     private Mappings() {
     }
-    // Define the motors used to move the robot.
-    public static final byte LEFT_MOTOR = 1;
-    public static final byte RIGHT_MOTOR = 2;
-    // Define the pickup and trigger motors.
-    public static final byte PICKUP_MOTOR = 3;
-    public static final byte TRIGGER_MOTOR = 4;
-    // Define the bridge arm and winder motors
-    public static final byte BRIDGE_MOTOR = 5;
-    public static final byte WINDER_MOTOR = 6;
-    // Define the arms used to move the kinect.
+    // The motors used to move the robot.
+    public static final byte LEFT_MOTORS = 1;
+    public static final byte RIGHT_MOTORS = 2;
+    // Other various motors.
+    public static final byte LAUNCHER_MOTOR_A = 3;
+    public static final byte LAUNCHER_MOTOR_B = 4;
+    public static final byte INDEX_MOTOR = 5;
+    public static final byte LOADER_MOTOR = 6;
+    public static final byte LIFT_MOTOR = 7;
+    // The arms used to move the kinect.
     public static final byte LEFT_KINECT_ARM = 1;
     public static final byte RIGHT_KINECT_ARM = 2;
-    // Define the gyro and range finder i/o ports.
+    // The gyro, range finder, and various other I/O ports.
     public static final byte GYRO_PORT = 1;
-    public static final byte ROTATE_SWITCH_PORT = 3;
-    public static final byte BALL_SWITCH_PORT = 4;
-    public static final byte TRIGGER_SWITCH_PORT = 5;
-    // If you are using multiple modules, make sure to define both the port
-    // number and the module. For example you with a rangefinder:
-    public static final byte RANGE_FINDER_PORT = 6;
+    public static final byte ENCODER_PORT_A = 2;
+    public static final byte ENCODER_PORT_B = 3;
+    public static final byte RANGE_FINDER_PORT = 4;
+    public static final byte DISC_DETECTION_SWITCH_PORT = 5;
+    // The relay controlling the current to the camera light
     public static final byte CAMERA_LIGHT_RELAY = 1;
+    // The port to which the joystick is connected to.
+    public static final int JOYSTICK_PORT = 1;
+    // The solenoid ports.
+    public static final int SOLENOID_ONE = 0;
+    public static final int SOLENOID_TWO = 1;
+    // All of the various button mappings on the joystick.
+    public static final int CAMERA_LIGHT_BUTTON = 8;
+    public static final int CAMERA_TARGET_BUTTON = 9;
+    public static final int SOLENOID_ONE_BUTTON = 10;
+    public static final int SOLENOID_TWO_BUTTON = 11;
 }

@@ -8,29 +8,24 @@ import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class Launcher extends Subsystem {
-    Jaguar catapultMotor;
-    Jaguar triggerMotor;
-    DigitalInput hasBallSwitch;
-    DigitalInput isRotatedSwitch;
-    DigitalInput triggerSwitch;
+    Jaguar launcherMotorA;
+    Jaguar launcherMotorB;
+    DigitalInput hasDiscSwitch;
 
     public Launcher() {
-        super("Catapult");
+        super("Launcher");
 
-        System.out.println("Initializing catapult.");
+        System.out.println("Initializing launcher.");
 
-        catapultMotor = new Jaguar(Mappings.WINDER_MOTOR);
-        triggerMotor = new Jaguar(Mappings.TRIGGER_MOTOR);
+        launcherMotorA = new Jaguar(Mappings.LAUNCHER_MOTOR_A);
+        launcherMotorB = new Jaguar(Mappings.LAUNCHER_MOTOR_B);
 
-        hasBallSwitch = new DigitalInput(Mappings.BALL_SWITCH_PORT);
-        isRotatedSwitch = new DigitalInput(Mappings.ROTATE_SWITCH_PORT);
-        triggerSwitch = new DigitalInput(Mappings.TRIGGER_SWITCH_PORT);
+        hasDiscSwitch = new DigitalInput(Mappings.DISC_DETECTION_SWITCH_PORT);
 
-        catapultMotor.setSafetyEnabled(Constants.SAFETY_ENABLED);
-        catapultMotor.setExpiration(Constants.EXPIRATION);
-
-        triggerMotor.setSafetyEnabled(Constants.SAFETY_ENABLED);
-        triggerMotor.setExpiration(Constants.EXPIRATION);
+        launcherMotorA.setSafetyEnabled(Constants.SAFETY_ENABLED);
+        launcherMotorB.setSafetyEnabled(Constants.SAFETY_ENABLED);
+        launcherMotorA.setExpiration(Constants.EXPIRATION);
+        launcherMotorB.setExpiration(Constants.EXPIRATION);
     }
 
     public void initDefaultCommand() {
@@ -38,31 +33,15 @@ public class Launcher extends Subsystem {
         setDefaultCommand(new LauncherDoNothing());
     }
 
-    public void windMotor(double speed) {
-        catapultMotor.set(speed);
+    public void launcherMotor(double speed) {
+        launcherMotorA.set(speed);
     }
 
-    public void triggerRelease(double speed) {
-        triggerMotor.set(speed);
+    public boolean getLauncherDriveState() {
+        return launcherMotorA.isAlive();
     }
 
-    public boolean getTriggerDriveState() {
-        return triggerMotor.isAlive();
-    }
-
-    public boolean getCatapultDriveState() {
-        return catapultMotor.isAlive();
-    }
-
-    public boolean hasBall() {
-        return hasBallSwitch.get();
-    }
-
-    public boolean isRotated() {
-        return isRotatedSwitch.get();
-    }
-
-    public boolean triggerState() {
-        return triggerSwitch.get();
+    public boolean hasDisc() {
+        return hasDiscSwitch.get();
     }
 }

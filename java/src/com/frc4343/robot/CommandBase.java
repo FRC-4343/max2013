@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public abstract class CommandBase extends Command {
     // Create a single static instance of all of your subsystems
     public static Loader loader = new Loader();
-    public static Encoder encoder = new Encoder();
+    public static MagneticEncoder encoder = new MagneticEncoder();
     public static Camera camera = new Camera();
     public static Launcher launcher = new Launcher();
     public static Chassis chassis = new Chassis();
