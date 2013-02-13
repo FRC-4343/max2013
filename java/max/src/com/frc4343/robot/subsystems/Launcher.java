@@ -3,22 +3,26 @@ package com.frc4343.robot.subsystems;
 import com.frc4343.robot.Constants;
 import com.frc4343.robot.Mappings;
 import com.frc4343.robot.commands.LauncherDoNothing;
+import com.frc4343.robot.commands.LauncherDriveWithJoystick;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Jaguar;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class Launcher extends Subsystem {
-    Jaguar launcherMotorA;
-    Jaguar launcherMotorB;
+    Victor launcherMotorA;
+    Victor launcherMotorB;
     DigitalInput hasDiscSwitch;
+    public double speedVal = 0.0;
 
     public Launcher() {
         super("Launcher");
 
         System.out.println("Initializing launcher.");
 
-        launcherMotorA = new Jaguar(Mappings.LAUNCHER_MOTOR_A);
-        launcherMotorB = new Jaguar(Mappings.LAUNCHER_MOTOR_B);
+        launcherMotorA = new Victor(Mappings.LAUNCHER_MOTOR_A);
+        launcherMotorB = new Victor(Mappings.LAUNCHER_MOTOR_B);
 
         hasDiscSwitch = new DigitalInput(Mappings.DISC_DETECTION_SWITCH_PORT);
 

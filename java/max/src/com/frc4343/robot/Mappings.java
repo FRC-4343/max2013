@@ -31,7 +31,8 @@ public class Mappings {
     // The relay controlling the current to the camera light
     public static final byte CAMERA_LIGHT_RELAY = 1;
     // The port to which the joystick is connected to.
-    public static final int JOYSTICK_PORT = 1;
+    public static final int JOYSTICK_PORT_A = 1;
+    public static final int JOYSTICK_PORT_B = 2;
     // The solenoid ports.
     public static final int SOLENOID_ONE = 0;
     public static final int SOLENOID_TWO = 1;
@@ -40,4 +41,7 @@ public class Mappings {
     public static final int CAMERA_TARGET_BUTTON = 9;
     public static final int SOLENOID_ONE_BUTTON = 10;
     public static final int SOLENOID_TWO_BUTTON = 11;
+    // Launcher control buttons.
+    public static final int LAUNCHER_SPEED_INCREASE_BUTTON = 2;
+    public static final int LAUNCHER_SPEED_DECREASE_BUTTON = 3;
 }

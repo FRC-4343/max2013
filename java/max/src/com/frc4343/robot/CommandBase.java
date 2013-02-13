@@ -49,6 +49,7 @@ public abstract class CommandBase extends Command {
         SmartDashboard.putNumber("Current Y Val", chassis.getCurrentYVal());
         SmartDashboard.putNumber("Target X Val", oi.getJoystick().getAxis(Joystick.AxisType.kX));
         SmartDashboard.putNumber("Target Y Val", oi.getJoystick().getAxis(Joystick.AxisType.kY));
+        SmartDashboard.putNumber("Current Motor Speed: ", launcher.speedVal);
     }
 
     public CommandBase(String name) {
