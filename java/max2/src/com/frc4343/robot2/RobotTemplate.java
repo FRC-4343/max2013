@@ -9,24 +9,36 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 
 public class RobotTemplate extends IterativeRobot {
 
-    Joystick joystick = new Joystick(1);             // Joystick
-    Victor launcherMotor = new Victor(3);            // Launch motor
+    DriverStationLCD dsLCD = DriverStationLCD.getInstance();
+    Timer timer = new Timer();
+    // Joysticks
+    Joystick joystick = new Joystick(1);
+    // Victor Motors
+    Victor launcherMotor = new Victor(3);
     Relay indexerMotor = new Relay(2);
-    RobotDrive robotDrive = new RobotDrive(1, 2);    // Drive motors
-    Solenoid[] solenoids = new Solenoid[2];          // Solenoid launcherMotor array
-    Compressor compressor = new Compressor(1, 1);    // Compressor
-    DigitalInput frisbeeIndexerLimitSwitch = new DigitalInput(2); // Limit switch
+    // Drive motors
+    RobotDrive robotDrive = new RobotDrive(1, 2);
+    // Solenoid launcherMotor array
+    Solenoid[] solenoids = new Solenoid[2];
+    // Compressors
+    Compressor compressor = new Compressor(1, 1);
+    // Limit Switches
+    DigitalInput frisbeeIndexerLimitSwitch = new DigitalInput(2);
     // The default speed for the launch motor to start at.
     double speed = 0.60;
+    // Timer in miliseconds
+    int indexerTimeoutInMilliseconds = 1000;
     // Whether or not the launch speed launcherMotor buttons are being pressed.
     boolean previouslyChangedSpeeds = false;
     boolean isMotorRunning = false;
     boolean isFrisbeeLoaded = false;
     boolean isTriggerHeld = false;
+    boolean isButtonHeld = false;
     // Button mappings
     final int SPEED_DECREASE_BUTTON = 2;
     final int SPEED_INCREASE_BUTTON = 3;
@@ -47,29 +59,32 @@ public class RobotTemplate extends IterativeRobot {
         // Clears the output window of text.
         clearWindow();
 
-        //robotDrive.arcadeDrive(joystick.getAxis(Joystick.AxisType.kY), -joystick.getAxis(Joystick.AxisType.kX));
+        robotDrive.arcadeDrive(joystick.getAxis(Joystick.AxisType.kY), -joystick.getAxis(Joystick.AxisType.kX));
 
         // If the frisbee has passed the limit switch, registers it as loaded and turns off the loader motor.
         if (frisbeeIndexerLimitSwitch.get()) {
             indexerMotor.set(Relay.Value.kOff);
             isFrisbeeLoaded = true;
         }
-
-        if (!isFrisbeeLoaded) {
-            DriverStationLCD.getInstance().println(Line.kUser1, 1, "Frisbee Loaded: False");
-        } else {
-            DriverStationLCD.getInstance().println(Line.kUser1, 1, "Frisbee Loaded: True");
+        if (joystick.getRawButton(1) && isMotorRunning) {
+            timer.start();
+            if (timer.get() >= indexerTimeoutInMilliseconds) {
+                isFrisbeeLoaded = false;
+                indexerMotor.set(Relay.Value.kOff);
+                timer.stop();
+                timer.reset();
+            }
         }
+        dsLCD.println(Line.kUser1, 1, isFrisbeeLoaded ? "Frisbee Loaded: True" : "Frisbee Loaded: False");
 
         handleLauncherMotor();
-        handleShooter();
         handleSolenoid();
 
         // Print the speed.
-        DriverStationLCD.getInstance().println(Line.kUser2, 1, "Launcher Speed: " + (byte) (speed * 100) + "%");
+        dsLCD.println(Line.kUser2, 1, "Launcher Speed: " + (byte) (speed * 100) + "%");
 
         // Updates the output window.
-        DriverStationLCD.getInstance().updateLCD();
+        dsLCD.updateLCD();
     }
 
     private void handleLauncherMotor() {
@@ -106,24 +121,15 @@ public class RobotTemplate extends IterativeRobot {
         }
     }
 
-    private void handleShooter() {
-    }
-
     private void handleSolenoid() {
         // If the trigger is pressed.
         if (joystick.getRawButton(1) && !isTriggerHeld) {
             // If there is no frisbee in the launcher, turns on the motor to load a new one.
             if (!isFrisbeeLoaded) {
                 indexerMotor.set(Relay.Value.kForward);
-
-                // If there is a frisbee in the launcher, then it launches it.
             } else {
-                isFrisbeeLoaded = false;
-                setPistonExtended(true);
-                if (isMotorRunning) {
-                    launcherMotor.set(1.0);
-                    isFrisbeeLoaded = false;
-                }
+                // If there is a frisbee in the launcher, then it launches it.
+                fire();
             }
 
             isTriggerHeld = true;
@@ -135,6 +141,21 @@ public class RobotTemplate extends IterativeRobot {
             }
 
             isTriggerHeld = false;
+        }
+    }
+
+    private boolean isButtonPressed(byte buttonVal) {
+        boolean isButtonPressed = joystick.getRawButton(buttonVal);
+
+        if (isButtonPressed) {
+            if (!isButtonHeld) {
+                isButtonHeld = true;
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
         }
     }
 
@@ -154,5 +175,15 @@ public class RobotTemplate extends IterativeRobot {
     private void setPistonExtended(boolean extended) {
         solenoids[0].set(!extended);
         solenoids[1].set(extended);
+    }
+
+    private void fire() {
+        isFrisbeeLoaded = false;
+        setPistonExtended(true);
+        if (isMotorRunning) {
+            launcherMotor.set(1.0);
+            isFrisbeeLoaded = false;
+        }
+        indexerMotor.set(Relay.Value.kOn);
     }
 }
