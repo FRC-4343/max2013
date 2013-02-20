@@ -26,7 +26,7 @@ public class RobotTemplate extends IterativeRobot {
 
     // The default speed for the launch motor to start at.
     double speed = 0.32;
-    double axisCompensation = 0.49;
+    double axisCompensation = 0.55;
     double indexerTimeoutInSeconds = 1.5;
 
     // Whether or not the launch speed launcherMotor buttons are being pressed.
@@ -53,7 +53,7 @@ public class RobotTemplate extends IterativeRobot {
     final double autonomousDelayBetweenEachShot = 3;
     final double autonomousDelayBeforeFirstShot = 4;
     boolean isInitialAutonomousDelayOver = false;
-    final byte autonomousFireType = 1;
+    final byte autonomousFireType = 0;
     boolean readyToIndexNextFrisbee = false;
     final double delayToPistonRetraction = 0.1;
 
@@ -110,7 +110,7 @@ public class RobotTemplate extends IterativeRobot {
             speed = 0.32;
             maximumFrisbeesToFireInAutonomous = 3;
         } else if (autonomousFireType == 1) {
-            speed = 0.4;
+            speed = 0.38;
             maximumFrisbeesToFireInAutonomous = 2;
         }
         timer.start();
@@ -233,9 +233,9 @@ public class RobotTemplate extends IterativeRobot {
 
     private void handleLauncherMotor() {
         // Check if the motor is being run.
-        if (joystick.getRawButton(LAUNCHER_MOTOR_ENABLE)) {
+        if (joystick.getRawButton(LAUNCHER_MOTOR_ENABLE) || joystick2.getRawButton(LAUNCHER_MOTOR_ENABLE)) {
             isLauncherMotorRunning = true;
-        } else if (joystick.getRawButton(LAUNCHER_MOTOR_DISABLE)) {
+        } else if (joystick.getRawButton(LAUNCHER_MOTOR_DISABLE) || joystick2.getRawButton(LAUNCHER_MOTOR_DISABLE)) {
             isLauncherMotorRunning = false;
         }
 
@@ -246,6 +246,14 @@ public class RobotTemplate extends IterativeRobot {
             speed = 0.32;
         } else if (joystick.getRawButton(11)) {
             speed = 0.4;
+        }
+        // Manually eject the frisbee
+        if (joystick.getRawButton(9)) {
+            setPistonExtended(false);
+            isFrisbeeLoaded = false;
+            timer.start();
+            //isIndexerMotorRunning = true;
+            readyToIndexNextFrisbee = true;
         }
 
         // Checks to see if either the speed increase or decrease buttons are pressed.
