@@ -56,11 +56,16 @@ public class RobotTemplate extends IterativeRobot {
     final byte autonomousFireType = 0;
     boolean readyToIndexNextFrisbee = false;
     final double delayToPistonRetraction = 0.1;
+    final double speedWhenStartingAtBackOfPyramid = 0.32;
+    final double speedWhenStartingAtFontOfPyramid = 0.38;
 
     private void resetRobot() {
+        // Reset the timer.
         timer.reset();
         timer.stop();
+        // Reset the launcher piston to it's retracted position.
         setPistonExtended(true);
+        // Reset the number of fired frisbees in autonomous to zero and reset the timer delay to allow for the re-enabling of autonomous.
         numberOfFrisbeesFiredInAutonomous = 0;
         isInitialAutonomousDelayOver = false;
     }
@@ -70,11 +75,10 @@ public class RobotTemplate extends IterativeRobot {
         for (int i = 0; i < solenoids.length; i++) {
             solenoids[i] = new Solenoid(i + 1);
         }
-
-        compressor.start();
     }
 
     public void teleopInit() {
+        // Initialize the compressor, reset the values, disable the motors.
         compressor.start();
         resetRobot();
         isLauncherMotorRunning = false;
@@ -82,7 +86,8 @@ public class RobotTemplate extends IterativeRobot {
     }
 
     public void teleopPeriodic() {
-        // Activate Arcade Drive
+        // This combines the axes in order to allow for both joysticks to control the robot's movement.
+        // One of the joysticks will be made less sensitive to allow for precision control.
         double sumXAxes = joystick2.getAxis(Joystick.AxisType.kY) + (joystick.getAxis(Joystick.AxisType.kY) * 0.5);
         double sumYAxes = -joystick2.getAxis(Joystick.AxisType.kX) * axisCompensation + ((-joystick.getAxis(Joystick.AxisType.kX) * axisCompensation) * 0.9);
 
@@ -106,72 +111,48 @@ public class RobotTemplate extends IterativeRobot {
         resetRobot();
         isLauncherMotorRunning = true;
         isIndexerMotorRunning = true;
+
+        // Depending on which type of autonomous we're using, change the initial frisbee count and launcher speed.
         if (autonomousFireType == 0) {
-            speed = 0.32;
+            speed = speedWhenStartingAtBackOfPyramid;
             maximumFrisbeesToFireInAutonomous = 3;
         } else if (autonomousFireType == 1) {
-            speed = 0.38;
+            speed = speedWhenStartingAtFrontOfPyramid;
             maximumFrisbeesToFireInAutonomous = 2;
         }
+
         timer.start();
     }
 
     public void autonomousPeriodic() {
+        // Disable the indexer motor if a frisbee triggers the limit switch.
         if (indexerLimitSwitch.get()) {
             isIndexerMotorRunning = false;
         }
 
+        // If the autonomous delay has not finished previously and the is now over, set the boolean and reset the timer.
         if (timer.get() >= autonomousDelayBeforeFirstShot && !isInitialAutonomousDelayOver) {
             isInitialAutonomousDelayOver = true;
             timer.reset();
         }
 
-        if (autonomousFireType == 0) {
-            if (isInitialAutonomousDelayOver) {
-                if (numberOfFrisbeesFiredInAutonomous <= maximumFrisbeesToFireInAutonomous) {
-                    if (numberOfFrisbeesFiredInAutonomous < maximumFrisbeesToFireInAutonomous) {
-                        if (timer.get() > autonomousDelayBetweenEachShot) {
-                            numberOfFrisbeesFiredInAutonomous += 1;
-                            setPistonExtended(false);
-                            timer.reset();
-
-                            if (numberOfFrisbeesFiredInAutonomous != maximumFrisbeesToFireInAutonomous)
-                                readyToIndexNextFrisbee = true;
-                        }
-                    }
-                    if (timer.get() > delayToPistonRetraction && timer.get() < 1.5) {
-                        setPistonExtended(true);
-                    }
-                    if (timer.get() > delayToPistonRetraction + 0.5) {
-                        if (readyToIndexNextFrisbee) {
-                            isIndexerMotorRunning = true;
-                            readyToIndexNextFrisbee = false;
-                        }
-                    }
-                }
+        if (isInitialAutonomousDelayOver) {
+            if (autonomousFireType == 1) {
+                setClimbingPistonExtended(false);
             }
-        } else if (autonomousFireType == 1) {
-            setClimbingPistonExtended(false);
-            if (isInitialAutonomousDelayOver) {
-                if (numberOfFrisbeesFiredInAutonomous <= maximumFrisbeesToFireInAutonomous) {
-                    if (numberOfFrisbeesFiredInAutonomous < maximumFrisbeesToFireInAutonomous) {
-                        if (timer.get() > autonomousDelayBetweenEachShot) {
-                            numberOfFrisbeesFiredInAutonomous += 1;
-                            setPistonExtended(false);
-                            timer.reset();
 
-                            if (numberOfFrisbeesFiredInAutonomous != maximumFrisbeesToFireInAutonomous)
-                                readyToIndexNextFrisbee = true;
-                        }
-                    }
-                    if (timer.get() > delayToPistonRetraction && timer.get() < 1.5) {
-                        setPistonExtended(true);
-                    }
-                    if (timer.get() > delayToPistonRetraction + 0.5) {
-                        if (readyToIndexNextFrisbee) {
-                            isIndexerMotorRunning = true;
-                            readyToIndexNextFrisbee = false;
-                        }
+            if (numberOfFrisbeesFiredInAutonomous <= maximumFrisbeesToFireInAutonomous) {
+                if (numberOfFrisbeesFiredInAutonomous < maximumFrisbeesToFireInAutonomous) {
+                    // Once the delay per shot has been reached, fire the next frisbee.
+                    if (timer.get() > autonomousDelayBetweenEachShot) {
+                        // Increment the frisbee count, retract the piston, and reset the timer.
+                        numberOfFrisbeesFiredInAutonomous += 1;
+                        setPistonExtended(false);
+                        timer.reset();
+
+                        // If we can still fire another frisbee, prepare to index.
+                        if (numberOfFrisbeesFiredInAutonomous != maximumFrisbeesToFireInAutonomous)
+                            readyToIndexNextFrisbee = true;
                     }
                 }
             }
@@ -181,32 +162,28 @@ public class RobotTemplate extends IterativeRobot {
     }
 
     private void handleConsoleOutputAndMotorBooleans() {
-        if (timer.get() > delayToPistonRetraction && timer.get() < 0.5) {
+        // If the piston retraction delay has passed, retract the piston.
+        if (timer.get() > delayToPistonRetraction && timer.get() < (delayToPistonRetraction + 0.5)){
             setPistonExtended(true);
         }
-        if (timer.get() > delayToPistonRetraction + 0.5 && readyToIndexNextFrisbee) {
-            isIndexerMotorRunning = true;
-            readyToIndexNextFrisbee = false;
+        // If 0.4 s has passed since the piston retracted, we can index the next frisbee, if there is still one left.
+        // If there are no frisbees left, we do not attempt to index another, but rather reset and stop the the timer.
+        if (timer.get() > delayToPistonRetraction + 0.4) {
+            if (readyToIndexNextFrisbee) {
+                isIndexerMotorRunning = true;
+                readyToIndexNextFrisbee = false;
+            }
+            else {
+                timer.reset();
+                timer.stop();
+            }
         }
 
         indexerMotor.set(isIndexerMotorRunning ? Relay.Value.kForward : Relay.Value.kOff);
         launcherMotor.set(isLauncherMotorRunning ? speed : 0);
 
-        // Clears driverStation text.
-        clearWindow();
-        dsLCD.println(Line.kUser1, 1, "Z Axis: " + (-joystick.getZ()));
-        // Prints State of Frisbee
-        dsLCD.println(Line.kUser2, 1, isFrisbeeLoaded ? "Frisbee Loaded: True" : "Frisbee Loaded: False");
-        // Print the speed.
-        dsLCD.println(Line.kUser3, 1, "Launcher Speed: " + speed * 100 + "%");
-        // Prints State of Launcher Motor
-        dsLCD.println(Line.kUser4, 1, isLauncherMotorRunning ? "Launcher Motor: True" : "Launcher Motor: False");
-        // Prints State of Launcher Motor
-        dsLCD.println(Line.kUser5, 1, isIndexerMotorRunning ? "Indexer Motor: True" : "Indexer Motor: False");
-        // Print the tank pressurization state.
-        dsLCD.println(Line.kUser6, 1, compressor.getPressureSwitchValue() ? "Tanks Full: YES" : "Tanks Full: NO");
-        // Updates the output window.
-        dsLCD.updateLCD();
+        // Update the output screen.
+        updateLCD();
     }
 
     private void handleTimerAndFrisbeeLoadedState() {
@@ -217,17 +194,10 @@ public class RobotTemplate extends IterativeRobot {
             timer.stop();
             timer.reset();
 
-            if (indexerLimitSwitch.get()) {
-                // If the indexer limit switch is being pressed by a frisbee, we enable the launcher motor, and set the frisbee loaded state to true.
-                //isLauncherMotorRunning = true;
-                isFrisbeeLoaded = true;
-                readyToIndexNextFrisbee = false;
-            } else {
-                // If the indexer limit switch is not being pressed by a frisbee, we disable the launcher motor, and set the frisbee loaded state to false.
-                //isLauncherMotorRunning = false;
-                isFrisbeeLoaded = false;
-                readyToIndexNextFrisbee = true;
-            }
+            // If a frisbee hit the limit switch, we store the fact that we have a frisbee loaded and that we're not ready to index.
+            // If the timer ran out, we do the opposite.
+            isFrisbeeLoaded = indexerLimitSwitch.get();
+            readyToIndexNextFrisbee = !indexerLimitSwitch.get();
         }
     }
 
@@ -314,6 +284,7 @@ public class RobotTemplate extends IterativeRobot {
         solenoids[2].set(extended);
         solenoids[3].set(!extended);
 
+        // When we attempt to raise ourselves, we want to automatically enable the launcher motor.
         isLauncherMotorRunning = !extended;
     }
 
@@ -328,5 +299,22 @@ public class RobotTemplate extends IterativeRobot {
         clearLine(Line.kUser4);
         clearLine(Line.kUser5);
         clearLine(Line.kUser6);
+    }
+
+    private void updateLCD() {
+        // Clears driverStation text.
+        clearWindow();
+        // Prints State of Frisbee
+        dsLCD.println(Line.kUser1, 1, isFrisbeeLoaded ? "Frisbee Loaded: True" : "Frisbee Loaded: False");
+        // Print the speed.
+        dsLCD.println(Line.kUser2, 1, "Launcher Speed: " + speed * 100 + "%");
+        // Prints State of Launcher Motor
+        dsLCD.println(Line.kUser3, 1, isLauncherMotorRunning ? "Launcher Motor: True" : "Launcher Motor: False");
+        // Prints State of Launcher Motor
+        dsLCD.println(Line.kUser4, 1, isIndexerMotorRunning ? "Indexer Motor: True" : "Indexer Motor: False");
+        // Print the tank pressurization state.
+        dsLCD.println(Line.kUser5, 1, compressor.getPressureSwitchValue() ? "Tanks Full: YES" : "Tanks Full: NO");
+        // Updates the output window.
+        dsLCD.updateLCD();
     }
 }
