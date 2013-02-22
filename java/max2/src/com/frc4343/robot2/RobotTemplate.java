@@ -57,7 +57,7 @@ public class RobotTemplate extends IterativeRobot {
     boolean readyToIndexNextFrisbee = false;
     final double delayToPistonRetraction = 0.1;
     final double speedWhenStartingAtBackOfPyramid = 0.32;
-    final double speedWhenStartingAtFontOfPyramid = 0.38;
+    final double speedWhenStartingAtFrontOfPyramid = 0.38;
 
     private void resetRobot() {
         // Reset the timer.
