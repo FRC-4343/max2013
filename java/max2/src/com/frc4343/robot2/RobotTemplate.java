@@ -48,13 +48,13 @@ public class RobotTemplate extends IterativeRobot {
     final byte RETRACT_CLIMBING_PISTONS = 2;
 
     // This section is relevant only to autonomous.
+    boolean isInitialAutonomousDelayOver = false;
+    boolean readyToIndexNextFrisbee = false;
     byte numberOfFrisbeesFiredInAutonomous = 0;
     byte maximumFrisbeesToFireInAutonomous = 3;
+    final byte autonomousFireType = 0;
     final double autonomousDelayBetweenEachShot = 3;
     final double autonomousDelayBeforeFirstShot = 4;
-    boolean isInitialAutonomousDelayOver = false;
-    final byte autonomousFireType = 0;
-    boolean readyToIndexNextFrisbee = false;
     final double delayToPistonRetraction = 0.1;
     final double speedWhenStartingAtBackOfPyramid = 0.32;
     final double speedWhenStartingAtFrontOfPyramid = 0.38;
