@@ -132,7 +132,7 @@ public class RobotTemplate extends IterativeRobot {
             }
         }
         else {
-            if (numberOfFrisbeesFiredInAutonomous <= maximumFrisbeesToFireInAutonomous) {
+            if (numberOfFrisbeesFiredInAutonomous < maximumFrisbeesToFireInAutonomous) {
                     // Once the delay per shot has been reached, fire the next frisbee.
                     if (timer.get() >= autonomousDelayBetweenEachShot) {
                         // Increment the frisbee count, retract the piston, and reset the timer.
