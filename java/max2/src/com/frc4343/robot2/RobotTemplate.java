@@ -90,9 +90,8 @@ public class RobotTemplate extends IterativeRobot {
         robotDrive.arcadeDrive(sumXAxes, sumYAxes);
 
         handleInput();
-        handlePistonRetraction();
-        handleTimerAndFrisbeeLoadedState();
-        solenoidHandler();
+        handlePistonRetractionAndAutoIndex();
+        checkIfFrisbeeCanOrHasBeenIndexed();
 
         handleConsoleOutputAndMotorBooleans();
     }
@@ -140,26 +139,27 @@ public class RobotTemplate extends IterativeRobot {
                 }
             }
 
-            handlePistonRetraction();
+            handlePistonRetractionAndAutoIndex();
         }
 
         handleConsoleOutputAndMotorBooleans();
     }
 
-    private void handlePistonRetraction()
+    private void handlePistonRetractionAndAutoIndex()
     {
         // If the piston retraction delay has passed, begin to retract the piston.
-        if (timer.get() > delayToPistonRetraction && timer.get() < (delayToPistonRetraction + 0.5)){
+        if (timer.get() > delayToPistonRetraction && timer.get() < (delayToPistonRetraction + 0.5) && isFrisbeeLoaded){
             firingPiston.extend();
+            isFrisbeeLoaded = false;
         }
         // If 0.4 s has passed since the piston retracted, we can index the next frisbee, if there is still one left.
         // If there are no frisbees left, we do not attempt to index another, but rather reset and stop the the timer.
-        if (timer.get() > delayToPistonRetraction + 0.4 && numberOfFrisbeesFiredInAutonomous < maximumFrisbeesToFireInAutonomous) {
+        if (timer.get() > delayToPistonRetraction + 0.4 && !isFrisbeeLoaded && (numberOfFrisbeesFiredInAutonomous < maximumFrisbeesToFireInAutonomous || !m_ds.isAutonomous())) {
             isIndexerMotorRunning = true;
         }
     }
 
-    private void handleTimerAndFrisbeeLoadedState() {
+    private void checkIfFrisbeeCanOrHasBeenIndexed() {
         // If the frisbee hits limit switch, registers it as loaded and turns off the loader motor.
         if (indexerLimitSwitch.get() || timer.get() >= indexerTimeoutInSeconds) {
             // Disables the indexer motor if a frisbee is detected or if the timer runs out, also resets the timer and stops it.
@@ -173,15 +173,18 @@ public class RobotTemplate extends IterativeRobot {
         }
     }
 
-    private void solenoidHandler() {
+    private void handleInput() {
         // If the trigger is pressed.
         if (joystick.getRawButton(TRIGGER)) {
             if (!isTriggerHeld) {
                 // If there is no frisbee in the launcher, turns on the motor to load a new one.
                 if (isFrisbeeLoaded) {
-                    // If there is a frisbee in the launcher, then it launches it.
-                    firingPiston.retract();
-                    isFrisbeeLoaded = false;
+                    if (isLauncherMotorRunning) {
+                        // If there is a frisbee in the launcher, then it launches it.
+                        firingPiston.retract();
+                    } else {
+                        isLauncherMotorRunning = true;
+                    }
                 }
                 timer.start();
             }
@@ -190,9 +193,7 @@ public class RobotTemplate extends IterativeRobot {
         } else {
             isTriggerHeld = false;
         }
-    }
 
-    private void handleInput() {
         // Change the state of the climbing pistons.
         if (joystick.getRawButton(EXTEND_CLIMBING_PISTONS)) {
             climbingPiston.extend();
@@ -210,7 +211,6 @@ public class RobotTemplate extends IterativeRobot {
         // Manually eject the frisbee.
         if (joystick.getRawButton(9)) {
             firingPiston.retract();
-            isFrisbeeLoaded = false;
             timer.start();
         }
 
