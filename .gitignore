@@ -4,7 +4,6 @@
 *.d
 
 *.class
-MANIFEST.MF
 *.jar
 
 *suite*
