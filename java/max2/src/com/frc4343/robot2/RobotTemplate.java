@@ -20,7 +20,9 @@ public class RobotTemplate extends IterativeRobot {
     Victor launcherMotor = new Victor(3);
     Relay indexerMotor = new Relay(2);
     RobotDrive robotDrive = new RobotDrive(1, 2);
-    Solenoid[] solenoids = new Solenoid[4];
+    //Solenoid[] solenoids = new Solenoid[4];
+    Piston firingPiston = new Piston(1, 2, true);
+    Piston climbingPiston = new Piston(3, 4, true);
     Compressor compressor = new Compressor(1, 1);
     DigitalInput indexerLimitSwitch = new DigitalInput(2);
 
@@ -64,18 +66,11 @@ public class RobotTemplate extends IterativeRobot {
         timer.reset();
         timer.stop();
         // Reset the launcher piston to it's retracted position.
-        setPistonExtended(true);
-        setClimbingPistonExtended(true);
+        firingPiston.extend();
+        climbingPiston.extend();
         // Reset the number of fired frisbees in autonomous to zero and reset the timer delay to allow for the re-enabling of autonomous.
         numberOfFrisbeesFiredInAutonomous = 0;
         readyToIndexNextFrisbee = true;
-    }
-
-    public void robotInit() {
-        // Initialize solenoids
-        for (int i = 0; i < solenoids.length; i++) {
-            solenoids[i] = new Solenoid(i + 1);
-        }
     }
 
     public void teleopInit() {
@@ -140,7 +135,7 @@ public class RobotTemplate extends IterativeRobot {
 
         if (isInitialAutonomousDelayOver) {
             if (autonomousFireType == 1) {
-                setClimbingPistonExtended(true);
+                climbingPiston.extend();
             }
 
             if (numberOfFrisbeesFiredInAutonomous <= maximumFrisbeesToFireInAutonomous) {
@@ -148,7 +143,7 @@ public class RobotTemplate extends IterativeRobot {
                     if (timer.get() >= autonomousDelayBetweenEachShot) {
                         // Increment the frisbee count, retract the piston, and reset the timer.
                         numberOfFrisbeesFiredInAutonomous++;
-                        setPistonExtended(false);
+                        firingPiston.retract();
                         timer.reset();
 
                         // If we can still fire another frisbee, prepare to index.
@@ -165,7 +160,7 @@ public class RobotTemplate extends IterativeRobot {
     private void handleConsoleOutputAndMotorBooleans() {
         // If the piston retraction delay has passed, begin to retract the piston.
         if (timer.get() > delayToPistonRetraction && timer.get() < (delayToPistonRetraction + 0.5)){
-            setPistonExtended(true);
+            firingPiston.extend();
         }
         // If 0.4 s has passed since the piston retracted, we can index the next frisbee, if there is still one left.
         // If there are no frisbees left, we do not attempt to index another, but rather reset and stop the the timer.
@@ -214,7 +209,7 @@ public class RobotTemplate extends IterativeRobot {
 
         // Manually eject the frisbee
         if (joystick.getRawButton(9)) {
-            setPistonExtended(false);
+            firingPiston.retract();
             isFrisbeeLoaded = false;
             timer.start();
             readyToIndexNextFrisbee = true;
@@ -242,9 +237,9 @@ public class RobotTemplate extends IterativeRobot {
 
     private void solenoidHandler() {
         if (joystick.getRawButton(EXTEND_CLIMBING_PISTONS)) {
-            setClimbingPistonExtended(true);
+            climbingPiston.extend();
         } else if (joystick.getRawButton(RETRACT_CLIMBING_PISTONS)) {
-            setClimbingPistonExtended(false);
+            climbingPiston.retract();
         }
 
         // If the trigger is pressed.
@@ -253,7 +248,7 @@ public class RobotTemplate extends IterativeRobot {
                 // If there is no frisbee in the launcher, turns on the motor to load a new one.
                 if (isFrisbeeLoaded) {
                     // If there is a frisbee in the launcher, then it launches it.
-                    setPistonExtended(false);
+                    firingPiston.retract();
                     isFrisbeeLoaded = false;
                 }
                 timer.start();
@@ -264,16 +259,6 @@ public class RobotTemplate extends IterativeRobot {
         } else {
             isTriggerHeld = false;
         }
-    }
-
-    private void setPistonExtended(boolean extended) {
-        solenoids[0].set(extended);
-        solenoids[1].set(!extended);
-    }
-
-    private void setClimbingPistonExtended(boolean extended) {
-        solenoids[2].set(extended);
-        solenoids[3].set(!extended);
     }
 
     private void clearLine(Line line) {
