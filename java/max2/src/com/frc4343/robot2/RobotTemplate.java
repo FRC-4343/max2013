@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 
 public class RobotTemplate extends IterativeRobot {
-    DriverStationLCD dsLCD = DriverStationLCD.getInstance();
+    Logger logger = new Logger();
     Timer timer = new Timer();
     Joystick joystick = new Joystick(1);
     Joystick joystick2 = new Joystick(2);
@@ -172,7 +172,7 @@ public class RobotTemplate extends IterativeRobot {
         launcherMotor.set(isLauncherMotorRunning ? speed : 0);
 
         // Update the output screen.
-        updateLCD();
+        printConsoleOutput();
     }
 
     private void handleTimerAndFrisbeeLoadedState() {
@@ -261,34 +261,22 @@ public class RobotTemplate extends IterativeRobot {
         }
     }
 
-    private void clearLine(Line line) {
-        dsLCD.println(line, 1, "                                     ");
-    }
-
-    private void clearWindow() {
-        clearLine(Line.kUser1);
-        clearLine(Line.kUser2);
-        clearLine(Line.kUser3);
-        clearLine(Line.kUser4);
-        clearLine(Line.kUser5);
-        clearLine(Line.kUser6);
-    }
-
-    private void updateLCD() {
+    private void printConsoleOutput() {
         // Clears driverStation text.
-        clearWindow();
+        logger.clearWindow();
         // Prints State of Frisbee
-        dsLCD.println(Line.kUser1, 1, isFrisbeeLoaded ? "Frisbee Loaded: True" : "Frisbee Loaded: False");
+        logger.printLine(Line.kUser1, isFrisbeeLoaded ? "Frisbee Loaded: True" : "Frisbee Loaded: False");
         // Print the speed.
-        dsLCD.println(Line.kUser2, 1, "Launcher Speed: " + speed * 100 + "%");
+        logger.printLine(Line.kUser2, "Launcher Speed: " + speed * 100 + "%");
         // Prints State of Launcher Motor
-        dsLCD.println(Line.kUser3, 1, isLauncherMotorRunning ? "Launcher Motor: True" : "Launcher Motor: False");
+        logger.printLine(Line.kUser3, isLauncherMotorRunning ? "Launcher Motor: True" : "Launcher Motor: False");
         // Prints State of Launcher Motor
-        dsLCD.println(Line.kUser4, 1, isIndexerMotorRunning ? "Indexer Motor: True" : "Indexer Motor: False");
+        logger.printLine(Line.kUser4, isIndexerMotorRunning ? "Indexer Motor: True" : "Indexer Motor: False");
         // Print the tank pressurization state.
-        dsLCD.println(Line.kUser5, 1, compressor.getPressureSwitchValue() ? "Tanks Full: YES" : "Tanks Full: NO");
+        logger.printLine(Line.kUser5, compressor.getPressureSwitchValue() ? "Tanks Full: YES" : "Tanks Full: NO");
+        // Displays the timer value.
+        logger.printLine(Line.kUser6, Double.toString(timer.get()));
         // Updates the output window.
-        dsLCD.println(Line.kUser6, 1, Double.toString(timer.get()) + (isInitialAutonomousDelayOver ? "true" : "false"));
-        dsLCD.updateLCD();
+        logger.updateLCD();
     }
 }
