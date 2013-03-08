@@ -2,13 +2,11 @@ package com.frc4343.robot2;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStationLCD;
 import edu.wpi.first.wpilibj.DriverStationLCD.Line;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 
@@ -20,7 +18,6 @@ public class RobotTemplate extends IterativeRobot {
     Victor launcherMotor = new Victor(3);
     Relay indexerMotor = new Relay(2);
     RobotDrive robotDrive = new RobotDrive(1, 2);
-    //Solenoid[] solenoids = new Solenoid[4];
     Piston firingPiston = new Piston(1, 2, true);
     Piston climbingPiston = new Piston(3, 4, true);
     Compressor compressor = new Compressor(1, 1);
@@ -71,12 +68,11 @@ public class RobotTemplate extends IterativeRobot {
         // Reset the number of fired frisbees in autonomous to zero and reset the timer delay to allow for the re-enabling of autonomous.
         numberOfFrisbeesFiredInAutonomous = 0;
         readyToIndexNextFrisbee = true;
+        isLauncherMotorRunning = true;
     }
 
     public void teleopInit() {
-        // Initialize the compressor, reset the values, disable the motors.
         resetRobot();
-        isLauncherMotorRunning = true;
         isIndexerMotorRunning = false;
         isInitialAutonomousDelayOver = true;
     }
@@ -85,7 +81,7 @@ public class RobotTemplate extends IterativeRobot {
         // This combines the axes in order to allow for both joysticks to control the robot's movement.
         // One of the joysticks will be made less sensitive to allow for precision control.
         double sumXAxes = joystick2.getAxis(Joystick.AxisType.kY) + (joystick.getAxis(Joystick.AxisType.kY) * 0.5);
-        double sumYAxes = -joystick2.getAxis(Joystick.AxisType.kX) * axisCompensation + ((-joystick.getAxis(Joystick.AxisType.kX) * axisCompensation) * 0.4);
+        double sumYAxes = -joystick2.getAxis(Joystick.AxisType.kX) * axisCompensation + (-joystick.getAxis(Joystick.AxisType.kX) * axisCompensation);
 
         // Floor the values of the combined joysticks in case they are above 1 or below -1.
         sumXAxes = sumXAxes > 1 ? 1 : sumXAxes;
@@ -94,6 +90,7 @@ public class RobotTemplate extends IterativeRobot {
         sumYAxes = sumYAxes < -1 ? -1 : sumYAxes;
 
         robotDrive.arcadeDrive(sumXAxes, sumYAxes);
+
         handleTimerAndFrisbeeLoadedState();
         handleLauncherMotor();
         solenoidHandler();
@@ -104,7 +101,6 @@ public class RobotTemplate extends IterativeRobot {
     public void autonomousInit() {
         resetRobot();
         isInitialAutonomousDelayOver = false;
-        isLauncherMotorRunning = true;
         isIndexerMotorRunning = true;
 
         // Depending on which type of autonomous we're using, change the initial frisbee count and launcher speed.
@@ -116,6 +112,7 @@ public class RobotTemplate extends IterativeRobot {
             maximumFrisbeesToFireInAutonomous = 3;
         }
 
+        // Initialize the timer to begin the autonomous launch delay.
         timer.start();
     }
 
@@ -127,17 +124,14 @@ public class RobotTemplate extends IterativeRobot {
             isFrisbeeLoaded = true;
         }
 
-        // If the autonomous delay has not finished previously and the is now over, set the boolean and reset the timer.
-        if (timer.get() >= autonomousDelayBeforeFirstShot && !isInitialAutonomousDelayOver) {
-            isInitialAutonomousDelayOver = true;
-            timer.reset();
-        }
-
-        if (isInitialAutonomousDelayOver) {
-            if (autonomousFireType == 1) {
-                climbingPiston.extend();
+        if (!isInitialAutonomousDelayOver) {
+            // If the autonomous delay has not finished previously and the is now over, set the boolean and reset the timer.
+            if (timer.get() >= autonomousDelayBeforeFirstShot) {
+                isInitialAutonomousDelayOver = true;
+                timer.reset();
             }
-
+        }
+        else {
             if (numberOfFrisbeesFiredInAutonomous <= maximumFrisbeesToFireInAutonomous) {
                     // Once the delay per shot has been reached, fire the next frisbee.
                     if (timer.get() >= autonomousDelayBetweenEachShot) {
