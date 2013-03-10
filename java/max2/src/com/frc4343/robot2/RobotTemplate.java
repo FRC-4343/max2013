@@ -31,6 +31,7 @@ public class RobotTemplate extends IterativeRobot {
     double axisCompensation = 0.8;
     double indexerTimeoutInSeconds = 1.5;
     double loadingDelay = 0.15;
+    double accelerationDelay = 0.1;
 
     // Motor Booleans
     boolean launcherMotor = false;
@@ -150,7 +151,7 @@ public class RobotTemplate extends IterativeRobot {
            }
         }
         
-        if (accelerationTimer.get() >= 0.1) {
+        if (accelerationTimer.get() >= accelerationDelay) {
             firingPiston.retract();
             frisbeeLoaded = false;
             loadingDelayTimer.reset();
@@ -235,7 +236,7 @@ public class RobotTemplate extends IterativeRobot {
             }
             triggerHeld = j.getRawButton(TRIGGER);
         }
-        if (accelerationTimer.get() >= 0.1) {
+        if (accelerationTimer.get() >= accelerationDelay) {
             firingPiston.retract();
             frisbeeLoaded = false;
             launcherSpeed = 0.4;
