@@ -262,16 +262,16 @@ public class RobotTemplate extends IterativeRobot {
         // Clears driverStation text.
         logger.clearWindow();
         // Prints State of Frisbee
-        logger.dsLCD.println(Line.kUser1, 1, frisbeeLoaded ? "Frisbee Loaded: True" : "Frisbee Loaded: False");
+        logger.printLine(Line.kUser1, frisbeeLoaded ? "Frisbee Loaded: True" : "Frisbee Loaded: False");
         // Print the speed.
-        logger.dsLCD.println(Line.kUser2, 1, "Launcher Speed: " + launcherSpeed * 100 + "%");
+        logger.printLine(Line.kUser2, "Launcher Speed: " + launcherSpeed * 100 + "%");
         // Prints State of Launcher Motor
-        logger.dsLCD.println(Line.kUser3, 1, launcherMotor ? "Launcher Motor: True" : "Launcher Motor: False");
+        logger.printLine(Line.kUser3, launcherMotor ? "Launcher Motor: True" : "Launcher Motor: False");
         // Prints State of Launcher Motor
-        logger.dsLCD.println(Line.kUser4, 1, indexerMotor ? "Indexer Motor: True" : "Indexer Motor: False");
+        logger.printLine(Line.kUser4, indexerMotor ? "Indexer Motor: True" : "Indexer Motor: False");
         // Print the tank pressurization state.
-        logger.dsLCD.println(Line.kUser5, 1, compressor.getPressureSwitchValue() ? "Tanks Full: YES" : "Tanks Full: NO");
+        logger.printLine(Line.kUser5, compressor.getPressureSwitchValue() ? "Tanks Full: YES" : "Tanks Full: NO");
         // Updates the output window.
-        logger.dsLCD.updateLCD();
+        logger.updateLCD();
     }
 }
