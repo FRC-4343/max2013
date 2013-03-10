@@ -87,7 +87,7 @@ public class RobotTemplate extends IterativeRobot {
         double sumXAxes = j2.getAxis(Joystick.AxisType.kY) + (j.getAxis(Joystick.AxisType.kY) * 0.5);
         double sumYAxes = -j2.getAxis(Joystick.AxisType.kX) * axisCompensation + ((-j.getAxis(Joystick.AxisType.kX) * axisCompensation) * 0.4);
 
-        // Floor the values of the combined js in case they are above 1 or below -1.
+        // Floor the values of the combined joysticks in case they are above 1 or below -1.
         sumXAxes = sumXAxes > 1 ? 1 : sumXAxes;
         sumXAxes = sumXAxes < -1 ? -1 : sumXAxes;
         sumYAxes = sumYAxes > 1 ? 1 : sumYAxes;
@@ -145,7 +145,6 @@ public class RobotTemplate extends IterativeRobot {
                     numberOfFrisbeesFiredInAutonomous++;
                     launcherSpeed = 1;
                     accelerationTimer.start();
-                    loadingDelayTimer.reset();
                 }
              }
            }
@@ -154,6 +153,7 @@ public class RobotTemplate extends IterativeRobot {
         if (accelerationTimer.get() >= 0.1) {
             firingPiston.retract();
             frisbeeLoaded = false;
+            loadingDelayTimer.reset();
             launcherSpeed = 0.4;
             accelerationTimer.stop();
             accelerationTimer.reset();
