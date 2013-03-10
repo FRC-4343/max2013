@@ -7,7 +7,7 @@ public final class Piston {
     Solenoid[] solenoids = new Solenoid[2];
 
     // The constructor which takes all the values required to define and operate a piston.
-    Piston(int firstSolenoid, int secondSolenoid, boolean isExtended) {
+    Piston(byte firstSolenoid, byte secondSolenoid, boolean isExtended) {
         solenoids[0] = new Solenoid(firstSolenoid);
         solenoids[1] = new Solenoid(secondSolenoid);
 

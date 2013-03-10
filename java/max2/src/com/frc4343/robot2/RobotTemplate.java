@@ -21,8 +21,8 @@ public class RobotTemplate extends IterativeRobot {
     Victor launcher = new Victor(3);
     Relay indexer = new Relay(2);
     RobotDrive robotDrive = new RobotDrive(1, 2);
-    Piston firingPiston = new Piston(1, 2, true);
-    Piston climbingPiston = new Piston(3, 4, true);
+    Piston firingPiston = new Piston((byte) 1, (byte) 2, true);
+    Piston climbingPiston = new Piston((byte) 3, (byte) 4, true);
     Compressor compressor = new Compressor(1, 1);
     DigitalInput indexerLimitSwitch = new DigitalInput(2);
     
@@ -56,8 +56,7 @@ public class RobotTemplate extends IterativeRobot {
     boolean initialAutonomousDelayOver = false;
     byte numberOfFrisbeesFiredInAutonomous = 0;
     byte maxFrisbeesToFireInAutonomous = 3;
-    
-    final byte autonomousFireType = 0;
+
     final double autonomousDelayBetweenEachShot = 3;
     final double autonomousDelayBeforeFirstShot = 4;
     final double launcherSpeedAtPyramidBack = 0.4;
@@ -262,13 +261,13 @@ public class RobotTemplate extends IterativeRobot {
         // Clears driverStation text.
         logger.clearWindow();
         // Prints State of Frisbee
-        logger.printLine(Line.kUser1, frisbeeLoaded ? "Frisbee Loaded: True" : "Frisbee Loaded: False");
+        logger.printLine(Line.kUser1, frisbeeLoaded ? "Frisbee Loaded: YES" : "Frisbee Loaded: NO");
         // Print the speed.
-        logger.printLine(Line.kUser2, "Launcher Speed: " + launcherSpeed * 100 + "%");
+        logger.printLine(Line.kUser2, "Launcher Speed: " + (byte)(launcherSpeed * 100) + "%");
         // Prints State of Launcher Motor
-        logger.printLine(Line.kUser3, launcherMotor ? "Launcher Motor: True" : "Launcher Motor: False");
+        logger.printLine(Line.kUser3, launcherMotor ? "Launcher Motor: ON" : "Launcher Motor: OFF");
         // Prints State of Launcher Motor
-        logger.printLine(Line.kUser4, indexerMotor ? "Indexer Motor: True" : "Indexer Motor: False");
+        logger.printLine(Line.kUser4, indexerMotor ? "Indexer Motor: ON" : "Indexer Motor: OFF");
         // Print the tank pressurization state.
         logger.printLine(Line.kUser5, compressor.getPressureSwitchValue() ? "Tanks Full: YES" : "Tanks Full: NO");
         // Updates the output window.
