@@ -231,7 +231,6 @@ public class RobotTemplate extends IterativeRobot {
                 } else if (!frisbeeLoaded) {
                     indexerMotor = true;
                     indexingTimer.start();
-                    loadingDelayTimer.start();
                 }
             }
             triggerHeld = j.getRawButton(TRIGGER);
