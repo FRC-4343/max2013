@@ -117,7 +117,6 @@ public class RobotTemplate extends IterativeRobot {
             loadingDelayTimer.start();
         }
         launcherSpeed = launcherSpeedAtPyramidBack;
-        maxFrisbeesToFireInAutonomous = 3;
     }
 
     public void autonomousPeriodic() {
@@ -129,7 +128,6 @@ public class RobotTemplate extends IterativeRobot {
         // Default Position of Piston
         if (!frisbeeLoaded) {
             firingPiston.extend();
-            launcherSpeed = 0.4;
         }
         
         // If the autonomous delay has not finished previously and the is now over, set the boolean and reset the timer.
