@@ -105,6 +105,7 @@ public class RobotTemplate extends IterativeRobot {
         firingHandler();
         launcherMotorHandler();
         climbingHandler();
+
         handleConsoleOutputAndMotorBooleans();
     }
 
@@ -125,30 +126,35 @@ public class RobotTemplate extends IterativeRobot {
             isIndexing = true;
             indexerMotor = false;
         }
-        // Default Position of Piston
+
+        // If there is no frisbee in the chamber (i.e. one has just been fired), we extend the piston to its initial state.
         if (!frisbeeLoaded) {
             firingPiston.extend();
         }
 
-        // If the autonomous delay has not finished previously and the is now over, set the boolean and reset the timer.
+        // If the autonomous delay has not finished previously and the delay is now over, set the boolean and reset the timer.
         if (loadingDelayTimer.get() >= autonomousDelayBeforeFirstShot && !initialAutonomousDelayOver) {
             initialAutonomousDelayOver = true;
             loadingDelayTimer.reset();
         }
 
+        // Once the initial delay in autonomous has passed, we can begin firing frisbees.
         if (initialAutonomousDelayOver) {
+            // If the number of frisbees already fired does not exceed the number of frisbees we want to fire during autonomous, we attempt to fire another one.
             if (numberOfFrisbeesFiredInAutonomous <= maxFrisbeesToFireInAutonomous) {
-                if (frisbeeLoaded) {
-                if (loadingDelayTimer.get() >= autonomousDelayBetweenEachShot) {
+                // If there is a frisbee in the chamber, ready to be fired, and the the delay between each shot has been passed, we fire the frisbee.
+                if (frisbeeLoaded && loadingDelayTimer.get() >= autonomousDelayBetweenEachShot) {
+                    // We increment the number of frisbees fired, set the launcher speed to 100% temporarily (to reduce wheel spin-up time), and begin the acceleration timer.
                     numberOfFrisbeesFiredInAutonomous++;
                     launcherSpeed = 1;
                     accelerationTimer.start();
                 }
-             }
-           }
+            }
         }
 
+        // If the acceleration delay has been completed, we release the frisbee.
         if (accelerationTimer.get() >= accelerationDelay) {
+            // Retract the piston to release the frisbee, stop the indexer motor, register the chamber as frisbee-less, reset the loading timer, return the launcher speed to its original state, and stop and reset the acceleration timer.
             firingPiston.retract();
             isIndexing = false;
             frisbeeLoaded = false;
@@ -158,6 +164,7 @@ public class RobotTemplate extends IterativeRobot {
             accelerationTimer.reset();
         }
 
+        // If we have passed the initial autonomous delay, there is no frisbee in the loader, and the indexer motor is not running, we turn on the indexer motor.
         if (initialAutonomousDelayOver && !frisbeeLoaded && !isIndexing) {
             indexerMotor = true;
         }
@@ -175,26 +182,25 @@ public class RobotTemplate extends IterativeRobot {
     }
 
     private void launcherMotorHandler() {
-        // Manual Enable/Disable
+        // MManually handle the state of the launcher motor. (Not intended to be used in competition)
         if (joystick.getRawButton(LAUNCHER_MOTOR_ENABLE) || joystick2.getRawButton(LAUNCHER_MOTOR_ENABLE)) {
             launcherMotor = true;
         } else if (joystick.getRawButton(LAUNCHER_MOTOR_DISABLE) || joystick2.getRawButton(LAUNCHER_MOTOR_DISABLE)) {
             launcherMotor = false;
         }
 
-        if (joystick.getRawButton(SPEED_INCREASE) ^ joystick.getRawButton(SPEED_DECREASE)) {
-            // If the buttons have not been pressed previously.
-            if (!adjustedSpeed) {
-                // speed change
-                if (joystick.getRawButton(SPEED_INCREASE)) {
-                    launcherSpeed += 0.001;
-                }
-                if (joystick.getRawButton(SPEED_DECREASE)) {
-                    launcherSpeed -= 0.001;
-                }
+        // If the buttons are not being held down or pressed together, increase or decrease the speed of the launcher motor.
+        if ((joystick.getRawButton(SPEED_INCREASE) ^ joystick.getRawButton(SPEED_DECREASE) && !adjustedSpeed) {
+            if (joystick.getRawButton(SPEED_INCREASE)) {
+                launcherSpeed += 0.001;
             }
-            adjustedSpeed = true;
+            if (joystick.getRawButton(SPEED_DECREASE)) {
+                launcherSpeed -= 0.001;
+            }
         }
+
+        // Store the state of whether or not the buttons have been pressed, to know if they are being held down in the next iteration.
+        adjustedSpeed = joystick.getRawButton(SPEED_INCREASE) ^ joystick.getRawButton(SPEED_DECREASE);
     }
 
     private void firingHandler() {
