@@ -277,15 +277,15 @@ public class RobotTemplate extends IterativeRobot {
         // Clears driverStation text.
         logger.clearWindow();
         // Prints State of Frisbee
-        logger.printLine(Line.kUser1, "Frisbee Loaded: " + frisbeeLoaded ? "YES" : "NO");
+        logger.printLine(Line.kUser1, "Frisbee Loaded: " + (frisbeeLoaded ? "YES" : "NO"));
         // Print the speed.
-        logger.printLine(Line.kUser2, "Launcher Speed: " + (byte)(launcherSpeed * 100) + "%");
+        logger.printLine(Line.kUser2, "Launcher Speed: " + ((byte)(launcherSpeed * 100) + "%"));
         // Prints State of Launcher Motor
-        logger.printLine(Line.kUser3, "Launcher Motor: " + launcherMotor ? "ON" : "OFF");
+        logger.printLine(Line.kUser3, "Launcher Motor: " + (launcherMotor ? "ON" : "OFF"));
         // Prints State of Launcher Motor
-        logger.printLine(Line.kUser4, "Indexer Motor: " + indexerMotor ? "ON" : "OFF");
+        logger.printLine(Line.kUser4, "Indexer Motor: " + (indexerMotor ? "ON" : "OFF"));
         // Print the tank pressurization state.
-        logger.printLine(Line.kUser5, "Tanks Full: " + compressor.getPressureSwitchValue() ? "YES" : "NO");
+        logger.printLine(Line.kUser5, "Tanks Full: " + (compressor.getPressureSwitchValue() ? "YES" : "NO"));
         // Updates the output window.
         logger.updateLCD();
     }
