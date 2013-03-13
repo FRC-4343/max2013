@@ -25,7 +25,7 @@ public class RobotTemplate extends IterativeRobot {
     Piston climbingPiston = new Piston((byte) 3, (byte) 4, true);
     Compressor compressor = new Compressor(1, 1);
     DigitalInput indexerLimitSwitch = new DigitalInput(2);
-    
+
     // The default speed for the launch motor to start at.
     double launcherSpeed = 0.4;
     double axisCompensation = 0.8;
@@ -36,7 +36,7 @@ public class RobotTemplate extends IterativeRobot {
     // Motor Booleans
     boolean launcherMotor = false;
     boolean indexerMotor = false;
-    
+
     // Auto-Fire Booleans
     boolean isIndexing = false;
     boolean frisbeeLoaded = false;
@@ -52,14 +52,14 @@ public class RobotTemplate extends IterativeRobot {
     // Button Checks
     boolean triggerHeld = false;
     boolean adjustedSpeed = false;
-    
+
     // This section is relevant only to autonomous.
     boolean initialAutonomousDelayOver = false;
     byte numberOfFrisbeesFiredInAutonomous = 0;
     byte maxFrisbeesToFireInAutonomous = 3;
 
-    final double autonomousDelayBetweenEachShot = 3;
     final double autonomousDelayBeforeFirstShot = 4;
+    final double autonomousDelayBetweenEachShot = 3;
     final double launcherSpeedAtPyramidBack = 0.4;
 
 
@@ -68,17 +68,18 @@ public class RobotTemplate extends IterativeRobot {
         // Reset the timer.
         loadingDelayTimer.reset();
         loadingDelayTimer.stop();
-        // Reset the launcher piston to it's retracted position.
+        // Reset the pistons to their default positions.
         firingPiston.extend();
         climbingPiston.extend();
         // Reset the number of fired frisbees in autonomous to zero and reset the timer delay to allow for the re-enabling of autonomous.
         numberOfFrisbeesFiredInAutonomous = 0;
+        // Launcher motor will be enabled in case the drivers forget.
+        launcherMotor = true;
     }
 
     public void teleopInit() {
         // Initialize the compressor, reset the values, disable the motors.
         resetRobot();
-        launcherMotor = true;
         indexerMotor = false;
     }
 
@@ -95,11 +96,12 @@ public class RobotTemplate extends IterativeRobot {
         sumYAxes = sumYAxes < -1 ? -1 : sumYAxes;
 
         robotDrive.arcadeDrive(sumXAxes, sumYAxes);*/
-        
+
+        // The previous code *allegedly* did not allow for the y axis on the second joystick to function.
+        // This new code will arcade drive twice (once for each joystick) to allow for precision control.
         robotDrive.arcadeDrive(joystick.getAxis(Joystick.AxisType.kX), joystick.getAxis(Joystick.AxisType.kY) * axisCompensation);
-        // Percision Control
         robotDrive.arcadeDrive(joystick2.getAxis(Joystick.AxisType.kX) * 0.5, joystick2.getAxis(Joystick.AxisType.kY) * 0.5);
-        
+
         firingHandler();
         launcherMotorHandler();
         climbingHandler();
@@ -108,8 +110,8 @@ public class RobotTemplate extends IterativeRobot {
 
     public void autonomousInit() {
         resetRobot();
+        // The delay which occurs at the beginning of autonomous must be reset.
         initialAutonomousDelayOver = false;
-        launcherMotor = true;
         indexerMotor = true;
         launcherSpeed = launcherSpeedAtPyramidBack;
     }
@@ -125,7 +127,7 @@ public class RobotTemplate extends IterativeRobot {
         if (!frisbeeLoaded) {
             firingPiston.extend();
         }
-        
+
         // If the autonomous delay has not finished previously and the is now over, set the boolean and reset the timer.
         if (loadingDelayTimer.get() >= autonomousDelayBeforeFirstShot && !initialAutonomousDelayOver) {
             initialAutonomousDelayOver = true;
@@ -143,7 +145,7 @@ public class RobotTemplate extends IterativeRobot {
              }
            }
         }
-        
+
         if (accelerationTimer.get() >= accelerationDelay) {
             firingPiston.retract();
             isIndexing = false;
@@ -153,18 +155,20 @@ public class RobotTemplate extends IterativeRobot {
             accelerationTimer.stop();
             accelerationTimer.reset();
         }
-        
+
         if (initialAutonomousDelayOver && !frisbeeLoaded && !isIndexing) {
             indexerMotor = true;
         }
-        
+
         handleConsoleOutputAndMotorBooleans();
     }
 
     private void handleConsoleOutputAndMotorBooleans() {
+        // Set the state of the motors based on the values of the booleans controlling them.
         indexer.set(indexerMotor ? Relay.Value.kForward : Relay.Value.kOff);
         launcher.set(launcherMotor ? launcherSpeed : 0);
-        // Update the output screen.
+
+        // Print the debug output the the DriverStation console.
         printConsoleOutput();
     }
 
@@ -174,13 +178,6 @@ public class RobotTemplate extends IterativeRobot {
             launcherMotor = true;
         } else if (joystick.getRawButton(LAUNCHER_MOTOR_DISABLE) || joystick2.getRawButton(LAUNCHER_MOTOR_DISABLE)) {
             launcherMotor = false;
-        }
-
-        // Manual Speed Settings
-        if (joystick.getRawButton(10)) {
-            launcherSpeed = 0.32;
-        } else if (joystick.getRawButton(11)) {
-            launcherSpeed = 0.4;
         }
 
         if (joystick.getRawButton(SPEED_INCREASE) ^ joystick.getRawButton(SPEED_DECREASE)) {
@@ -194,8 +191,7 @@ public class RobotTemplate extends IterativeRobot {
                     launcherSpeed -= 0.001;
                 }
             }
-            // button pressed check
-            adjustedSpeed = joystick.getRawButton(SPEED_INCREASE) ^ joystick.getRawButton(SPEED_DECREASE);
+            adjustedSpeed = true;
         }
     }
 
