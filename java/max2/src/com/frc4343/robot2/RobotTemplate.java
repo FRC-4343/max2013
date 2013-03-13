@@ -38,6 +38,7 @@ public class RobotTemplate extends IterativeRobot {
     boolean indexerMotor = false;
     
     // Auto-Fire Booleans
+    boolean isIndexing = false;
     boolean frisbeeLoaded = false;
 
     // Button mappings
@@ -123,6 +124,7 @@ public class RobotTemplate extends IterativeRobot {
         frisbeeLoaded = loadingDelayTimer.get() >= loadingDelay;
         // Disable the indexer motor if a frisbee triggers the limit switch.
         if (indexerLimitSwitch.get()) {
+            isIndexing = true;
             indexerMotor = false;
         }
         // Default Position of Piston
@@ -150,6 +152,7 @@ public class RobotTemplate extends IterativeRobot {
         
         if (accelerationTimer.get() >= accelerationDelay) {
             firingPiston.retract();
+            isIndexing = false;
             frisbeeLoaded = false;
             loadingDelayTimer.reset();
             launcherSpeed = 0.4;
@@ -157,7 +160,7 @@ public class RobotTemplate extends IterativeRobot {
             accelerationTimer.reset();
         }
         
-        if (initialAutonomousDelayOver && !frisbeeLoaded) {
+        if (initialAutonomousDelayOver && !frisbeeLoaded && !isIndexing) {
             indexerMotor = true;
         }
         
@@ -217,6 +220,7 @@ public class RobotTemplate extends IterativeRobot {
             indexingTimer.stop();
             indexingTimer.reset();
             if (indexerLimitSwitch.get() && !(indexingTimer.get() >= indexerTimeoutInSeconds)) {
+                isIndexing = true;
                 loadingDelayTimer.start();
             }
         }
@@ -226,7 +230,7 @@ public class RobotTemplate extends IterativeRobot {
                 if (frisbeeLoaded) {
                     launcherSpeed = 1;
                     accelerationTimer.start();
-                } else if (!frisbeeLoaded) {
+                } else if (!frisbeeLoaded && !isIndexing) {
                     indexerMotor = true;
                     indexingTimer.start();
                 }
@@ -235,6 +239,7 @@ public class RobotTemplate extends IterativeRobot {
         }
         if (accelerationTimer.get() >= accelerationDelay) {
             firingPiston.retract();
+            isIndexing = false;
             frisbeeLoaded = false;
             launcherSpeed = 0.4;
             accelerationTimer.stop();
