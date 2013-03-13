@@ -25,22 +25,22 @@ public class RobotTemplate extends IterativeRobot {
     Piston climbingPiston = new Piston((byte) 3, (byte) 4, true);
     Compressor compressor = new Compressor(1, 1);
     DigitalInput indexerLimitSwitch = new DigitalInput(2);
-    
+
     // The default speed for the launch motor to start at.
     double launcherSpeed = 0.4;
     double axisCompensation = 0.8;
     double indexerTimeoutInSeconds = 1.5;
     double loadingDelay = 0.15;
     double accelerationDelay = 0.1;
-    
+
     // Motor Booleans
     boolean launcherMotor = false;
     boolean indexerMotor = false;
-    
+
     // Auto-Fire Booleans
     boolean isIndexing = false;
     boolean frisbeeLoaded = false;
-    
+
     // Button mappings
     final byte TRIGGER = 1;
     final byte SPEED_DECREASE = 4;
@@ -52,15 +52,16 @@ public class RobotTemplate extends IterativeRobot {
     // Button Checks
     boolean triggerHeld = false;
     boolean adjustedSpeed = false;
-    
+
     // This section is relevant only to autonomous.
     boolean initialAutonomousDelayOver = false;
     byte numberOfFrisbeesFiredInAutonomous = 0;
     byte maxFrisbeesToFireInAutonomous = 3;
-    
+
     final double autonomousDelayBeforeFirstShot = 4;
     final double autonomousDelayBetweenEachShot = 3;
     final double launcherSpeedAtPyramidBack = 0.4;
+
 
     private void resetRobot() {
         compressor.start();
@@ -83,7 +84,8 @@ public class RobotTemplate extends IterativeRobot {
     }
 
     public void teleopPeriodic() {
-        /*// This combines the axes in order to allow for both joysticks to control the robot's movement.
+        /*
+         // This combines the axes in order to allow for both joysticks to control the robot's movement.
          // One of the joysticks will be made less sensitive to allow for precision control.
          double sumXAxes = joystick2.getAxis(Joystick.AxisType.kY) + (joystick.getAxis(Joystick.AxisType.kY) * 0.5);
          double sumYAxes = -joystick2.getAxis(Joystick.AxisType.kX) * axisCompensation + ((-joystick.getAxis(Joystick.AxisType.kX) * axisCompensation) * 0.4);
@@ -113,8 +115,8 @@ public class RobotTemplate extends IterativeRobot {
         // The delay which occurs at the beginning of autonomous must be reset.
         initialAutonomousDelayOver = false;
         launcherSpeed = launcherSpeedAtPyramidBack;
-        indexerMotor = true;
-        // incase we need ~ FMS Check
+
+        // FMS check for future use.
         /*
          if (indexerLimitSwitch.get()) {
          indexerMotor = false;
@@ -122,6 +124,8 @@ public class RobotTemplate extends IterativeRobot {
          loadingDelayTimer.start();
          }
          */
+
+        indexerMotor = true;
         isIndexing = true;
         loadingDelayTimer.start();
     }
@@ -180,6 +184,10 @@ public class RobotTemplate extends IterativeRobot {
     }
 
     private void handleConsoleOutputAndMotorBooleans() {
+        // Store the state of whether or not the buttons have been pressed, to know if they are being held down in the next iteration.
+        triggerHeld = joystick.getRawButton(TRIGGER);
+        adjustedSpeed = joystick.getRawButton(SPEED_INCREASE) ^ joystick.getRawButton(SPEED_DECREASE);
+
         // Set the state of the motors based on the values of the booleans controlling them.
         indexer.set(indexerMotor ? Relay.Value.kForward : Relay.Value.kOff);
         launcher.set(launcherMotor ? launcherSpeed : 0);
@@ -197,22 +205,19 @@ public class RobotTemplate extends IterativeRobot {
         }
 
         // If the buttons are not being held down or pressed together, increase or decrease the speed of the launcher motor.
-        if (joystick.getRawButton(SPEED_INCREASE) ^ joystick.getRawButton(SPEED_DECREASE) && !adjustedSpeed) {
+        if (!adjustedSpeed) {
             if (joystick.getRawButton(SPEED_INCREASE)) {
                 launcherSpeed += 0.001;
-            }
-            if (joystick.getRawButton(SPEED_DECREASE)) {
+            } else if (joystick.getRawButton(SPEED_DECREASE)) {
                 launcherSpeed -= 0.001;
             }
         }
-
-        // Store the state of whether or not the buttons have been pressed, to know if they are being held down in the next iteration.
-        adjustedSpeed = joystick.getRawButton(SPEED_INCREASE) ^ joystick.getRawButton(SPEED_DECREASE);
     }
 
     private void firingHandler() {
         frisbeeLoaded = loadingDelayTimer.get() >= loadingDelay;
 
+        // If a frisbee is in the chamber, stop and disable the loading timer, otherwise extend the launch piston.
         if (frisbeeLoaded) {
             loadingDelayTimer.stop();
             loadingDelayTimer.reset();
@@ -220,17 +225,21 @@ public class RobotTemplate extends IterativeRobot {
             firingPiston.extend();
         }
 
+        // If a frisbee is entering the loader, or if we have passed the indexer waiting time, we disable the indexer motor, and stop and reset the timer.
         if (indexerLimitSwitch.get() || indexingTimer.get() >= indexerTimeoutInSeconds) {
-            indexerMotor = false;
-            indexingTimer.stop();
-            indexingTimer.reset();
+            // If a frisbee is entering the chamber, and the indexing timer is not yet over, we register that the frisbee is being indexed, and enable the loading timer.
             if (indexerLimitSwitch.get() && !(indexingTimer.get() >= indexerTimeoutInSeconds)) {
                 isIndexing = true;
                 loadingDelayTimer.start();
             }
+            indexerMotor = false;
+            indexingTimer.stop();
+            indexingTimer.reset();
         }
 
+        // If the trigger has been pressed and is not being held, we handle frisbee firing.
         if (joystick.getRawButton(TRIGGER) && !triggerHeld) {
+            // If there is a frisbee in the chamber, we accelerate the launcher wheel to 100% and begin the acceleration timer, otherwise we enable the indexer motor and timer.
             if (frisbeeLoaded) {
                 launcherSpeed = 1;
                 accelerationTimer.start();
@@ -239,7 +248,6 @@ public class RobotTemplate extends IterativeRobot {
                 indexingTimer.start();
             }
         }
-        triggerHeld = joystick.getRawButton(TRIGGER);
 
         if (accelerationTimer.get() >= accelerationDelay) {
             firingPiston.retract();
@@ -249,7 +257,8 @@ public class RobotTemplate extends IterativeRobot {
             accelerationTimer.stop();
             accelerationTimer.reset();
         }
-        // Just in case, keeping manual eject :P
+
+        // If attempting manual eject, force the frisbee out of the launcher.
         if (joystick.getRawButton(9)) {
             firingPiston.retract();
             frisbeeLoaded = false;
@@ -268,15 +277,15 @@ public class RobotTemplate extends IterativeRobot {
         // Clears driverStation text.
         logger.clearWindow();
         // Prints State of Frisbee
-        logger.printLine(Line.kUser1, "Frisbee Loaded: " + (frisbeeLoaded ? "YES" : "NO"));
+        logger.printLine(Line.kUser1, "Frisbee Loaded: " + frisbeeLoaded ? "YES" : "NO");
         // Print the speed.
-        logger.printLine(Line.kUser2, "Launcher Speed: " + (byte) (launcherSpeed * 100) + "%");
+        logger.printLine(Line.kUser2, "Launcher Speed: " + (byte)(launcherSpeed * 100) + "%");
         // Prints State of Launcher Motor
-        logger.printLine(Line.kUser3, "Launcher Motor: " + (launcherMotor ? "ON" : "OFF"));
+        logger.printLine(Line.kUser3, "Launcher Motor: " + launcherMotor ? "ON" : "OFF");
         // Prints State of Launcher Motor
-        logger.printLine(Line.kUser4, "Indexer Motor: " + (indexerMotor ? "ON" : "OFF"));
+        logger.printLine(Line.kUser4, "Indexer Motor: " + indexerMotor ? "ON" : "OFF");
         // Print the tank pressurization state.
-        logger.printLine(Line.kUser5, "Tanks Full: " + (compressor.getPressureSwitchValue() ? "YES" : "NO"));
+        logger.printLine(Line.kUser5, "Tanks Full: " + compressor.getPressureSwitchValue() ? "YES" : "NO");
         // Updates the output window.
         logger.updateLCD();
     }
