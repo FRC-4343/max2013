@@ -112,8 +112,10 @@ public class RobotTemplate extends IterativeRobot {
         resetRobot();
         // The delay which occurs at the beginning of autonomous must be reset.
         initialAutonomousDelayOver = false;
-        indexerMotor = true;
         launcherSpeed = launcherSpeedAtPyramidBack;
+
+        indexerMotor = true;
+-       loadingDelayTimer.start();
     }
 
     public void autonomousPeriodic() {
