@@ -16,8 +16,8 @@ public class RobotTemplate extends IterativeRobot {
     Timer indexingTimer = new Timer();
     Timer loadingDelayTimer = new Timer();
     Timer accelerationTimer = new Timer();
-    Joystick j = new Joystick(1);
-    Joystick j2 = new Joystick(2);
+    Joystick joystick = new Joystick(1);
+    Joystick joystick2 = new Joystick(2);
     Victor launcher = new Victor(3);
     Relay indexer = new Relay(2);
     RobotDrive robotDrive = new RobotDrive(1, 2);
@@ -83,10 +83,10 @@ public class RobotTemplate extends IterativeRobot {
     }
 
     public void teleopPeriodic() {
-        /*// This combines the axes in order to allow for both js to control the robot's movement.
-        // One of the js will be made less sensitive to allow for precision control.
-        double sumXAxes = j2.getAxis(Joystick.AxisType.kY) + (j.getAxis(Joystick.AxisType.kY) * 0.5);
-        double sumYAxes = -j2.getAxis(Joystick.AxisType.kX) * axisCompensation + ((-j.getAxis(Joystick.AxisType.kX) * axisCompensation) * 0.4);
+        /*// This combines the axes in order to allow for both joysticks to control the robot's movement.
+        // One of the joysticks will be made less sensitive to allow for precision control.
+        double sumXAxes = joystick2.getAxis(Joystick.AxisType.kY) + (joystick.getAxis(Joystick.AxisType.kY) * 0.5);
+        double sumYAxes = -joystick2.getAxis(Joystick.AxisType.kX) * axisCompensation + ((-joystick.getAxis(Joystick.AxisType.kX) * axisCompensation) * 0.4);
 
         // Floor the values of the combined joysticks in case they are above 1 or below -1.
         sumXAxes = sumXAxes > 1 ? 1 : sumXAxes;
@@ -96,9 +96,9 @@ public class RobotTemplate extends IterativeRobot {
 
         robotDrive.arcadeDrive(sumXAxes, sumYAxes);*/
         
-        robotDrive.arcadeDrive(j.getAxis(Joystick.AxisType.kX), j.getAxis(Joystick.AxisType.kY) * axisCompensation);
+        robotDrive.arcadeDrive(joystick.getAxis(Joystick.AxisType.kX), joystick.getAxis(Joystick.AxisType.kY) * axisCompensation);
         // Percision Control
-        robotDrive.arcadeDrive(j2.getAxis(Joystick.AxisType.kX) * 0.5, j2.getAxis(Joystick.AxisType.kY) * 0.5);
+        robotDrive.arcadeDrive(joystick2.getAxis(Joystick.AxisType.kX) * 0.5, joystick2.getAxis(Joystick.AxisType.kY) * 0.5);
         
         firingHandler();
         launcherMotorHandler();
@@ -176,32 +176,32 @@ public class RobotTemplate extends IterativeRobot {
 
     private void launcherMotorHandler() {
         // Manual Enable/Disable
-        if (j.getRawButton(LAUNCHER_MOTOR_ENABLE) || j2.getRawButton(LAUNCHER_MOTOR_ENABLE)) {
+        if (joystick.getRawButton(LAUNCHER_MOTOR_ENABLE) || joystick2.getRawButton(LAUNCHER_MOTOR_ENABLE)) {
             launcherMotor = true;
-        } else if (j.getRawButton(LAUNCHER_MOTOR_DISABLE) || j2.getRawButton(LAUNCHER_MOTOR_DISABLE)) {
+        } else if (joystick.getRawButton(LAUNCHER_MOTOR_DISABLE) || joystick2.getRawButton(LAUNCHER_MOTOR_DISABLE)) {
             launcherMotor = false;
         }
 
         // Manual Speed Settings
-        if (j.getRawButton(10)) {
+        if (joystick.getRawButton(10)) {
             launcherSpeed = 0.32;
-        } else if (j.getRawButton(11)) {
+        } else if (joystick.getRawButton(11)) {
             launcherSpeed = 0.4;
         }
 
-        if (j.getRawButton(SPEED_INCREASE) ^ j.getRawButton(SPEED_DECREASE)) {
+        if (joystick.getRawButton(SPEED_INCREASE) ^ joystick.getRawButton(SPEED_DECREASE)) {
             // If the buttons have not been pressed previously.
             if (!adjustedSpeed) {
                 // speed change
-                if (j.getRawButton(SPEED_INCREASE)) {
+                if (joystick.getRawButton(SPEED_INCREASE)) {
                     launcherSpeed += 0.001;
                 }
-                if (j.getRawButton(SPEED_DECREASE)) {
+                if (joystick.getRawButton(SPEED_DECREASE)) {
                     launcherSpeed -= 0.001;
                 }
             }
             // button pressed check
-            adjustedSpeed = j.getRawButton(SPEED_INCREASE) ^ j.getRawButton(SPEED_DECREASE);
+            adjustedSpeed = joystick.getRawButton(SPEED_INCREASE) ^ joystick.getRawButton(SPEED_DECREASE);
         }
     }
 
@@ -225,7 +225,7 @@ public class RobotTemplate extends IterativeRobot {
             }
         }
 
-        if (j.getRawButton(TRIGGER)) {
+        if (joystick.getRawButton(TRIGGER)) {
             if (!triggerHeld) {
                 if (frisbeeLoaded) {
                     launcherSpeed = 1;
@@ -235,7 +235,7 @@ public class RobotTemplate extends IterativeRobot {
                     indexingTimer.start();
                 }
             }
-            triggerHeld = j.getRawButton(TRIGGER);
+            triggerHeld = joystick.getRawButton(TRIGGER);
         }
         if (accelerationTimer.get() >= accelerationDelay) {
             firingPiston.retract();
@@ -246,16 +246,16 @@ public class RobotTemplate extends IterativeRobot {
             accelerationTimer.reset();
         }
         // Just in case, keeping manual eject :P
-        if (j.getRawButton(9)) {
+        if (joystick.getRawButton(9)) {
             firingPiston.retract();
             frisbeeLoaded = false;
         }
     }
 
     private void climbingHandler() {
-        if (j.getRawButton(EXTEND_CLIMBING_PISTONS)) {
+        if (joystick.getRawButton(EXTEND_CLIMBING_PISTONS)) {
             climbingPiston.extend();
-        } else if (j.getRawButton(RETRACT_CLIMBING_PISTONS)) {
+        } else if (joystick.getRawButton(RETRACT_CLIMBING_PISTONS)) {
             climbingPiston.retract();
         }
     }
