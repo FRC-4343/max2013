@@ -110,13 +110,7 @@ public class RobotTemplate extends IterativeRobot {
         resetRobot();
         initialAutonomousDelayOver = false;
         launcherMotor = true;
-        indexerMotor = true; 
-        // Potential Double Indexing
-        // Fix Check
-        if (indexerLimitSwitch.get()) {
-            indexerMotor = false;
-            loadingDelayTimer.start();
-        }
+        indexerMotor = true;
         launcherSpeed = launcherSpeedAtPyramidBack;
     }
 
