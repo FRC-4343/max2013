@@ -76,6 +76,14 @@ public class RobotTemplate extends IterativeRobot {
         printConsoleOutput();
     }
 
+    private void climbingHandler() {
+        if (joystick.getRawButton(EXTEND_CLIMBING_PISTONS)) {
+            climbingPiston.extend();
+        } else if (joystick.getRawButton(RETRACT_CLIMBING_PISTONS)) {
+            climbingPiston.retract();
+        }
+    }
+
     private void printConsoleOutput() {
         // Clears driverStation text.
         logger.clearWindow();
