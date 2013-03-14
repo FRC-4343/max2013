@@ -101,14 +101,11 @@ public final class FiringSystem {
                             initialAutonomousDelayOver = true;
                         }
                     } else {
-                        // If the number of frisbees already fired does not exceed the number of frisbees we want to fire during autonomous, we attempt to load and fire another one.
-                        if (numberOfFrisbeesFiredInAutonomous <= maxFrisbeesToFireInAutonomous) {
-                            // If we have passed the delay between each shot, we begin indexing.
-                            if (loadingDelayTimer.get() >= autonomousDelayBetweenEachShot) {
-                                loadingDelayTimer.reset();
-                                loadingDelayTimer.stop();
-                                state = INDEXING;
-                            }
+                        // If the number of frisbees already fired does not exceed the number of frisbees we want to fire during autonomous, and we have passed the delay between each shot, we attempt to load and fire another one.
+                        if (numberOfFrisbeesFiredInAutonomous <= maxFrisbeesToFireInAutonomous && loadingDelayTimer.get() >= autonomousDelayBetweenEachShot) {
+                            loadingDelayTimer.reset();
+                            loadingDelayTimer.stop();
+                            state = INDEXING;
                         }
                     }
 
