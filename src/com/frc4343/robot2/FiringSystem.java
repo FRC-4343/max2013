@@ -4,26 +4,23 @@ public final class FiringSystem {
     final RobotBase robot;
     Timer indexingTimer = new Timer();
     Timer loadingDelayTimer = new Timer();
-    Timer accelerationTimer = new Timer();
-    Victor launcher = new Victor(3);
-    Relay indexer = new Relay(2);
+    Timer launchTimer = new Timer();
+    Victor launcherMotor = new Victor(3);
+    Relay indexerMotor = new Relay(2);
     Piston firingPiston = new Piston((byte) 1, (byte) 2, true);
-    byte numberOfFrisbeesFiredInAutonomous = 0;
     DigitalInput indexerLimitSwitch = new DigitalInput(2);
 
     // The default speed for the launch motor to start at.
-    double launcherSpeed = 0.4;
+    double launcherMotorSpeed = 0.4;
+
+    // Timeouts
     double indexerTimeoutInSeconds = 1.5;
     double loadingDelay = 0.15;
     double accelerationDelay = 0.1;
 
     // Motor Booleans
-    boolean launcherMotor = false;
-    boolean indexerMotor = false;
-
-    // Auto-Fire Booleans
-    boolean isIndexing = false;
-    boolean frisbeeLoaded = false;
+    boolean isLauncherMotorRunning = false;
+    boolean isIndexerMotorRunning = false;
 
     // Button mappings
     final byte TRIGGER = 1;
@@ -36,14 +33,30 @@ public final class FiringSystem {
     boolean triggerHeld = false;
     boolean adjustedSpeed = false;
 
+    // Autonomous-only variables
+    final byte maxFrisbeesToFireInAutonomous = 3;
     final double autonomousDelayBeforeFirstShot = 4;
     final double autonomousDelayBetweenEachShot = 3;
     final double launcherSpeedAtPyramidBack = 0.4;
-
-    // This section is relevant only to autonomous.
     boolean initialAutonomousDelayOver = false;
     byte numberOfFrisbeesFiredInAutonomous = 0;
-    byte maxFrisbeesToFireInAutonomous = 3;
+
+    // Represents the state of the FiringSystem.
+    // IDLE indicates no activity,
+    // INDEXING indicates an attempt to feed a frisbee from the hopper to the loader,
+    // LOADING indicates that a frisbee is moving from the hopper to the chamber,
+    // LOADED indicates that a frisbee is in the chamber and ready to fire,
+    // FIRING indicates that a frisbee is now being expelled from the chamber,
+    // RESETTING indicates that a frisbee has just been fired and the chamber is preparing to index another frisbee.
+    State firingState = IDLE;
+    enum State {
+        IDLE,
+        INDEXING,
+        LOADING,
+        LOADED,
+        FIRING,
+        RESETTING
+    }
 
     // The constructor which takes all the values required to define and operate the FiringSystem.
     FiringSystem(RobotBase robot) {
@@ -56,163 +69,225 @@ public final class FiringSystem {
         loadingDelayTimer.stop();
         indexingTimer.reset();
         indexingTimer.stop();
-        accelerationTimer.reset();
-        accelerationTimer.stop();
+        launchTimer.reset();
+        launchTimer.stop();
+
         // Reset the piston to its default position.
         firingPiston.extend();
         // Reset the number of fired frisbees in autonomous to zero.
         numberOfFrisbeesFiredInAutonomous = 0;
-        // Launcher motor will be enabled in case the drivers forget.
-        launcherMotor = true;
+        // The delay which occurs at the beginning of autonomous must be reset.
+        initialAutonomousDelayOver = false;
+        // Launcher motor will be enabled and reset to the default speed in case the drivers forget.
+        isLauncherMotorRunning = true;
+        launcherMotorSpeed = launcherSpeedAtPyramidBack;
+
+        state = IDLE;
     }
 
     public void switchMode() {
         reset();
 
         if (robot.isAutonomous()) {
-            // The delay which occurs at the beginning of autonomous must be reset.
-            initialAutonomousDelayOver = false;
-            launcherSpeed = launcherSpeedAtPyramidBack;
-
-            // FMS check for future use.
-            /*
-             if (indexerLimitSwitch.get()) {
-             indexerMotor = false;
-             isIndexing = true;
-             loadingDelayTimer.start();
-             }
-             */
-
-            indexerMotor = true;
-            isIndexing = true;
             loadingDelayTimer.start();
-        } else {
-            indexerMotor = false;
         }
     }
 
     public void run() {
         if (robot.isAutonomous()) {
-            // Assumes that once the loadingDelayTimer has reached the loadingDelay, there is a frisbee in the chamber.
-            frisbeeLoaded = loadingDelayTimer.get() >= loadingDelay;
-
-            // Disable the indexer motor if a frisbee triggers the limit switch.
-            if (indexerLimitSwitch.get()) {
-                isIndexing = true;
-                indexerMotor = false;
-            }
-
-            // If there is no frisbee in the chamber (i.e. one has just been fired), we extend the piston to its initial state.
-            if (!frisbeeLoaded) {
-                firingPiston.extend();
-            }
-
-            // If the autonomous delay has not finished previously and the delay is now over, set the boolean and reset the timer.
-            if (loadingDelayTimer.get() >= autonomousDelayBeforeFirstShot && !initialAutonomousDelayOver) {
-                initialAutonomousDelayOver = true;
-                loadingDelayTimer.reset();
-            }
-
-            // Once the initial delay in autonomous has passed, we can begin firing frisbees.
-            if (initialAutonomousDelayOver) {
-                // If the number of frisbees already fired does not exceed the number of frisbees we want to fire during autonomous, we attempt to fire another one.
-                if (numberOfFrisbeesFiredInAutonomous <= maxFrisbeesToFireInAutonomous) {
-                    // If there is a frisbee in the chamber, ready to be fired, and the the delay between each shot has been passed, we fire the frisbee.
-                    if (frisbeeLoaded && loadingDelayTimer.get() >= autonomousDelayBetweenEachShot) {
-                        // We increment the number of frisbees fired, set the launcher speed to 100% temporarily (to reduce wheel spin-up time), and begin the acceleration timer.
-                        numberOfFrisbeesFiredInAutonomous++;
-                        launcherSpeed = 1;
-                        accelerationTimer.start();
+            switch (firingState) {
+                case IDLE:
+                    // If the autonomous delay has not finished previously and the delay is now passed, set the boolean and reset the timer.
+                    if (!initialAutonomousDelayOver) {
+                        if (loadingDelayTimer.get() >= autonomousDelayBeforeFirstShot) {
+                            loadingDelayTimer.reset();
+                            initialAutonomousDelayOver = true;
+                        }
+                    } else {
+                        // If the number of frisbees already fired does not exceed the number of frisbees we want to fire during autonomous, we attempt to load and fire another one.
+                        if (numberOfFrisbeesFiredInAutonomous <= maxFrisbeesToFireInAutonomous) {
+                            // If we have passed the delay between each shot, we begin indexing.
+                            if (loadingDelayTimer.get() >= autonomousDelayBetweenEachShot) {
+                                loadingDelayTimer.reset();
+                                loadingDelayTimer.stop();
+                                state = INDEXING;
+                            }
+                        }
                     }
-                }
-            }
 
-            // If the acceleration delay has been completed, we release the frisbee.
-            if (accelerationTimer.get() >= accelerationDelay) {
-                // Retract the piston to release the frisbee, stop the indexer motor, register the chamber as frisbee-less, reset the loading timer, return the launcher speed to its original state, and stop and reset the acceleration timer.
-                firingPiston.retract();
-                isIndexing = false;
-                frisbeeLoaded = false;
-                loadingDelayTimer.reset();
-                launcherSpeed = 0.4;
-                accelerationTimer.stop();
-                accelerationTimer.reset();
-            }
+                    break;
+                case INDEXING:
+                    isIndexerMotorRunning = true;
 
-            // If we have passed the initial autonomous delay, there is no frisbee in the loader, and the indexer motor is not running, we turn on the indexer motor.
-            if (initialAutonomousDelayOver && !frisbeeLoaded && !isIndexing) {
-                indexerMotor = true;
+                    // If a frisbee triggers the limit switch while indexing, we begin LOADING.
+                    if (indexerLimitSwitch.get()) {
+                        loadingDelayTimer.reset();
+                        loadingDelayTimer.start();
+                        state = LOADING;
+                    }
+
+                    break;
+                case LOADING:
+                    isIndexerMotorRunning = false;
+
+                    // Assumes that once the loadingDelayTimer has reached the loadingDelay, there is a frisbee in the chamber.
+                    if (loadingDelayTimer.get() >= loadingDelay) {
+                        launchTimer.reset();
+                        launchTimer.start();
+                        state = LOADED;
+                    }
+
+                    break;
+                case LOADED:
+                    // Sets the motor speed to 100% for a small amount of time so as to allow for the wheel to spin back up to speed for firing.
+                    launcherMotorSpeed = 1;
+
+                    if (launchTimer.get() >= accelerationDelay) {
+                        // Reset the speed of the launcher motor back to the target speed.
+                        launcherMotorSpeed = launcherSpeedAtPyramidBack;
+                        launchTimer.reset();
+                        state = FIRING;
+                    }
+
+                    break;
+                case FIRING:
+                    // Retract the piston to expel the frisbee.
+                    firingPiston.retract();
+
+                    if (launchTimer.get() >= accelerationDelay) {
+                        // Increment the number of frisbees fired.
+                        numberOfFrisbeesFiredInAutonomous++;
+                        launchTimer.reset();
+                        launchTimer.stop();
+                        state = RESETTING;
+                    }
+
+                    break;
+                case RESETTING:
+                    // We extend the piston to its initial state, as there is no longer a frisbee in the chamber.
+                    firingPiston.extend();
+
+                    if (launchTimer.get() >= accelerationDelay) {
+                        // After giving the piston a small amount of time to retract, we are ready to commence the cycle once more.
+                        state = IDLE;
+                    }
+
+                    break;
+                default:
+                    break;
             }
         } else {
-            frisbeeLoaded = loadingDelayTimer.get() >= loadingDelay;
+            switch (firingState) {
+                case IDLE:
+                    isIndexerMotorRunning = false;
 
-            // If a frisbee is in the chamber, stop and disable the loading timer, otherwise extend the launch piston.
-            if (frisbeeLoaded) {
-                loadingDelayTimer.stop();
-                loadingDelayTimer.reset();
-            } else if (!frisbeeLoaded) {
-                firingPiston.extend();
+                    // If the trigger has been pressed and is not being held, we begin the firing cycle.
+                    if (joystick.getRawButton(TRIGGER) && !triggerHeld) {
+                        indexingTimer.reset();
+                        indexingTimer.start();
+                        state = INDEXING;
+                    }
+
+                    break;
+                case INDEXING:
+                    isIndexerMotorRunning = true;
+
+                    // If a frisbee is entering the loader, or if we have passed the indexer waiting time, we disable the indexer motor, and stop and reset the timer.
+                    if (indexerLimitSwitch.get() || indexingTimer.get() >= indexerTimeoutInSeconds) {
+                        // If a frisbee triggers the limit switch while indexing, we begin LOADING.
+                        if (indexerLimitSwitch.get() && !(indexingTimer.get() >= indexerTimeoutInSeconds)) {
+                            loadingDelayTimer.reset();
+                            loadingDelayTimer.start();
+                            state = LOADING;
+                        } else {
+                            state = IDLE;
+                        }
+
+                        // Reset the indexingTimer as we no longer have to monitor the time a frisbee has been indexing for until we enter this stage again.
+                        indexingTimer.reset();
+                        indexingTimer.stop();
+                    }
+
+                    break;
+                case LOADING:
+                    isIndexerMotorRunning = false;
+
+                    // Assumes that once the loadingDelayTimer has reached the loadingDelay, there is a frisbee in the chamber.
+                    if (loadingDelayTimer.get() >= loadingDelay) {
+                        launchTimer.reset();
+                        launchTimer.stop();
+                        state = LOADED;
+                    }
+
+                    break;
+                case LOADED:
+                    // If the trigger has been pressed and is not being held, we handle frisbee firing.
+                    if (joystick.getRawButton(TRIGGER) && !triggerHeld) {
+                        // Sets the motor speed to 100% for a small amount of time so as to allow for the wheel to spin back up to speed for firing.
+                        launcherMotorSpeed = 1;
+                        launchTimer.start();
+                    }
+
+                    if (launchTimer.get() >= accelerationDelay) {
+                        // Reset the speed of the launcherMotor motor back to the target speed.
+                        launcherMotorSpeed = launcherSpeedAtPyramidBack;
+                        launchTimer.reset();
+                        state = FIRING;
+                    }
+
+                    break;
+                case FIRING:
+                    // Retract the piston to expel the frisbee.
+                    firingPiston.retract();
+
+                    if (launchTimer.get() >= accelerationDelay) {
+                        // Increment the number of frisbees fired.
+                        numberOfFrisbeesFiredInAutonomous++;
+                        launchTimer.reset();
+                        launchTimer.stop();
+                        state = RESETTING;
+                    }
+
+                    break;
+                case RESETTING:
+                    // We extend the piston to its initial state, as there is no longer a frisbee in the chamber.
+                    firingPiston.extend();
+
+                    if (launchTimer.get() >= accelerationDelay) {
+                        // After giving the piston a small amount of time to retract, we are ready to commence the cycle once more.
+                        state = IDLE;
+                    }
+
+                    break;
+                default:
+                    break;
             }
 
-            // If a frisbee is entering the loader, or if we have passed the indexer waiting time, we disable the indexer motor, and stop and reset the timer.
-            if (indexerLimitSwitch.get() || indexingTimer.get() >= indexerTimeoutInSeconds) {
-                // If a frisbee is entering the chamber, and the indexing timer is not yet over, we register that the frisbee is being indexed, and enable the loading timer.
-                if (indexerLimitSwitch.get() && !(indexingTimer.get() >= indexerTimeoutInSeconds)) {
-                    isIndexing = true;
-                    loadingDelayTimer.start();
-                }
-                indexerMotor = false;
-                indexingTimer.stop();
-                indexingTimer.reset();
-            }
-
-            // If the trigger has been pressed and is not being held, we handle frisbee firing.
-            if (joystick.getRawButton(TRIGGER) && !triggerHeld) {
-                // If there is a frisbee in the chamber, we accelerate the launcher wheel to 100% and begin the acceleration timer, otherwise we enable the indexer motor and timer.
-                if (frisbeeLoaded) {
-                    launcherSpeed = 1;
-                    accelerationTimer.start();
-                } else if (!frisbeeLoaded && !isIndexing) {
-                    indexerMotor = true;
-                    indexingTimer.start();
-                }
-            }
-
-            if (accelerationTimer.get() >= accelerationDelay) {
-                firingPiston.retract();
-                isIndexing = false;
-                frisbeeLoaded = false;
-                launcherSpeed = 0.4;
-                accelerationTimer.stop();
-                accelerationTimer.reset();
-            }
-
-            // If attempting manual eject, force the frisbee out of the launcher.
+            // If attempting manual eject, force the frisbee out of the launcherMotor.
             if (joystick.getRawButton(9)) {
-                firingPiston.retract();
-                frisbeeLoaded = false;
+                state = FIRING;
             }
 
-            launcherMotorHandler();
+            isLauncherMotorRunningHandler();
         }
 
         handleMotorAndButtonStates();
     }
 
-    private void launcherMotorHandler() {
-        // MManually handle the state of the launcher motor. (Not intended to be used in competition)
+    private void isLauncherMotorRunningHandler() {
+        // MManually handle the state of the launcherMotor motor. (Not intended to be used in competition)
         if (joystick.getRawButton(LAUNCHER_MOTOR_ENABLE) || joystick2.getRawButton(LAUNCHER_MOTOR_ENABLE)) {
-            launcherMotor = true;
+            isLauncherMotorRunning = true;
         } else if (joystick.getRawButton(LAUNCHER_MOTOR_DISABLE) || joystick2.getRawButton(LAUNCHER_MOTOR_DISABLE)) {
-            launcherMotor = false;
+            isLauncherMotorRunning = false;
         }
 
-        // If the buttons are not being held down or pressed together, increase or decrease the speed of the launcher motor.
+        // If the buttons are not being held down or pressed together, increase or decrease the speed of the launcherMotor motor.
         if (!adjustedSpeed) {
             if (joystick.getRawButton(SPEED_INCREASE)) {
-                launcherSpeed += 0.001;
+                launcherMotorSpeed += 0.001;
             } else if (joystick.getRawButton(SPEED_DECREASE)) {
-                launcherSpeed -= 0.001;
+                launcherMotorSpeed -= 0.001;
             }
         }
     }
@@ -223,7 +298,7 @@ public final class FiringSystem {
         adjustedSpeed = joystick.getRawButton(SPEED_INCREASE) ^ joystick.getRawButton(SPEED_DECREASE);
 
         // Set the state of the motors based on the values of the booleans controlling them.
-        indexer.set(indexerMotor ? Relay.Value.kForward : Relay.Value.kOff);
-        launcher.set(launcherMotor ? launcherSpeed : 0);
+        indexerMotor.set(isIndexerMotorRunning ? Relay.Value.kForward : Relay.Value.kOff);
+        launcherMotor.set(isLauncherMotorRunning ? launcherMotorSpeed : 0);
     }
 }
