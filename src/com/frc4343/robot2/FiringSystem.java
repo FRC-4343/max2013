@@ -42,7 +42,7 @@ public final class FiringSystem {
     final byte maxFrisbeesToFireInAutonomous = 3;
     final double autonomousDelayBeforeFirstShot = 4;
     final double autonomousDelayBetweenEachShot = 3;
-    final double launcherSpeedAtPyramidBack = 0.4;
+    final double defaultLauncherMotorSpeed = 0.4;
     boolean initialAutonomousDelayOver = false;
     byte numberOfFrisbeesFiredInAutonomous = 0;
 
@@ -79,7 +79,7 @@ public final class FiringSystem {
         firingPiston.extend();
         // Launcher motor will be enabled and reset to the default speed in case the drivers forget.
         isLauncherMotorRunning = true;
-        launcherMotorSpeed = launcherSpeedAtPyramidBack;
+        launcherMotorSpeed = defaultLauncherMotorSpeed;
 
         if (robot.isAutonomous()) {
             // Reset the number of fired frisbees in autonomous to zero.
@@ -210,8 +210,19 @@ public final class FiringSystem {
 
         // Assumes that once the loadingDelayTimer has reached the loadingDelay, there is a frisbee in the chamber.
         if (loadingDelayTimer.get() >= loadingDelay) {
+            // Reset and stop the loadingDelayTimer as we are no longer using it to track the time between individual frisbees.
+            loadingDelayTimer.reset();
+            loadingDelayTimer.stop();
+
             launchTimer.reset();
-            launchTimer.stop();
+
+            // If the robot is in autonomous mode, we instantly begin the READY state countdown as there is no user input before firing.
+            if (robot.isAutonomous()) {
+                launchTimer.start();
+            } else {
+                launchTimer.stop();
+            }
+
             firingState = READY;
         }
     }
@@ -219,7 +230,7 @@ public final class FiringSystem {
     private void ready() {
         if (launchTimer.get() >= accelerationDelay) {
             // Reset the speed of the launcher motor back to the target speed.
-            launcherMotorSpeed = launcherSpeedAtPyramidBack;
+            launcherMotorSpeed = defaultLauncherMotorSpeed;
             launchTimer.reset();
             firingState = FIRING;
         }
@@ -233,6 +244,7 @@ public final class FiringSystem {
             // Increment the number of frisbees fired.
             numberOfFrisbeesFiredInAutonomous++;
             launchTimer.reset();
+
             firingState = RESETTING;
         }
     }
@@ -242,6 +254,9 @@ public final class FiringSystem {
         firingPiston.extend();
 
         if (launchTimer.get() >= accelerationDelay) {
+            // Start the loading delay timer to measure the time between launched frisbees.
+            loadingDelayTimer.reset();
+            loadingDelayTimer.start();
             // After giving the piston a small amount of time to retract, we are ready to commence the cycle once more.
             firingState = IDLE;
         }
