@@ -1,7 +1,12 @@
 package com.frc4343.robot2;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Relay;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Victor;
+
 public final class FiringSystem {
-    final RobotBase robot;
+    final RobotTemplate robot;
     Timer indexingTimer = new Timer();
     Timer loadingDelayTimer = new Timer();
     Timer launchTimer = new Timer();
@@ -41,25 +46,23 @@ public final class FiringSystem {
     boolean initialAutonomousDelayOver = false;
     byte numberOfFrisbeesFiredInAutonomous = 0;
 
-    // Represents the state of the FiringSystem.
-    // IDLE indicates no activity,
-    // INDEXING indicates an attempt to feed a frisbee from the hopper to the loader,
-    // LOADING indicates that a frisbee is moving from the hopper to the chamber,
-    // READY indicates that a frisbee is in the chamber and ready to fire,
-    // FIRING indicates that a frisbee is now being expelled from the chamber,
+    // Handle the various firing states.
+    byte firingState = IDLE;
+    // IDLE indicates no activity.
+    static final byte IDLE = 0;
+    // INDEXING indicates an attempt to feed a frisbee from the hopper to the loader.
+    static final byte INDEXING = 1;
+    // LOADING indicates that a frisbee is moving from the hopper to the chamber.
+    static final byte LOADING = 2;
+    // READY indicates that a frisbee is in the chamber and ready to fire.
+    static final byte READY = 3;
+    // FIRING indicates that a frisbee is now being expelled from the chamber.
+    static final byte FIRING = 4;
     // RESETTING indicates that a frisbee has just been fired and the chamber is preparing to index another frisbee.
-    State firingState = IDLE;
-    enum State {
-        IDLE,
-        INDEXING,
-        LOADING,
-        READY,
-        FIRING,
-        RESETTING
-    }
+    static final byte RESETTING = 5;
 
     // The constructor which takes all the values required to define and operate the FiringSystem.
-    FiringSystem(RobotBase robot) {
+    FiringSystem(RobotTemplate robot) {
         this.robot = robot;
     }
 
@@ -87,7 +90,7 @@ public final class FiringSystem {
             loadingDelayTimer.start();
         }
 
-        state = IDLE;
+        firingState = IDLE;
     }
 
     public void run() {
@@ -105,7 +108,7 @@ public final class FiringSystem {
                         if (numberOfFrisbeesFiredInAutonomous <= maxFrisbeesToFireInAutonomous && loadingDelayTimer.get() >= autonomousDelayBetweenEachShot) {
                             loadingDelayTimer.reset();
                             loadingDelayTimer.stop();
-                            state = INDEXING;
+                            firingState = INDEXING;
                         }
                     }
 
@@ -135,10 +138,10 @@ public final class FiringSystem {
             switch (firingState) {
                 case IDLE:
                     // If the trigger has been pressed and is not being held, we begin the firing cycle.
-                    if (joystick.getRawButton(TRIGGER) && !triggerHeld) {
+                    if (robot.getJoystick(1).getRawButton(TRIGGER) && !triggerHeld) {
                         indexingTimer.reset();
                         indexingTimer.start();
-                        state = INDEXING;
+                        firingState = INDEXING;
                     }
 
                     break;
@@ -146,7 +149,7 @@ public final class FiringSystem {
                     // If a frisbee is entering the loader, or if we have passed the indexer waiting time, we disable the indexer motor, and stop and reset the timer.
                     if (indexerLimitSwitch.get() || indexingTimer.get() >= indexerTimeoutInSeconds) {
                         if (indexingTimer.get() >= indexerTimeoutInSeconds) {
-                            state = IDLE;
+                            firingState = IDLE;
                         }
 
                         // Reset the indexingTimer as we no longer have to monitor the time a frisbee has been indexing for until we enter this stage again.
@@ -161,7 +164,7 @@ public final class FiringSystem {
                     break;
                 case READY:
                     // If the trigger has been pressed and is not being held, we handle frisbee firing.
-                    if (joystick.getRawButton(TRIGGER) && !triggerHeld) {
+                    if (robot.getJoystick(1).getRawButton(TRIGGER) && !triggerHeld) {
                         // Sets the motor speed to 100% for a small amount of time so as to allow for the wheel to spin back up to speed for firing.
                         launcherMotorSpeed = 1;
                         launchTimer.start();
@@ -183,8 +186,8 @@ public final class FiringSystem {
         }
 
         // Store the state of whether or not the buttons have been pressed, to know if they are being held down in the next iteration.
-        triggerHeld = joystick.getRawButton(TRIGGER);
-        adjustedSpeed = joystick.getRawButton(SPEED_INCREASE) ^ joystick.getRawButton(SPEED_DECREASE);
+        triggerHeld = robot.getJoystick(1).getRawButton(TRIGGER);
+        adjustedSpeed = robot.getJoystick(1).getRawButton(SPEED_INCREASE) ^ robot.getJoystick(1).getRawButton(SPEED_DECREASE);
 
         // Set the state of the motors based on the values of the booleans controlling them.
         indexerMotor.set(isIndexerMotorRunning ? Relay.Value.kForward : Relay.Value.kOff);
@@ -198,7 +201,7 @@ public final class FiringSystem {
         if (indexerLimitSwitch.get()) {
             loadingDelayTimer.reset();
             loadingDelayTimer.start();
-            state = LOADING;
+            firingState = LOADING;
         }
     }
 
@@ -209,7 +212,7 @@ public final class FiringSystem {
         if (loadingDelayTimer.get() >= loadingDelay) {
             launchTimer.reset();
             launchTimer.stop();
-            state = READY;
+            firingState = READY;
         }
     }
 
@@ -218,7 +221,7 @@ public final class FiringSystem {
             // Reset the speed of the launcher motor back to the target speed.
             launcherMotorSpeed = launcherSpeedAtPyramidBack;
             launchTimer.reset();
-            state = FIRING;
+            firingState = FIRING;
         }
     }
 
@@ -231,7 +234,7 @@ public final class FiringSystem {
             numberOfFrisbeesFiredInAutonomous++;
             launchTimer.reset();
             launchTimer.stop();
-            state = RESETTING;
+            firingState = RESETTING;
         }
     }
 
@@ -241,30 +244,61 @@ public final class FiringSystem {
 
         if (launchTimer.get() >= accelerationDelay) {
             // After giving the piston a small amount of time to retract, we are ready to commence the cycle once more.
-            state = IDLE;
+            firingState = IDLE;
         }
     }
 
     private void input() {
         // Handle forced (manual) ejection of a loaded frisbee.
-        if (joystick.getRawButton(9)) {
-            state = FIRING;
+        if (robot.getJoystick(1).getRawButton(9)) {
+            firingState = FIRING;
         }
 
         // Manually control the state of the launcherMotor motor. (Not intended to be used in competition)
-        if (joystick.getRawButton(LAUNCHER_MOTOR_ENABLE) || joystick2.getRawButton(LAUNCHER_MOTOR_ENABLE)) {
+        if (robot.getJoystick(1).getRawButton(LAUNCHER_MOTOR_ENABLE) || robot.getJoystick(2).getRawButton(LAUNCHER_MOTOR_ENABLE)) {
             isLauncherMotorRunning = true;
-        } else if (joystick.getRawButton(LAUNCHER_MOTOR_DISABLE) || joystick2.getRawButton(LAUNCHER_MOTOR_DISABLE)) {
+        } else if (robot.getJoystick(1).getRawButton(LAUNCHER_MOTOR_DISABLE) || robot.getJoystick(2).getRawButton(LAUNCHER_MOTOR_DISABLE)) {
             isLauncherMotorRunning = false;
         }
 
         // If the buttons are not being held down or pressed together, increase or decrease the speed of the launcherMotor motor.
         if (!adjustedSpeed) {
-            if (joystick.getRawButton(SPEED_INCREASE)) {
+            if (robot.getJoystick(1).getRawButton(SPEED_INCREASE)) {
                 launcherMotorSpeed += 0.001;
-            } else if (joystick.getRawButton(SPEED_DECREASE)) {
+            } else if (robot.getJoystick(1).getRawButton(SPEED_DECREASE)) {
                 launcherMotorSpeed -= 0.001;
             }
         }
+    }
+
+    public String getState() {
+        switch (firingState) {
+            case 0:
+                return "IDLE";
+            case 1:
+                return "INDEXING";
+            case 2:
+                return "LOADING";
+            case 3:
+                return "READY";
+            case 4:
+                return "FIRING";
+            case 5:
+                return "RESETTING";
+            default:
+                return "ERROR";
+        }
+    }
+
+    public double getLauncherSpeed() {
+        return launcherMotorSpeed;
+    }
+
+    public boolean getLauncherMotorState() {
+        return isLauncherMotorRunning;
+    }
+
+    public boolean getIndexerMotorState() {
+        return isIndexerMotorRunning;
     }
 }

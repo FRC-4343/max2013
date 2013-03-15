@@ -1,14 +1,10 @@
 package com.frc4343.robot2;
 
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStationLCD.Line;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.Victor;
 
 public class RobotTemplate extends IterativeRobot {
     Logger logger = new Logger();
@@ -88,16 +84,26 @@ public class RobotTemplate extends IterativeRobot {
         // Clears driverStation text.
         logger.clearWindow();
         // Prints State of Frisbee
-        logger.printLine(Line.kUser1, "Frisbee Loaded: " + (frisbeeLoaded ? "YES" : "NO"));
+        logger.printLine(Line.kUser1, "Firing System State: " + firingSystem.getState());
         // Print the speed.
-        logger.printLine(Line.kUser2, "Launcher Speed: " + ((byte)(launcherSpeed * 100) + "%"));
+        logger.printLine(Line.kUser2, "Launcher Speed: " + (byte) (firingSystem.getLauncherSpeed() * 100) + "%");
         // Prints State of Launcher Motor
-        logger.printLine(Line.kUser3, "Launcher Motor: " + (launcherMotor ? "ON" : "OFF"));
+        logger.printLine(Line.kUser3, "Launcher Motor: " + (firingSystem.getLauncherMotorState() ? "ON" : "OFF"));
         // Prints State of Launcher Motor
-        logger.printLine(Line.kUser4, "Indexer Motor: " + (indexerMotor ? "ON" : "OFF"));
+        logger.printLine(Line.kUser4, "Indexer Motor: " + (firingSystem.getIndexerMotorState() ? "ON" : "OFF"));
         // Print the tank pressurization state.
         logger.printLine(Line.kUser5, "Tanks Full: " + (compressor.getPressureSwitchValue() ? "YES" : "NO"));
         // Updates the output window.
         logger.updateLCD();
+    }
+
+    public Joystick getJoystick(int joystickNumber) {
+        if (joystickNumber == 1) {
+            return joystick;
+        } else if (joystickNumber == 2) {
+            return joystick2;
+        } else {
+            return null;
+        }
     }
 }
