@@ -83,7 +83,7 @@ public final class FiringSystem {
         // Launcher motor will be enabled and reset to the default speed in case the drivers forget.
         isLauncherMotorRunning = true;
         launcherMotorSpeed = defaultLauncherMotorSpeed;
-        
+
         // Reset the teleop auto-fire
         firingAllFrisbees = false;
 
