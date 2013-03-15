@@ -97,7 +97,7 @@ public class RobotTemplate extends IterativeRobot {
         logger.updateLCD();
     }
 
-    public Joystick getJoystick(int joystickNumber) {
+    public Joystick getJoystick(byte joystickNumber) {
         if (joystickNumber == 1) {
             return joystick;
         } else if (joystickNumber == 2) {
