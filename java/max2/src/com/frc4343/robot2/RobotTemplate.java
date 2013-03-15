@@ -15,6 +15,7 @@ public class RobotTemplate extends IterativeRobot {
     Logger logger = new Logger();
     Timer indexingTimer = new Timer();
     Timer loadingDelayTimer = new Timer();
+    Timer firingDelayTimer = new Timer();
     Timer accelerationTimer = new Timer();
     Joystick joystick = new Joystick(1);
     Joystick joystick2 = new Joystick(2);
@@ -37,7 +38,6 @@ public class RobotTemplate extends IterativeRobot {
     // Auto-Fire Booleans
     boolean isIndexing = false;
     boolean frisbeeLoaded = false;
-    boolean firingDelayTimedOut = false;
     // Button mappings
     final byte TRIGGER = 1;
     final byte SPEED_DECREASE = 4;
@@ -147,7 +147,7 @@ public class RobotTemplate extends IterativeRobot {
             // If the number of frisbees already fired does not exceed the number of frisbees we want to fire during autonomous, we attempt to fire another one.
             if (numberOfFrisbeesFiredInAutonomous <= maxFrisbeesToFireInAutonomous) {
                 // If there is a frisbee in the chamber, ready to be fired, and the the delay between each shot has been passed, we fire the frisbee.
-                if (frisbeeLoaded && firingDelayTimedOut) {
+                if (frisbeeLoaded && loadingDelayTimer.get() >= delayBetweenEachShot) {
                     // We increment the number of frisbees fired, set the launcher speed to 100% temporarily (to reduce wheel spin-up time), and begin the acceleration timer.
                     numberOfFrisbeesFiredInAutonomous++;
                     launcherSpeed = 1;
@@ -179,7 +179,6 @@ public class RobotTemplate extends IterativeRobot {
     private void handleConsoleOutputAndMotorBooleans() {
         // Timers :D
         frisbeeLoaded = loadingDelayTimer.get() >= loadingDelay;
-        firingDelayTimedOut = loadingDelayTimer.get() >= delayBetweenEachShot;
 
         // Store the state of whether or not the buttons have been pressed, to know if they are being held down in the next iteration.
         triggerHeld = joystick.getRawButton(TRIGGER);
@@ -224,16 +223,17 @@ public class RobotTemplate extends IterativeRobot {
         if (indexerLimitSwitch.get() || indexingTimer.get() >= indexerTimeoutInSeconds) {
             // If a frisbee is entering the chamber, and the indexing timer is not yet over, we register that the frisbee is being indexed, and enable the loading timer.
             indexerMotor = false;
+            indexingTimer.reset();
+            indexingTimer.stop();
+            if (!indexerLimitSwitch.get()) {
+                firingDelayTimer.stop(); // Stop for auto-FIRE
+                firingDelayTimer.reset();
+            }
             if (!(indexingTimer.get() >= indexerTimeoutInSeconds)) {
                 isIndexing = true;
                 loadingDelayTimer.start();
-            }
-            if (firingDelayTimedOut) {
-                indexingTimer.reset();
-            } else {
-                indexingTimer.reset();
-                indexingTimer.stop();
-            }
+                firingDelayTimer.start();
+            }    
         }
 
         // If the trigger has been pressed and is not being held, we handle frisbee firing.
@@ -247,13 +247,19 @@ public class RobotTemplate extends IterativeRobot {
                 indexingTimer.start();
             }
         } else if (joystick.getRawButton(TRIGGER) && triggerHeld) {
-            if (frisbeeLoaded && firingDelayTimedOut) {
+            if (frisbeeLoaded && firingDelayTimer.get() >= delayBetweenEachShot) {
                 launcherSpeed = 1;
                 accelerationTimer.start();
+                firingDelayTimer.reset();
             } else if (!frisbeeLoaded && !isIndexing) {
                 indexerMotor = true;
                 indexingTimer.start();
             }
+        } 
+        
+        if (!triggerHeld){
+            firingDelayTimer.stop(); // Stop for auto-FIRE
+            firingDelayTimer.reset();
         }
 
         if (accelerationTimer.get() >= accelerationDelay) {
