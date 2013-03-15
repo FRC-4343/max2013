@@ -233,7 +233,6 @@ public final class FiringSystem {
             // Increment the number of frisbees fired.
             numberOfFrisbeesFiredInAutonomous++;
             launchTimer.reset();
-            launchTimer.stop();
             firingState = RESETTING;
         }
     }
