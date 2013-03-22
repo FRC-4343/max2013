@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 
 public class RobotTemplate extends IterativeRobot {
+
     Logger logger = new Logger();
     Joystick joystick = new Joystick(1);
     Joystick joystick2 = new Joystick(2);
@@ -14,9 +15,7 @@ public class RobotTemplate extends IterativeRobot {
     Piston climbingPiston = new Piston((byte) 3, (byte) 4, true);
     Compressor compressor = new Compressor(1, 1);
     FiringSystem firingSystem = new FiringSystem(this);
-
     double axisCompensation = 0.5;
-
     // Button mappings
     final byte EXTEND_CLIMBING_PISTONS = 3;
     final byte RETRACT_CLIMBING_PISTONS = 2;
