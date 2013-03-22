@@ -5,9 +5,8 @@ import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 
-public final class FiringSystem {
+public final class FiringSystem extends System {
 
-    final RobotTemplate robot;
     Timer indexingTimer = new Timer();
     Timer loadingDelayTimer = new Timer();
     Timer launchTimer = new Timer();
@@ -57,9 +56,8 @@ public final class FiringSystem {
     // RESETTING indicates that a frisbee has just been fired and the chamber is preparing to index another frisbee.
     static final byte RESETTING = 5;
 
-    // The constructor which takes all the values required to define and operate the FiringSystem.
-    FiringSystem(RobotTemplate robot) {
-        this.robot = robot;
+    public FiringSystem(RobotTemplate robot) {
+        super(robot);
     }
 
     public void switchMode() {
