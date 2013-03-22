@@ -4,25 +4,20 @@ public class Mappings {
 
     // Joystick Mappings
     public final static byte JOYSTICK_COUNT = 2;
-
-
     // Robot Mappings
     public final static byte CLIMBING_PISTON_SOLENOID_ONE = 3;
     public final static byte CLIMBING_PISTON_SOLENOID_TWO = 4;
     public final static boolean CLIMBING_PISTON_EXTENDED_BY_DEFAULT = true;
-
-
     // Gyro Mappings
     public final static byte GYRO_PORT = 1;
     public final static double ROTATE_SPEED = 0.7;
     public final static double ANGLE_TO_ROTATE_BY = 45;
-
-
     // Firing Mappings
-    public final static byte INDEXER_MOTOR_PORT = 2;
+    //public final static byte INDEXER_MOTOR_PORT = 2;
+    public final static byte INDEXER_MOTOR_PORT = 4;
     public final static byte LAUNCHER_MOTOR_PORT = 3;
     public final static byte FIRING_PISTON_SOLENOID_ONE = 1;
-    public final static byte FIRING_PISTON_SOLENOID_TWO= 2;
+    public final static byte FIRING_PISTON_SOLENOID_TWO = 2;
     public final static boolean FIRING_PISTON_EXTENDED_BY_DEFAULT = false;
     public final static byte INDEXER_LIMIT_SWITCH_PORT = 2;
     public final static double AUTONOMOUS_DELAY_BEFORE_FIRST_SHOT = 4;
@@ -31,15 +26,11 @@ public class Mappings {
     public final static double INDEXER_TIMEOUT = 1.5;
     public final static double LOADING_DELAY = 0.15;
     public final static double ACCELERATION_DELAY = 0.1;
-
-
     // Drive Mappings
     public final static double AXIS_COMPENSATION = 0.5;
     public final static double AUTONOMOUS_TIME_SPENT_DRIVING_BACK = 1;
     public final static double AUTONOMOUS_TIME_BEFORE_DRIVING_FORWARD = 1;
     public final static double AUTONOMOUS_TIME_SPENT_DRIVING_FORWARD = 1;
-
-
     // Button mappings
     public final static byte TRIGGER = 1;
     public final static byte RETRACT_CLIMBING_PISTONS = 2;

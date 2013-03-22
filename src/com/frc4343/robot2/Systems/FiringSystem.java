@@ -4,6 +4,7 @@ import com.frc4343.robot2.Mappings;
 import com.frc4343.robot2.Piston;
 import com.frc4343.robot2.RobotTemplate;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
@@ -13,8 +14,9 @@ public final class FiringSystem extends System {
     Timer indexingTimer = new Timer();
     Timer loadingDelayTimer = new Timer();
     Timer launchTimer = new Timer();
-    Victor launcherMotor = new Victor(Mappings.LAUNCHER_MOTOR_PORT);
-    Relay indexerMotor = new Relay(Mappings.INDEXER_MOTOR_PORT);
+    Jaguar launcherMotor = new Jaguar(Mappings.LAUNCHER_MOTOR_PORT);
+    Jaguar indexerMotor = new Jaguar(Mappings.INDEXER_MOTOR_PORT);
+    //Relay indexerMotor = new Relay(Mappings.INDEXER_MOTOR_PORT);
     Piston firingPiston = new Piston(Mappings.FIRING_PISTON_SOLENOID_ONE, Mappings.FIRING_PISTON_SOLENOID_TWO, Mappings.FIRING_PISTON_EXTENDED_BY_DEFAULT);
     DigitalInput indexerLimitSwitch = new DigitalInput(Mappings.INDEXER_LIMIT_SWITCH_PORT);
     // The default speed for the launch motor to start at.
@@ -180,7 +182,8 @@ public final class FiringSystem extends System {
         adjustedSpeed = robot.joystickSystem.getJoystick(1).getRawButton(Mappings.SPEED_INCREASE) ^ robot.joystickSystem.getJoystick(1).getRawButton(Mappings.SPEED_DECREASE);
 
         // Set the state of the motors based on the values of the booleans controlling them.
-        indexerMotor.set(isIndexerMotorRunning ? Relay.Value.kForward : Relay.Value.kOff);
+        //indexerMotor.set(isIndexerMotorRunning ? Relay.Value.kForward : Relay.Value.kOff);
+        indexerMotor.set(isIndexerMotorRunning ? 0.2 : 0);
         launcherMotor.set(isLauncherMotorRunning ? launcherMotorSpeed : 0);
     }
 
