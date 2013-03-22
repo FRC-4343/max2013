@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class GyroSystem extends System {
 
-    Gyro gyro = new Gyro(Mappings.GYRO_PORT);
+    public Gyro gyro = new Gyro(Mappings.GYRO_PORT);
     Timer timer = new Timer();
     double initialAngle = 0;
     boolean isButtonPressed = false;
@@ -60,6 +60,19 @@ public class GyroSystem extends System {
                 default:
                     break;
             }
+        }
+    }
+
+    public String getState() {
+        switch (systemState) {
+            case 0:
+                return "IDLE";
+            case 1:
+                return "ROTATING";
+            case 2:
+                return "ALIGNING";
+            default:
+                return "ERROR";
         }
     }
 }

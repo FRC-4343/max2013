@@ -17,10 +17,6 @@ public class JoystickSystem extends System {
     }
 
     public Joystick getJoystick(int joystickNumber) {
-        if (joysticks.length < joystickNumber && joysticks[joystickNumber] != null) {
-            return joysticks[joystickNumber - 1];
-        } else {
-            return null;
-        }
+        return joysticks[joystickNumber - 1];
     }
 }
