@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStationLCD.Line;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.RobotDrive;
@@ -19,8 +20,8 @@ public class RobotTemplate extends IterativeRobot {
     Timer accelerationTimer = new Timer();
     Joystick joystick = new Joystick(1);
     Joystick joystick2 = new Joystick(2);
-    Victor launcher = new Victor(3);
-    Relay indexer = new Relay(2);
+    Jaguar launcher = new Jaguar(3);
+    Jaguar indexer = new Jaguar(4);
     RobotDrive robotDrive = new RobotDrive(1, 2);
     Piston firingPiston = new Piston((byte) 1, (byte) 2, true);
     Piston climbingPiston = new Piston((byte) 3, (byte) 4, true);
@@ -94,9 +95,11 @@ public class RobotTemplate extends IterativeRobot {
 
         // The previous code *allegedly* did not allow for the y axis on the second joystick to function.
         // This new code will arcade drive twice (once for each joystick) to allow for precision control.
-        robotDrive.arcadeDrive(joystick.getAxis(Joystick.AxisType.kX), joystick.getAxis(Joystick.AxisType.kY) * axisCompensation);
-        robotDrive.arcadeDrive(joystick2.getAxis(Joystick.AxisType.kX) * 0.5, joystick2.getAxis(Joystick.AxisType.kY) * 0.5);
-
+        if (joystick.getZ() == 1.0) {
+            robotDrive.arcadeDrive(joystick.getAxis(Joystick.AxisType.kY), joystick.getAxis(Joystick.AxisType.kX) * axisCompensation);
+        } else {
+        robotDrive.arcadeDrive(joystick2.getAxis(Joystick.AxisType.kY) * 0.5, joystick2.getAxis(Joystick.AxisType.kX) * 0.5);
+        }
         firingHandler();
         launcherMotorHandler();
         climbingHandler();
@@ -185,7 +188,7 @@ public class RobotTemplate extends IterativeRobot {
         adjustedSpeed = joystick.getRawButton(SPEED_INCREASE) ^ joystick.getRawButton(SPEED_DECREASE);
 
         // Set the state of the motors based on the values of the booleans controlling them.
-        indexer.set(indexerMotor ? Relay.Value.kForward : Relay.Value.kOff);
+        indexer.set(indexerMotor ? 0.6 : 0.0);
         launcher.set(launcherMotor ? launcherSpeed : 0);
 
         // Print the debug output the the DriverStation console.
