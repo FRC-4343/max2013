@@ -15,7 +15,7 @@ public class DriveSystem extends System {
     double turnSpeed = 1.0;
     double timerGoal = 0.0;
     double pauseTime = 0.0;
-    public boolean isDrivingWithJoystick = false;
+    public boolean isDrivingWithJoystick = true;
     // IDLE indicates no activity.
     static final byte IDLE = 0;
     // DRIVING indicates that the robot is moving.
@@ -113,8 +113,8 @@ public class DriveSystem extends System {
                     break;
                 case DRIVING:
                     if (isDrivingWithJoystick) {
-                        drive.arcadeDrive(robot.joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kX), robot.joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kY));
-                        drive.arcadeDrive(robot.joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kX) * Mappings.AXIS_COMPENSATION, robot.joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kY) * Mappings.AXIS_COMPENSATION);
+                        drive.arcadeDrive(robot.joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kY), robot.joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kX));
+                        drive.arcadeDrive(robot.joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kY) * Mappings.AXIS_COMPENSATION, robot.joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kX) * Mappings.AXIS_COMPENSATION);
                     } else {
                         drive.arcadeDrive(driveSpeed, turnSpeed);
                     }
@@ -157,5 +157,26 @@ public class DriveSystem extends System {
         timer.stop();
 
         pauseTime = pause;
+    }
+
+    public String getState() {
+        switch (systemState) {
+            case 0:
+                return "IDLE";
+            case 1:
+                return "DRIVING";
+            case 2:
+                return "PAUSE";
+            case 3:
+                return "TIMED";
+            case 4:
+                return "DRIVE_BACK";
+            case 5:
+                return "DRIVE_FORWARD";
+            case 6:
+                return "DONE";
+            default:
+                return "ERROR";
+        }
     }
 }
