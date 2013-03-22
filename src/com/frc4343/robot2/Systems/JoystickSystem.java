@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class JoystickSystem extends System {
 
-    final static byte JOYSTICK_COUNT = 2;
     Joystick[] joysticks = new Joystick[JOYSTICK_COUNT];
 
     public JoystickSystem(RobotTemplate robot) {
