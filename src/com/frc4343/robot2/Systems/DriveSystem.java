@@ -1,5 +1,6 @@
 package com.frc4343.robot2.Systems;
 
+import com.frc4343.robot2.Mappings;
 import com.frc4343.robot2.RobotTemplate;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
@@ -10,7 +11,6 @@ public class DriveSystem extends System {
     RobotDrive drive = new RobotDrive(1, 2);
     Timer timer = new Timer();
     Timer pause = new Timer();
-    double axisCompensation = 0.5;
     double driveSpeed = 1.0;
     double turnSpeed = 1.0;
     double timerGoal = 0.0;
@@ -51,7 +51,7 @@ public class DriveSystem extends System {
             switch (systemState) {
                 case IDLE:
                     if (robot.firingSystem.isFinishedFiring()) {
-                        driveWithTimer(-1.0, 0.0, 1);
+                        driveWithTimer(-1.0, 0.0, Mappings.AUTONOMOUS_TIME_SPENT_DRIVING_BACK);
                         systemState = DRIVE_BACK;
                     }
                     break;
@@ -66,7 +66,7 @@ public class DriveSystem extends System {
                         driveSpeed = 0;
                         turnSpeed = 0;
 
-                        driveAfterPause(1.0, 0.0, 1, 1);
+                        driveAfterPause(1.0, 0.0, Mappings.AUTONOMOUS_TIME_SPENT_DRIVING_FORWARD, Mappings.AUTONOMOUS_TIME_BEFORE_DRIVING_FORWARD);
                         systemState = PAUSED;
                     }
                     break;
@@ -114,7 +114,7 @@ public class DriveSystem extends System {
                 case DRIVING:
                     if (isDrivingWithJoystick) {
                         drive.arcadeDrive(robot.joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kX), robot.joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kY));
-                        drive.arcadeDrive(robot.joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kX) * axisCompensation, robot.joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kY) * axisCompensation);
+                        drive.arcadeDrive(robot.joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kX) * Mappings.AXIS_COMPENSATION, robot.joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kY) * Mappings.AXIS_COMPENSATION);
                     } else {
                         drive.arcadeDrive(driveSpeed, turnSpeed);
                     }

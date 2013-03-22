@@ -20,11 +20,8 @@ public class RobotTemplate extends IterativeRobot {
     public DriveSystem driveSystem = new DriveSystem(this);
     // Miscellaneous robot components/helpers
     Logger logger = new Logger();
-    Piston climbingPiston = new Piston((byte) 3, (byte) 4, true);
+    Piston climbingPiston = new Piston(Mappings.CLIMBING_PISTON_SOLENOID_ONE, Mappings.CLIMBING_PISTON_SOLENOID_TWO, Mappings.CLIMBING_PISTON_EXTENDED_BY_DEFAULT);
     Compressor compressor = new Compressor(1, 1);
-    // Button mappings
-    final byte EXTEND_CLIMBING_PISTONS = 3;
-    final byte RETRACT_CLIMBING_PISTONS = 2;
 
     private void resetRobot() {
         compressor.start();
@@ -80,9 +77,9 @@ public class RobotTemplate extends IterativeRobot {
     }
 
     private void climbingHandler() {
-        if (joystickSystem.getJoystick(1).getRawButton(EXTEND_CLIMBING_PISTONS)) {
+        if (joystickSystem.getJoystick(1).getRawButton(Mappings.EXTEND_CLIMBING_PISTONS)) {
             climbingPiston.extend();
-        } else if (joystickSystem.getJoystick(1).getRawButton(RETRACT_CLIMBING_PISTONS)) {
+        } else if (joystickSystem.getJoystick(1).getRawButton(Mappings.RETRACT_CLIMBING_PISTONS)) {
             climbingPiston.retract();
         }
     }

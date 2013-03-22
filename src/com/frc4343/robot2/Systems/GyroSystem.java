@@ -1,17 +1,15 @@
 package com.frc4343.robot2.Systems;
 
+import com.frc4343.robot2.Mappings;
 import com.frc4343.robot2.RobotTemplate;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Timer;
 
 public class GyroSystem extends System {
 
-    Gyro gyro = new Gyro(1);
+    Gyro gyro = new Gyro(Mappings.GYRO_PORT);
     Timer timer = new Timer();
-    int deadZone = 5;
-    double motorSpeed = 0.7;
     double initialAngle = 0;
-    double turnAngle = 45;
     boolean isButtonPressed = false;
     boolean isRotatingClockwise = true;
     // IDLE indicates no activity.
@@ -39,20 +37,20 @@ public class GyroSystem extends System {
         if (!robot.isAutonomous()) {
             switch (systemState) {
                 case IDLE:
-                    if (robot.joystickSystem.getJoystick(1).getRawButton(10)) {
-                        robot.driveSystem.driveIndefinitely(0.0, motorSpeed);
+                    if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.ROTATE_CLOCKWISE)) {
+                        robot.driveSystem.driveIndefinitely(0.0, Mappings.ROTATE_SPEED);
                         initialAngle = gyro.getAngle();
                         robot.driveSystem.isDrivingWithJoystick = false;
                         systemState = ROTATING;
-                    } else if (robot.joystickSystem.getJoystick(1).getRawButton(11)) {
-                        robot.driveSystem.driveIndefinitely(0.0, -motorSpeed);
+                    } else if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.ROTATE_COUNTERCLOCKWISE)) {
+                        robot.driveSystem.driveIndefinitely(0.0, -Mappings.ROTATE_SPEED);
                         initialAngle = gyro.getAngle();
                         robot.driveSystem.isDrivingWithJoystick = false;
                         systemState = ROTATING;
                     }
                     break;
                 case ROTATING:
-                    if (gyro.getAngle() >= initialAngle + turnAngle || gyro.getAngle() <= initialAngle - turnAngle) {
+                    if (gyro.getAngle() >= initialAngle + Mappings.ANGLE_TO_ROTATE_BY || gyro.getAngle() <= initialAngle - Mappings.ANGLE_TO_ROTATE_BY) {
                         robot.driveSystem.isDrivingWithJoystick = true;
                         switchMode();
                     }
