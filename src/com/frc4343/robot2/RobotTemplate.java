@@ -6,10 +6,7 @@ import com.frc4343.robot2.Systems.GyroSystem;
 import com.frc4343.robot2.Systems.JoystickSystem;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStationLCD.Line;
-import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.RobotDrive;
 
 public class RobotTemplate extends IterativeRobot {
 
@@ -88,15 +85,18 @@ public class RobotTemplate extends IterativeRobot {
         // Clears driverStation text.
         logger.clearWindow();
         // Prints State of Frisbee
-        logger.printLine(Line.kUser1, "Firing System State: " + firingSystem.getState());
+        logger.printLine(Line.kUser1, "FSS: " + firingSystem.getState());
         // Print the speed.
-        logger.printLine(Line.kUser2, "Launcher Speed: " + (byte) (firingSystem.getLauncherSpeed() * 100) + "%");
+        //logger.printLine(Line.kUser2, "Launcher Speed: " + (byte) (firingSystem.getLauncherSpeed() * 100) + "%");
+        logger.printLine(Line.kUser2, "Gyro value: " + (gyroSystem.gyro.getAngle()));
         // Prints State of Launcher Motor
         logger.printLine(Line.kUser3, "Launcher Motor: " + (firingSystem.getLauncherMotorState() ? "ON" : "OFF"));
         // Prints State of Launcher Motor
         logger.printLine(Line.kUser4, "Indexer Motor: " + (firingSystem.getIndexerMotorState() ? "ON" : "OFF"));
         // Print the tank pressurization state.
-        logger.printLine(Line.kUser5, "Tanks Full: " + (compressor.getPressureSwitchValue() ? "YES" : "NO"));
+        //logger.printLine(Line.kUser5, "Tanks Full: " + (compressor.getPressureSwitchValue() ? "YES" : "NO"));
+        logger.printLine(Line.kUser5, "GSS: " + gyroSystem.getState());
+        logger.printLine(Line.kUser6, "DSS: " + driveSystem.getState());
         // Updates the output window.
         logger.updateLCD();
     }
