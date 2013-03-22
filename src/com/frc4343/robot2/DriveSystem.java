@@ -14,8 +14,7 @@ public class DriveSystem extends System {
     double turnSpeed = 1.0;
     double timerGoal = 0.0;
     double pauseTime = 0.0;
-    boolean isDrivingWithJoystick = false;
-    boolean isDrivingWithTimer = false;
+    public boolean isDrivingWithJoystick = false;
 
     // IDLE indicates no activity.
     static final byte IDLE = 0;
@@ -113,8 +112,12 @@ public class DriveSystem extends System {
                     systemState = DRIVING;
                     break;
                 case DRIVING:
-                    drive.arcadeDrive(robot.joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kX), robot.joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kY));
-                    drive.arcadeDrive(robot.joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kX) * axisCompensation, robot.joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kY) * axisCompensation);
+                    if (isDrivingWithJoystick) {
+                        drive.arcadeDrive(robot.joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kX), robot.joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kY));
+                        drive.arcadeDrive(robot.joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kX) * axisCompensation, robot.joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kY) * axisCompensation);
+                    } else {
+                        drive.arcadeDrive(driveSpeed, turnSpeed);
+                    }
                     break;
                 case TIMED:
                     drive.arcadeDrive(driveSpeed, turnSpeed);
@@ -134,22 +137,25 @@ public class DriveSystem extends System {
         }
     }
 
-    public void driveWithTimer(double speed, double turn, double seconds) {
-        timer.reset();
-        timer.start();
-
-        driveSpeed = speed;
-        turnSpeed = turn;
-        timerGoal = seconds;
-    }
-
-    public void driveAfterPause(double speed, double turn, double seconds, double pause) {
+    public void driveIndefinitely(double speed, double turn) {
         timer.reset();
         timer.stop();
 
         driveSpeed = speed;
         turnSpeed = turn;
+    }
+
+    public void driveWithTimer(double speed, double turn, double seconds) {
+        driveIndefinitely(speed, turn);
+        timer.start();
+
         timerGoal = seconds;
+    }
+
+    public void driveAfterPause(double speed, double turn, double seconds, double pause) {
+        driveWithTimer(speed, turn, seconds);
+        timer.stop();
+
         pauseTime = pause;
     }
 }
