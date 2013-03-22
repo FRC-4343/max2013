@@ -1,5 +1,9 @@
 package com.frc4343.robot2;
 
+import com.frc4343.robot2.Systems.DriveSystem;
+import com.frc4343.robot2.Systems.FiringSystem;
+import com.frc4343.robot2.Systems.GyroSystem;
+import com.frc4343.robot2.Systems.JoystickSystem;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStationLCD.Line;
 import edu.wpi.first.wpilibj.Gyro;
@@ -11,9 +15,9 @@ public class RobotTemplate extends IterativeRobot {
 
     // Various systems
     public FiringSystem firingSystem = new FiringSystem(this);
-    JoystickSystem joystickSystem = new JoystickSystem(this);
-    GyroSystem gyroSystem = new GyroSystem(this);
-    DriveSystem driveSystem = new DriveSystem(this);
+    public JoystickSystem joystickSystem = new JoystickSystem(this);
+    public GyroSystem gyroSystem = new GyroSystem(this);
+    public DriveSystem driveSystem = new DriveSystem(this);
     // Miscellaneous robot components/helpers
     Logger logger = new Logger();
     Piston climbingPiston = new Piston((byte) 3, (byte) 4, true);

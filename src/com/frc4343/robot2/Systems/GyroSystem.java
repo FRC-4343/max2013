@@ -1,5 +1,6 @@
-package com.frc4343.robot2;
+package com.frc4343.robot2.Systems;
 
+import com.frc4343.robot2.RobotTemplate;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -13,7 +14,6 @@ public class GyroSystem extends System {
     double turnAngle = 45;
     boolean isButtonPressed = false;
     boolean isRotatingClockwise = true;
-
     // IDLE indicates no activity.
     static final byte IDLE = 0;
     // ROTATING indicates that the robot is rotating around a point.
@@ -37,7 +37,7 @@ public class GyroSystem extends System {
 
     public void run() {
         if (!robot.isAutonomous()) {
-            switchMode(systemState) {
+            switch (systemState) {
                 case IDLE:
                     if (robot.joystickSystem.getJoystick(1).getRawButton(10)) {
                         robot.driveSystem.driveIndefinitely(0.0, motorSpeed);
@@ -59,7 +59,7 @@ public class GyroSystem extends System {
                     break;
                 case ALIGNING:
                     break;
-                case default:
+                default:
                     break;
             }
         }

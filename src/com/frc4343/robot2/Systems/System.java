@@ -1,4 +1,6 @@
-package com.frc4343.robot2;
+package com.frc4343.robot2.Systems;
+
+import com.frc4343.robot2.RobotTemplate;
 
 public class System {
 
@@ -9,7 +11,9 @@ public class System {
         this.robot = robot;
     }
 
-    protected void switchMode() { }
+    protected void switchMode() {
+    }
 
-    protected void run() { }
+    protected void run() {
+    }
 }

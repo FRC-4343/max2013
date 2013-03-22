@@ -1,5 +1,6 @@
-package com.frc4343.robot2;
+package com.frc4343.robot2.Systems;
 
+import com.frc4343.robot2.RobotTemplate;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
@@ -15,7 +16,6 @@ public class DriveSystem extends System {
     double timerGoal = 0.0;
     double pauseTime = 0.0;
     public boolean isDrivingWithJoystick = false;
-
     // IDLE indicates no activity.
     static final byte IDLE = 0;
     // DRIVING indicates that the robot is moving.
