@@ -39,28 +39,15 @@ public class RobotTemplate extends IterativeRobot {
         resetRobot();
     }
 
+    public void testInit() {
+        resetRobot();
+    }
+
     public void teleopPeriodic() {
         firingSystem.run();
 
         robotDrive.arcadeDrive(joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kX), joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kY));
         robotDrive.arcadeDrive(joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kX) * axisCompensation, joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kY) * axisCompensation);
-
-        climbingHandler();
-
-        // Print the debug output the the DriverStation console.
-        printConsoleOutput();
-    }
-
-    public void testInit() {
-        resetRobot();
-    }
-
-    public void testPeriodic() {
-        firingSystem.run();
-        gyroSystem.run();
-
-        //robotDrive.arcadeDrive(joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kX), joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kY));
-        //robotDrive.arcadeDrive(joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kX) * axisCompensation, joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kY) * axisCompensation);
 
         climbingHandler();
 
@@ -81,6 +68,19 @@ public class RobotTemplate extends IterativeRobot {
         } else if (joystickSystem.getJoystick(1).getRawButton(RETRACT_CLIMBING_PISTONS)) {
             climbingPiston.retract();
         }
+    }
+
+    public void testPeriodic() {
+        firingSystem.run();
+        gyroSystem.run();
+
+        //robotDrive.arcadeDrive(joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kX), joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kY));
+        //robotDrive.arcadeDrive(joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kX) * axisCompensation, joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kY) * axisCompensation);
+
+        climbingHandler();
+
+        // Print the debug output the the DriverStation console.
+        printConsoleOutput();
     }
 
     private void printConsoleOutput() {
