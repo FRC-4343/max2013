@@ -9,14 +9,15 @@ import edu.wpi.first.wpilibj.RobotDrive;
 
 public class RobotTemplate extends IterativeRobot {
 
-    Logger logger = new Logger();
-    RobotDrive robotDrive = new RobotDrive(1, 2);
-    Piston climbingPiston = new Piston((byte) 3, (byte) 4, true);
-    Compressor compressor = new Compressor(1, 1);
-    FiringSystem firingSystem = new FiringSystem(this);
+    // Various systems
+    public FiringSystem firingSystem = new FiringSystem(this);
     JoystickSystem joystickSystem = new JoystickSystem(this);
     GyroSystem gyroSystem = new GyroSystem(this);
-    double axisCompensation = 0.5;
+    DriveSystem driveSystem = new DriveSystem(this);
+    // Miscellaneous robot components/helpers
+    Logger logger = new Logger();
+    Piston climbingPiston = new Piston((byte) 3, (byte) 4, true);
+    Compressor compressor = new Compressor(1, 1);
     // Button mappings
     final byte EXTEND_CLIMBING_PISTONS = 3;
     final byte RETRACT_CLIMBING_PISTONS = 2;
@@ -25,10 +26,10 @@ public class RobotTemplate extends IterativeRobot {
         compressor.start();
         // Reset the climber piston to its initial position.
         climbingPiston.extend();
-        // Initialize the firing system.
+        // Initialize and/or reset the various systems.
         firingSystem.switchMode();
-        // Initialize the gyro system.
-        gyroSystem.reset();
+        gyroSystem.switchMode();
+        driveSystem.switchMode();
     }
 
     public void teleopInit() {
@@ -45,9 +46,8 @@ public class RobotTemplate extends IterativeRobot {
 
     public void teleopPeriodic() {
         firingSystem.run();
-
-        robotDrive.arcadeDrive(joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kX), joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kY));
-        robotDrive.arcadeDrive(joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kX) * axisCompensation, joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kY) * axisCompensation);
+        gyroSystem.run();
+        driveSystem.run();
 
         climbingHandler();
 
@@ -57,6 +57,19 @@ public class RobotTemplate extends IterativeRobot {
 
     public void autonomousPeriodic() {
         firingSystem.run();
+        gyroSystem.run();
+        driveSystem.run();
+
+        // Print the debug output the the DriverStation console.
+        printConsoleOutput();
+    }
+
+    public void testPeriodic() {
+        firingSystem.run();
+        gyroSystem.run();
+        driveSystem.run();
+
+        climbingHandler();
 
         // Print the debug output the the DriverStation console.
         printConsoleOutput();
@@ -68,19 +81,6 @@ public class RobotTemplate extends IterativeRobot {
         } else if (joystickSystem.getJoystick(1).getRawButton(RETRACT_CLIMBING_PISTONS)) {
             climbingPiston.retract();
         }
-    }
-
-    public void testPeriodic() {
-        firingSystem.run();
-        gyroSystem.run();
-
-        //robotDrive.arcadeDrive(joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kX), joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kY));
-        //robotDrive.arcadeDrive(joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kX) * axisCompensation, joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kY) * axisCompensation);
-
-        climbingHandler();
-
-        // Print the debug output the the DriverStation console.
-        printConsoleOutput();
     }
 
     private void printConsoleOutput() {

@@ -23,26 +23,24 @@ public final class FiringSystem extends System {
     // Motor Booleans
     boolean isLauncherMotorRunning = false;
     boolean isIndexerMotorRunning = false;
+    // Button Checks
+    boolean triggerHeld = false;
+    boolean adjustedSpeed = false;
     // Button mappings
     final byte TRIGGER = 1;
     final byte SPEED_DECREASE = 4;
     final byte SPEED_INCREASE = 5;
     final byte LAUNCHER_MOTOR_ENABLE = 6;
     final byte LAUNCHER_MOTOR_DISABLE = 7;
-    // Button Checks
-    boolean triggerHeld = false;
-    boolean adjustedSpeed = false;
     // Autonomous-only variables
-    final byte maxFrisbeesToFireInAutonomous = 3;
     final double autonomousDelayBeforeFirstShot = 4;
     final double autonomousDelayBetweenEachShot = 3;
     final double defaultLauncherMotorSpeed = 0.4;
     boolean initialAutonomousDelayOver = false;
+    byte maxFrisbeesToFireInAutonomous = 3;
     byte numberOfFrisbeesFiredInAutonomous = 0;
     // Teleop-only variables
     boolean firingAllFrisbees = false;
-    // Handle the various firing states.
-    byte firingState = IDLE;
     // IDLE indicates no activity.
     static final byte IDLE = 0;
     // INDEXING indicates an attempt to feed a frisbee from the hopper to the loader.
@@ -81,18 +79,20 @@ public final class FiringSystem extends System {
         if (robot.isAutonomous()) {
             // Reset the number of fired frisbees in autonomous to zero.
             numberOfFrisbeesFiredInAutonomous = 0;
+            // Reset the total number of frisbees to fire.
+            maxFrisbeesToFireInAutonomous = 3;
             // The delay which occurs at the beginning of autonomous must be reset.
             initialAutonomousDelayOver = false;
             // Enable the timer which will control the initial firing delay during autonomous.
             loadingDelayTimer.start();
         }
 
-        firingState = IDLE;
+        systemState = IDLE;
     }
 
     public void run() {
         if (robot.isAutonomous()) {
-            switch (firingState) {
+            switch (systemState) {
                 case IDLE:
                     // If the autonomous delay has not finished previously and the delay is now passed, set the boolean and reset the timer.
                     if (!initialAutonomousDelayOver) {
@@ -105,7 +105,7 @@ public final class FiringSystem extends System {
                         if (numberOfFrisbeesFiredInAutonomous <= maxFrisbeesToFireInAutonomous && loadingDelayTimer.get() >= autonomousDelayBetweenEachShot) {
                             loadingDelayTimer.reset();
                             loadingDelayTimer.stop();
-                            firingState = INDEXING;
+                            systemState = INDEXING;
                         }
                     }
 
@@ -132,13 +132,13 @@ public final class FiringSystem extends System {
                     break;
             }
         } else {
-            switch (firingState) {
+            switch (systemState) {
                 case IDLE:
                     // If the trigger has been pressed and is not being held, OR if we are firing all the frisbees in the robot, we begin the firing cycle.
                     if (robot.joystickSystem.getJoystick(1).getRawButton(TRIGGER) && !triggerHeld || firingAllFrisbees == true) {
                         indexingTimer.reset();
                         indexingTimer.start();
-                        firingState = INDEXING;
+                        systemState = INDEXING;
                     }
 
                     break;
@@ -148,7 +148,7 @@ public final class FiringSystem extends System {
                         if (indexingTimer.get() >= indexerTimeoutInSeconds) {
                             // If we were automatically firing frisbees, we stop, as there are no more frisbees left.
                             firingAllFrisbees = false;
-                            firingState = IDLE;
+                            systemState = IDLE;
                         }
 
                         // Reset the indexingTimer as we no longer have to monitor the time a frisbee has been indexing for until we enter this stage again.
@@ -200,7 +200,7 @@ public final class FiringSystem extends System {
         if (indexerLimitSwitch.get()) {
             loadingDelayTimer.reset();
             loadingDelayTimer.start();
-            firingState = LOADING;
+            systemState = LOADING;
         }
     }
 
@@ -222,7 +222,7 @@ public final class FiringSystem extends System {
                 launchTimer.stop();
             }
 
-            firingState = READY;
+            systemState = READY;
         }
     }
 
@@ -231,7 +231,7 @@ public final class FiringSystem extends System {
             // Reset the speed of the launcher motor back to the target speed.
             launcherMotorSpeed = defaultLauncherMotorSpeed;
             launchTimer.reset();
-            firingState = FIRING;
+            systemState = FIRING;
         }
     }
 
@@ -244,7 +244,7 @@ public final class FiringSystem extends System {
             numberOfFrisbeesFiredInAutonomous++;
             launchTimer.reset();
 
-            firingState = RESETTING;
+            systemState = RESETTING;
         }
     }
 
@@ -257,14 +257,14 @@ public final class FiringSystem extends System {
             loadingDelayTimer.reset();
             loadingDelayTimer.start();
             // After giving the piston a small amount of time to retract, we are ready to commence the cycle once more.
-            firingState = IDLE;
+            systemState = IDLE;
         }
     }
 
     private void input() {
         // Handle forced (manual) ejection of a loaded frisbee.
         if (robot.joystickSystem.getJoystick(1).getRawButton(9)) {
-            firingState = FIRING;
+            systemState = FIRING;
         }
 
         // Attempt to fire all frisbees contained in the hopper.
@@ -290,7 +290,7 @@ public final class FiringSystem extends System {
     }
 
     public String getState() {
-        switch (firingState) {
+        switch (systemState) {
             case 0:
                 return "IDLE";
             case 1:
@@ -318,5 +318,13 @@ public final class FiringSystem extends System {
 
     public boolean getIndexerMotorState() {
         return isIndexerMotorRunning;
+    }
+
+    public boolean isFinishedFiring() {
+        return numberOfFrisbeesFiredInAutonomous == maxFrisbeesToFireInAutonomous;
+    }
+
+    public void setNumberOfFrisbeesToFireInAutonomous(int frisbees) {
+        maxFrisbeesToFireInAutonomous = 2;
     }
 }
