@@ -2,6 +2,7 @@ package com.frc4343.robot2;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStationLCD.Line;
+import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
@@ -9,12 +10,12 @@ import edu.wpi.first.wpilibj.RobotDrive;
 public class RobotTemplate extends IterativeRobot {
 
     Logger logger = new Logger();
-    Joystick joystick = new Joystick(1);
-    Joystick joystick2 = new Joystick(2);
     RobotDrive robotDrive = new RobotDrive(1, 2);
     Piston climbingPiston = new Piston((byte) 3, (byte) 4, true);
     Compressor compressor = new Compressor(1, 1);
+    Gyro gyro = new Gyro(1);
     FiringSystem firingSystem = new FiringSystem(this);
+    JoystickSystem joystickSystem = new JoystickSystem();
     double axisCompensation = 0.5;
     // Button mappings
     final byte EXTEND_CLIMBING_PISTONS = 3;
@@ -39,24 +40,8 @@ public class RobotTemplate extends IterativeRobot {
     public void teleopPeriodic() {
         firingSystem.run();
 
-        /*
-         // This combines the axes in order to allow for both joysticks to control the robot's movement.
-         // One of the joysticks will be made less sensitive to allow for precision control.
-         double sumXAxes = joystick2.getAxis(Joystick.AxisType.kY) + (joystick.getAxis(Joystick.AxisType.kY) * 0.5);
-         double sumYAxes = -joystick2.getAxis(Joystick.AxisType.kX) * axisCompensation + ((-joystick.getAxis(Joystick.AxisType.kX) * axisCompensation) * 0.4);
-
-         // Floor the values of the combined joysticks in case they are above 1 or below -1.
-         sumXAxes = sumXAxes > 1 ? 1 : sumXAxes;
-         sumXAxes = sumXAxes < -1 ? -1 : sumXAxes;
-         sumYAxes = sumYAxes > 1 ? 1 : sumYAxes;
-         sumYAxes = sumYAxes < -1 ? -1 : sumYAxes;
-
-         robotDrive.arcadeDrive(sumXAxes, sumYAxes);*/
-
-        // The previous code *allegedly* did not allow for the y axis on the second joystick to function.
-        // This new code will arcade drive twice (once for each joystick) to allow for precision control.
-        robotDrive.arcadeDrive(joystick.getAxis(Joystick.AxisType.kX), joystick.getAxis(Joystick.AxisType.kY));
-        robotDrive.arcadeDrive(joystick2.getAxis(Joystick.AxisType.kX) * axisCompensation, joystick2.getAxis(Joystick.AxisType.kY) * axisCompensation);
+        robotDrive.arcadeDrive(joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kX), joystickSystem.getJoystick(1).getAxis(Joystick.AxisType.kY));
+        robotDrive.arcadeDrive(joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kX) * axisCompensation, joystickSystem.getJoystick(2).getAxis(Joystick.AxisType.kY) * axisCompensation);
 
         climbingHandler();
 
@@ -72,9 +57,9 @@ public class RobotTemplate extends IterativeRobot {
     }
 
     private void climbingHandler() {
-        if (joystick.getRawButton(EXTEND_CLIMBING_PISTONS)) {
+        if (joystickSystem.getJoystick(1).getRawButton(EXTEND_CLIMBING_PISTONS)) {
             climbingPiston.extend();
-        } else if (joystick.getRawButton(RETRACT_CLIMBING_PISTONS)) {
+        } else if (joystickSystem.getJoystick(1).getRawButton(RETRACT_CLIMBING_PISTONS)) {
             climbingPiston.retract();
         }
     }
@@ -94,15 +79,5 @@ public class RobotTemplate extends IterativeRobot {
         logger.printLine(Line.kUser5, "Tanks Full: " + (compressor.getPressureSwitchValue() ? "YES" : "NO"));
         // Updates the output window.
         logger.updateLCD();
-    }
-
-    public Joystick getJoystick(int joystickNumber) {
-        if (joystickNumber == 1) {
-            return joystick;
-        } else if (joystickNumber == 2) {
-            return joystick2;
-        } else {
-            return null;
-        }
     }
 }

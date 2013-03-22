@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 
 public final class FiringSystem {
+
     final RobotTemplate robot;
     Timer indexingTimer = new Timer();
     Timer loadingDelayTimer = new Timer();
@@ -14,30 +15,24 @@ public final class FiringSystem {
     Relay indexerMotor = new Relay(2);
     Piston firingPiston = new Piston((byte) 1, (byte) 2, true);
     DigitalInput indexerLimitSwitch = new DigitalInput(2);
-
     // The default speed for the launch motor to start at.
     double launcherMotorSpeed = 0.4;
-
     // Timeouts
     double indexerTimeoutInSeconds = 1.5;
     double loadingDelay = 0.15;
     double accelerationDelay = 0.1;
-
     // Motor Booleans
     boolean isLauncherMotorRunning = false;
     boolean isIndexerMotorRunning = false;
-
     // Button mappings
     final byte TRIGGER = 1;
     final byte SPEED_DECREASE = 4;
     final byte SPEED_INCREASE = 5;
     final byte LAUNCHER_MOTOR_ENABLE = 6;
     final byte LAUNCHER_MOTOR_DISABLE = 7;
-
     // Button Checks
     boolean triggerHeld = false;
     boolean adjustedSpeed = false;
-
     // Autonomous-only variables
     final byte maxFrisbeesToFireInAutonomous = 3;
     final double autonomousDelayBeforeFirstShot = 4;
@@ -45,10 +40,8 @@ public final class FiringSystem {
     final double defaultLauncherMotorSpeed = 0.4;
     boolean initialAutonomousDelayOver = false;
     byte numberOfFrisbeesFiredInAutonomous = 0;
-
     // Teleop-only variables
     boolean firingAllFrisbees = false;
-
     // Handle the various firing states.
     byte firingState = IDLE;
     // IDLE indicates no activity.
@@ -144,7 +137,7 @@ public final class FiringSystem {
             switch (firingState) {
                 case IDLE:
                     // If the trigger has been pressed and is not being held, OR if we are firing all the frisbees in the robot, we begin the firing cycle.
-                    if (robot.getJoystick(1).getRawButton(TRIGGER) && !triggerHeld || firingAllFrisbees == true) {
+                    if (robot.joystickSystem.getJoystick(1).getRawButton(TRIGGER) && !triggerHeld || firingAllFrisbees == true) {
                         indexingTimer.reset();
                         indexingTimer.start();
                         firingState = INDEXING;
@@ -172,7 +165,7 @@ public final class FiringSystem {
                     break;
                 case READY:
                     // If the trigger has been pressed and is not being held, OR if we are firing all the frisbees in the robot, we handle frisbee firing.
-                    if (robot.getJoystick(1).getRawButton(TRIGGER) && !triggerHeld || firingAllFrisbees == true) {
+                    if (robot.joystickSystem.getJoystick(1).getRawButton(TRIGGER) && !triggerHeld || firingAllFrisbees == true) {
                         // Sets the motor speed to 100% for a small amount of time so as to allow for the wheel to spin back up to speed for firing.
                         launcherMotorSpeed = 1;
                         launchTimer.start();
@@ -194,8 +187,8 @@ public final class FiringSystem {
         }
 
         // Store the state of whether or not the buttons have been pressed, to know if they are being held down in the next iteration.
-        triggerHeld = robot.getJoystick(1).getRawButton(TRIGGER);
-        adjustedSpeed = robot.getJoystick(1).getRawButton(SPEED_INCREASE) ^ robot.getJoystick(1).getRawButton(SPEED_DECREASE);
+        triggerHeld = robot.joystickSystem.getJoystick(1).getRawButton(TRIGGER);
+        adjustedSpeed = robot.joystickSystem.getJoystick(1).getRawButton(SPEED_INCREASE) ^ robot.joystickSystem.getJoystick(1).getRawButton(SPEED_DECREASE);
 
         // Set the state of the motors based on the values of the booleans controlling them.
         indexerMotor.set(isIndexerMotorRunning ? Relay.Value.kForward : Relay.Value.kOff);
@@ -272,27 +265,27 @@ public final class FiringSystem {
 
     private void input() {
         // Handle forced (manual) ejection of a loaded frisbee.
-        if (robot.getJoystick(1).getRawButton(9)) {
+        if (robot.joystickSystem.getJoystick(1).getRawButton(9)) {
             firingState = FIRING;
         }
 
         // Attempt to fire all frisbees contained in the hopper.
-        if (robot.getJoystick(1).getRawButton(10)) {
+        if (robot.joystickSystem.getJoystick(1).getRawButton(10)) {
             firingAllFrisbees = true;
         }
 
         // Manually control the state of the launcherMotor motor. (Not intended to be used in competition)
-        if (robot.getJoystick(1).getRawButton(LAUNCHER_MOTOR_ENABLE) || robot.getJoystick(2).getRawButton(LAUNCHER_MOTOR_ENABLE)) {
+        if (robot.joystickSystem.getJoystick(1).getRawButton(LAUNCHER_MOTOR_ENABLE) || robot.joystickSystem.getJoystick(2).getRawButton(LAUNCHER_MOTOR_ENABLE)) {
             isLauncherMotorRunning = true;
-        } else if (robot.getJoystick(1).getRawButton(LAUNCHER_MOTOR_DISABLE) || robot.getJoystick(2).getRawButton(LAUNCHER_MOTOR_DISABLE)) {
+        } else if (robot.joystickSystem.getJoystick(1).getRawButton(LAUNCHER_MOTOR_DISABLE) || robot.joystickSystem.getJoystick(2).getRawButton(LAUNCHER_MOTOR_DISABLE)) {
             isLauncherMotorRunning = false;
         }
 
         // If the buttons are not being held down or pressed together, increase or decrease the speed of the launcherMotor motor.
         if (!adjustedSpeed) {
-            if (robot.getJoystick(1).getRawButton(SPEED_INCREASE)) {
+            if (robot.joystickSystem.getJoystick(1).getRawButton(SPEED_INCREASE)) {
                 launcherMotorSpeed += 0.001;
-            } else if (robot.getJoystick(1).getRawButton(SPEED_DECREASE)) {
+            } else if (robot.joystickSystem.getJoystick(1).getRawButton(SPEED_DECREASE)) {
                 launcherMotorSpeed -= 0.001;
             }
         }
