@@ -26,8 +26,11 @@ public class Mappings {
     public final static double INDEXER_TIMEOUT = 1.5;
     public final static double LOADING_DELAY = 0.15;
     public final static double ACCELERATION_DELAY = 0.1;
+    public final static double PISTON_RETRACTION_DELAY = 0.1;
+    public final static double PISTON_EXTENSION_DELAY = 0.1;
     // Drive Mappings
     public final static double AXIS_COMPENSATION = 0.5;
+    public final static double PERCISION_COMPENSATION = 0.4;
     public final static double AUTONOMOUS_TIME_SPENT_DRIVING_BACK = 1;
     public final static double AUTONOMOUS_TIME_BEFORE_DRIVING_FORWARD = 1;
     public final static double AUTONOMOUS_TIME_SPENT_DRIVING_FORWARD = 1;
