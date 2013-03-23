@@ -114,20 +114,7 @@ public final class FiringSystem extends System {
 
                 break;
             case INDEXING:
-                if (robot.isAutonomous()) {
-                    // If a frisbee is entering the loader, or if we have passed the indexer waiting time, we disable the indexer motor, and stop and reset the timer.
-                    if (indexerLimitSwitch.get() || indexingTimer.get() >= Mappings.INDEXER_TIMEOUT) {
-                        if (indexingTimer.get() >= Mappings.INDEXER_TIMEOUT) {
-                            // If we were automatically firing frisbees, we stop, as there are no more frisbees left.
-                            firingAllFrisbees = false;
-                            systemState = IDLE;
-                        }
-
-                        // Reset the indexingTimer as we no longer have to monitor the time a frisbee has been indexing for until we enter this stage again.
-                        indexingTimer.reset();
-                        indexingTimer.stop();
-                    }
-                } else {
+                if (!robot.isAutonomous()) {
                     // If a frisbee is entering the loader, or if we have passed the indexer waiting time, we disable the indexer motor, and stop and reset the timer.
                     if (indexerLimitSwitch.get() || indexingTimer.get() >= Mappings.INDEXER_TIMEOUT) {
                         if (indexingTimer.get() >= Mappings.INDEXER_TIMEOUT) {
@@ -141,6 +128,7 @@ public final class FiringSystem extends System {
                         indexingTimer.stop();
                     }
                 }
+
                 index();
                 break;
             case LOADING:

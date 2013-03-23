@@ -11,7 +11,7 @@ public class JoystickSystem extends System {
     public JoystickSystem(RobotTemplate robot) {
         super(robot);
 
-        for (byte i = 0; i <= Mappings.JOYSTICK_COUNT; i++) {
+        for (byte i = 0; i < Mappings.JOYSTICK_COUNT; i++) {
             joysticks[i] = new Joystick(i + 1);
         }
     }
