@@ -11,12 +11,12 @@ public class JoystickSystem extends System {
     public JoystickSystem(RobotTemplate robot) {
         super(robot);
 
-        for (byte i = 1; i <= Mappings.JOYSTICK_COUNT; i++) {
+        for (int i = 0; i < Mappings.JOYSTICK_COUNT; i++) {
             joysticks[i] = new Joystick(i);
         }
     }
 
-    public Joystick getJoystick(byte joystickNumber) {
-        return joysticks[joystickNumber];
+    public Joystick getJoystick(int joystickNumber) {
+        return joysticks[joystickNumber - 1];
     }
 }
