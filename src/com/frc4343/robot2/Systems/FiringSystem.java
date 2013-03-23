@@ -86,9 +86,9 @@ public final class FiringSystem extends System {
     }
 
     public void run() {
-        if (robot.isAutonomous()) {
-            switch (systemState) {
-                case IDLE:
+        switch (systemState) {
+            case IDLE:
+                if (robot.isAutonomous()) {
                     // If the autonomous delay has not finished previously and the delay is now passed, set the boolean and reset the timer.
                     if (!initialAutonomousDelayOver) {
                         if (loadingDelayTimer.get() >= Mappings.AUTONOMOUS_DELAY_BEFORE_FIRST_SHOT) {
@@ -103,38 +103,18 @@ public final class FiringSystem extends System {
                             systemState = INDEXING;
                         }
                     }
-
-                    break;
-                case INDEXING:
-                    index();
-                    break;
-                case LOADING:
-                    load();
-                    break;
-                case READY:
-                    ready();
-                    break;
-                case FIRING:
-                    fire();
-                    break;
-                case RESETTING:
-                    reset();
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            switch (systemState) {
-                case IDLE:
+                } else {
                     // If the trigger has been pressed and is not being held, OR if we are firing all the frisbees in the robot, we begin the firing cycle.
                     if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.TRIGGER) && !triggerHeld || firingAllFrisbees == true) {
                         indexingTimer.reset();
                         indexingTimer.start();
                         systemState = INDEXING;
                     }
+                }
 
-                    break;
-                case INDEXING:
+                break;
+            case INDEXING:
+                if (robot.isAutonomous()) {
                     // If a frisbee is entering the loader, or if we have passed the indexer waiting time, we disable the indexer motor, and stop and reset the timer.
                     if (indexerLimitSwitch.get() || indexingTimer.get() >= Mappings.INDEXER_TIMEOUT) {
                         if (indexingTimer.get() >= Mappings.INDEXER_TIMEOUT) {
@@ -147,32 +127,47 @@ public final class FiringSystem extends System {
                         indexingTimer.reset();
                         indexingTimer.stop();
                     }
+                } else {
+                    // If a frisbee is entering the loader, or if we have passed the indexer waiting time, we disable the indexer motor, and stop and reset the timer.
+                    if (indexerLimitSwitch.get() || indexingTimer.get() >= Mappings.INDEXER_TIMEOUT) {
+                        if (indexingTimer.get() >= Mappings.INDEXER_TIMEOUT) {
+                            // If we were automatically firing frisbees, we stop, as there are no more frisbees left.
+                            firingAllFrisbees = false;
+                            systemState = IDLE;
+                        }
 
-                    index();
-                    break;
-                case LOADING:
-                    load();
-                    break;
-                case READY:
+                        // Reset the indexingTimer as we no longer have to monitor the time a frisbee has been indexing for until we enter this stage again.
+                        indexingTimer.reset();
+                        indexingTimer.stop();
+                    }
+                }
+                index();
+                break;
+            case LOADING:
+                load();
+                break;
+            case READY:
+                if (!robot.isAutonomous()) {
                     // If the trigger has been pressed and is not being held, OR if we are firing all the frisbees in the robot, we handle frisbee firing.
                     if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.TRIGGER) && !triggerHeld || firingAllFrisbees == true) {
                         // Sets the motor speed to 100% for a small amount of time so as to allow for the wheel to spin back up to speed for firing.
                         launcherMotorSpeed = 1;
                         launchTimer.start();
                     }
+                }
+                ready();
+                break;
+            case FIRING:
+                fire();
+                break;
+            case RESETTING:
+                reset();
+                break;
+            default:
+                break;
+        }
 
-                    ready();
-                    break;
-                case FIRING:
-                    fire();
-                    break;
-                case RESETTING:
-                    reset();
-                    break;
-                default:
-                    break;
-            }
-
+        if (!robot.isAutonomous()) {
             input();
         }
 
