@@ -29,7 +29,7 @@ public final class FiringSystem extends System {
     boolean adjustedSpeed = false;
     // Autonomous-only variables
     final double defaultLauncherMotorSpeed = 0.4;
-    boolean initialAutonomousDelayOver = false;
+    public boolean initialAutonomousDelayOver = false;
     byte maxFrisbeesToFireInAutonomous = 3;
     byte numberOfFrisbeesFiredInAutonomous = 0;
     // Teleop-only variables
@@ -64,6 +64,8 @@ public final class FiringSystem extends System {
         firingPiston.extend();
         // Launcher motor will be enabled and reset to the default speed in case the drivers forget.
         isLauncherMotorRunning = true;
+        isIndexerMotorRunning = false;
+
         launcherMotorSpeed = defaultLauncherMotorSpeed;
 
         // Reset the teleop auto-fire
@@ -110,9 +112,6 @@ public final class FiringSystem extends System {
                     load();
                     break;
                 case READY:
-                    // Sets the motor speed to 100% for a small amount of time so as to allow for the wheel to spin back up to speed for firing.
-                    launcherMotorSpeed = 1;
-
                     ready();
                     break;
                 case FIRING:
@@ -200,6 +199,8 @@ public final class FiringSystem extends System {
 
     private void load() {
         isIndexerMotorRunning = false;
+        // Sets the motor speed to 100% for a small amount of time so as to allow for the wheel to spin back up to speed for firing.
+        launcherMotorSpeed = 1;
 
         // Assumes that once the loadingDelayTimer has reached the loadingDelay, there is a frisbee in the chamber.
         if (loadingDelayTimer.get() >= Mappings.LOADING_DELAY) {
@@ -233,7 +234,7 @@ public final class FiringSystem extends System {
         // Retract the piston to expel the frisbee.
         firingPiston.retract();
 
-        if (launchTimer.get() >= Mappings.ACCELERATION_DELAY) {
+        if (launchTimer.get() >= Mappings.EXTEND_TIME) {
             // Increment the number of frisbees fired.
             numberOfFrisbeesFiredInAutonomous++;
             launchTimer.reset();
@@ -246,7 +247,7 @@ public final class FiringSystem extends System {
         // We extend the piston to its initial state, as there is no longer a frisbee in the chamber.
         firingPiston.extend();
 
-        if (launchTimer.get() >= Mappings.ACCELERATION_DELAY) {
+        if (launchTimer.get() >= Mappings.RETRACT_TIME) {
             // Start the loading delay timer to measure the time between launched frisbees.
             loadingDelayTimer.reset();
             loadingDelayTimer.start();

@@ -16,4 +16,8 @@ public class System {
 
     protected void run() {
     }
+
+    protected String getState() {
+        return "N/A";
+    }
 }
