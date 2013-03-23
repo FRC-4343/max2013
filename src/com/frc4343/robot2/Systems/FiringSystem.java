@@ -117,9 +117,12 @@ public final class FiringSystem extends System {
                 if (!robot.isAutonomous()) {
                     // If a frisbee is entering the loader, or if we have passed the indexer waiting time, we disable the indexer motor, and stop and reset the timer.
                     if (indexerLimitSwitch.get() || indexingTimer.get() >= Mappings.INDEXER_TIMEOUT) {
+                        isIndexerMotorRunning = false;
+
                         if (indexingTimer.get() >= Mappings.INDEXER_TIMEOUT) {
                             // If we were automatically firing frisbees, we stop, as there are no more frisbees left.
                             firingAllFrisbees = false;
+
                             systemState = IDLE;
                         }
 
@@ -181,7 +184,6 @@ public final class FiringSystem extends System {
     }
 
     private void load() {
-        isIndexerMotorRunning = false;
         // Sets the motor speed to 100% for a small amount of time so as to allow for the wheel to spin back up to speed for firing.
         launcherMotorSpeed = 1;
 
