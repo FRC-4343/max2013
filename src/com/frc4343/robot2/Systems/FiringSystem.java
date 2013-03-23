@@ -88,6 +88,13 @@ public final class FiringSystem extends System {
         switch (systemState) {
             case IDLE:
                 if (robot.isAutonomous()) {
+                    // If the autonomous delay has not finished previously and the delay is now passed, set the boolean and reset the timer.
+                    /*if (!initialAutonomousDelayOver) {
+                     if (loadingDelayTimer.get() >= Mappings.AUTONOMOUS_DELAY_BEFORE_FIRST_SHOT) {
+                     loadingDelayTimer.reset();
+                     initialAutonomousDelayOver = true;
+                     }
+                     } else { */// We wont need this if we plan to go back to pickup, start at index, timers are enough for init delay.
                     // If the number of frisbees already fired does not exceed the number of frisbees we want to fire during autonomous, and we have passed the delay between each shot, we attempt to load and fire another one.
                     if (numberOfFrisbeesFiredInAutonomous <= maxFrisbeesToFireInAutonomous && loadingDelayTimer.get() >= Mappings.AUTONOMOUS_DELAY_BETWEEN_EACH_SHOT) {
                         loadingDelayTimer.reset();
@@ -128,7 +135,7 @@ public final class FiringSystem extends System {
             default:
                 break;
         }
-        if (robot.isOperatorControl()) {
+        if (!robot.isAutonomous()) { // Does it really matter?
             input();
         }
 
@@ -150,12 +157,9 @@ public final class FiringSystem extends System {
         // If a frisbee triggers the limit switch while indexing, we begin LOADING.
         if (indexerLimitSwitch.get() || indexingTimer.get() >= Mappings.INDEXER_TIMEOUT) {
             // Reset the indexingTimer as we no longer have to monitor the time a frisbee has been indexing for until we enter this stage again.
-            if (indexingTimer.get() >= Mappings.INDEXER_TIMEOUT) {
-                systemState = IDLE;
-            }
             indexingTimer.reset();
             indexingTimer.stop();
-            
+
             loadingDelayTimer.reset();
             loadingDelayTimer.start(); // this line can be removed?
             systemState = LOADING;
