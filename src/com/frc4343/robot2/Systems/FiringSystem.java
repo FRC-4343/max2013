@@ -220,8 +220,8 @@ public final class FiringSystem extends System {
     private void input() {
         // Handle forced (manual) ejection of a loaded frisbee.
         if (robot.joystickSystem.getJoystick((byte) 1).getRawButton(Mappings.MANUAL_EJECT)) {
-            systemState = FIRING;
-            launchTimer.start();
+            firingPiston.retract();
+            systemState = IDLE;
         }
 
         // Attempt to fire all frisbees contained in the hopper.
