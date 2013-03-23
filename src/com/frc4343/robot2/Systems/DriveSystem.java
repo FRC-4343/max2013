@@ -51,7 +51,7 @@ public class DriveSystem extends System {
             switch (systemState) {
                 case IDLE:
                     if (robot.firingSystem.isFinishedFiring()) {
-                        driveWithTimer(-1.0, 0.0, Mappings.AUTONOMOUS_TIME_SPENT_DRIVING_BACK);
+                        driveWithTimer(-Mappings.AUTONOMOUS_DRIVE_SPEED, 0.0, Mappings.AUTONOMOUS_TIME_SPENT_DRIVING_BACK);
                         systemState = DRIVE_BACK;
                     }
                     break;
@@ -66,7 +66,7 @@ public class DriveSystem extends System {
                         driveSpeed = 0;
                         turnSpeed = 0;
 
-                        driveAfterPause(1.0, 0.0, Mappings.AUTONOMOUS_TIME_SPENT_DRIVING_FORWARD, Mappings.AUTONOMOUS_TIME_BEFORE_DRIVING_FORWARD);
+                        driveAfterPause(Mappings.AUTONOMOUS_DRIVE_SPEED, 0.0, Mappings.AUTONOMOUS_TIME_SPENT_DRIVING_FORWARD, Mappings.AUTONOMOUS_TIME_BEFORE_DRIVING_FORWARD);
                         systemState = PAUSED;
                     }
                     break;
@@ -78,8 +78,6 @@ public class DriveSystem extends System {
                         driveWithTimer(driveSpeed, turnSpeed, timerGoal);
 
                         pauseTime = 0;
-                        driveSpeed = 0;
-                        turnSpeed = 0;
 
                         systemState = DRIVE_FORWARD;
                     }
@@ -98,6 +96,7 @@ public class DriveSystem extends System {
                         // Causes the firingSystem to fire the frisbees contained once more.
                         robot.firingSystem.switchMode();
                         robot.firingSystem.setNumberOfFrisbeesToFireInAutonomous((byte) 2);
+                        robot.firingSystem.initialAutonomousDelayOver = true;
                         systemState = DONE;
                     }
                     break;
@@ -113,11 +112,11 @@ public class DriveSystem extends System {
                     break;
                 case DRIVING:
                     if (isDrivingWithJoystick) {
-                        double sumOfYAxes = robot.joystickSystem.getJoystick((byte) 2).getAxis(Joystick.AxisType.kY) + (robot.joystickSystem.getJoystick((byte) 2).getAxis(Joystick.AxisType.kY) * 0.5);
-                        double sumOfXAxes = -robot.joystickSystem.getJoystick((byte) 2).getAxis(Joystick.AxisType.kX) * Mappings.AXIS_COMPENSATION + (-robot.joystickSystem.getJoystick((byte) 2).getAxis(Joystick.AxisType.kX) * Mappings.PERCISION_COMPENSATION);
+                        double sumOfYAxes = robot.joystickSystem.getJoystick((byte) 2).getAxis(Joystick.AxisType.kY) + (robot.joystickSystem.getJoystick((byte) 1).getAxis(Joystick.AxisType.kY) * 0.5);
+                        double sumOfXAxes = -robot.joystickSystem.getJoystick((byte) 2).getAxis(Joystick.AxisType.kX) * Mappings.AXIS_COMPENSATION + (-robot.joystickSystem.getJoystick((byte) 1).getAxis(Joystick.AxisType.kX) * Mappings.PRECISION_COMPENSATION);
                         // Floor the values of the combined js in case they are above 1 or below -1.
-                        sumOfYAxes = sumOfYAxes > 1 ? 1 : (sumOfYAxes < -1) ? -1 : sumOfYAxes;
-                        sumOfXAxes = sumOfXAxes > 1 ? 1 : (sumOfXAxes < -1) ? -1 : sumOfXAxes; // 4 lines reduced to 2 :D
+                        sumOfYAxes = sumOfYAxes > 1 ? 1 : sumOfYAxes < -1 ? -1 : sumOfYAxes;
+                        sumOfXAxes = sumOfXAxes > 1 ? 1 : sumOfXAxes < -1 ? -1 : sumOfXAxes; // 4 lines reduced to 2 :D
                         drive.arcadeDrive(sumOfYAxes, sumOfXAxes);
                     } else {
                         drive.arcadeDrive(driveSpeed, turnSpeed);
@@ -159,6 +158,7 @@ public class DriveSystem extends System {
     public void driveAfterPause(double speed, double turn, double seconds, double pause) {
         driveWithTimer(speed, turn, seconds);
         timer.stop();
+        this.pause.start();
 
         pauseTime = pause;
     }

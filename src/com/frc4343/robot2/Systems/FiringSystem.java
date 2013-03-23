@@ -226,7 +226,8 @@ public final class FiringSystem extends System {
 
         // Attempt to fire all frisbees contained in the hopper.
         if (robot.joystickSystem.getJoystick((byte) 1).getRawButton(Mappings.FLUSH_HOPPER)) {
-            firingAllFrisbees = true;
+            systemState = IDLE;
+            firingAllFrisbees = robot.joystickSystem.getJoystick((byte) 1).getRawButton(Mappings.FLUSH_HOPPER); // HOLD IT
         }
 
         // Manually control the state of the launcherMotor motor. (Not intended to be used in competition)
