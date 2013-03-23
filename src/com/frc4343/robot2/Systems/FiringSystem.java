@@ -152,13 +152,16 @@ public final class FiringSystem extends System {
             // Reset the indexingTimer as we no longer have to monitor the time a frisbee has been indexing for until we enter this stage again.
             if (indexingTimer.get() >= Mappings.INDEXER_TIMEOUT) {
                 systemState = IDLE;
+                indexingTimer.reset();
+                indexingTimer.stop();
+            } else {
+                indexingTimer.reset();
+                indexingTimer.stop();
+
+                loadingDelayTimer.reset();
+                loadingDelayTimer.start(); // this line can be removed?
+                systemState = LOADING;
             }
-            indexingTimer.reset();
-            indexingTimer.stop();
-            
-            loadingDelayTimer.reset();
-            loadingDelayTimer.start(); // this line can be removed?
-            systemState = LOADING;
         }
     }
 
