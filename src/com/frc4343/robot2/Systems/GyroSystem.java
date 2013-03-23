@@ -37,12 +37,12 @@ public class GyroSystem extends System {
         if (!robot.isAutonomous()) {
             switch (systemState) {
                 case IDLE:
-                    if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.ROTATE_CLOCKWISE)) {
+                    if (robot.joystickSystem.getJoystick((byte) 1).getRawButton(Mappings.ROTATE_CLOCKWISE)) {
                         robot.driveSystem.driveIndefinitely(0.0, Mappings.ROTATE_SPEED);
                         initialAngle = gyro.getAngle();
                         robot.driveSystem.isDrivingWithJoystick = false;
                         systemState = ROTATING;
-                    } else if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.ROTATE_COUNTERCLOCKWISE)) {
+                    } else if (robot.joystickSystem.getJoystick((byte) 1).getRawButton(Mappings.ROTATE_COUNTERCLOCKWISE)) {
                         robot.driveSystem.driveIndefinitely(0.0, -Mappings.ROTATE_SPEED);
                         initialAngle = gyro.getAngle();
                         robot.driveSystem.isDrivingWithJoystick = false;
