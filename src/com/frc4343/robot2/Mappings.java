@@ -26,6 +26,7 @@ public class Mappings {
     // Timeouts
     public final static double INDEXER_TIMEOUT = 1.5;
     public final static double LOADING_DELAY = 0.5;
+    public final static double FRISBEE_FALL_TIMER = 0.5;
     public final static double ACCELERATION_DELAY = 0.0;
     public final static double EXTEND_TIME = 0.3;
     public final static double RETRACT_TIME = 0.2;
