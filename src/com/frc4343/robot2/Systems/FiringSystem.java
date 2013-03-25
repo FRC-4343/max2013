@@ -11,9 +11,12 @@ import edu.wpi.first.wpilibj.Victor;
 
 public final class FiringSystem extends System {
 
+    Timer autonomousTimer = new Timer();
     Timer indexingTimer = new Timer();
     Timer loadingDelayTimer = new Timer();
+    Timer frisbeeFallTimer = new Timer();
     Timer launchTimer = new Timer();
+
     Jaguar launcherMotor = new Jaguar(Mappings.LAUNCHER_MOTOR_PORT);
     Jaguar indexerMotor = new Jaguar(Mappings.INDEXER_MOTOR_PORT);
     //Relay indexerMotor = new Relay(Mappings.INDEXER_MOTOR_PORT);
@@ -29,7 +32,7 @@ public final class FiringSystem extends System {
     boolean adjustedSpeed = false;
     // Autonomous-only variables
     public boolean initialAutonomousDelayOver = false;
-    byte maxFrisbeesToFireInAutonomous = 3;
+    int maxFrisbeesToFireInAutonomous = 3;
     byte numberOfFrisbeesFiredInAutonomous = 0;
     // Teleop-only variables
     boolean firingAllFrisbees = false;
@@ -52,10 +55,14 @@ public final class FiringSystem extends System {
 
     public void switchMode() {
         // Reset the timers.
-        loadingDelayTimer.reset();
-        loadingDelayTimer.stop();
+        autonomousTimer.reset();
+        autonomousTimer.stop();
         indexingTimer.reset();
         indexingTimer.stop();
+        loadingDelayTimer.reset();
+        loadingDelayTimer.stop();
+        frisbeeFallTimer.reset();
+        frisbeeFallTimer.stop();
         launchTimer.reset();
         launchTimer.stop();
 
@@ -78,7 +85,7 @@ public final class FiringSystem extends System {
             // The delay which occurs at the beginning of autonomous must be reset.
             initialAutonomousDelayOver = false;
             // Enable the timer which will control the initial firing delay during autonomous.
-            loadingDelayTimer.start();
+            autonomousTimer.start();
         }
 
         systemState = IDLE;
@@ -90,8 +97,12 @@ public final class FiringSystem extends System {
                 if (robot.isAutonomous()) {
                     // If the autonomous delay has not finished previously and the delay is now passed, set the boolean and reset the timer.
                     if (!initialAutonomousDelayOver) {
-                        if (loadingDelayTimer.get() >= Mappings.AUTONOMOUS_DELAY_BEFORE_FIRST_SHOT) {
+                        if (autonomousTimer.get() >= Mappings.AUTONOMOUS_DELAY_BEFORE_FIRST_SHOT) {
+                            autonomousTimer.reset();
+                            autonomousTimer.stop();
                             loadingDelayTimer.reset();
+                            loadingDelayTimer.start();
+
                             initialAutonomousDelayOver = true;
                         }
                     } else {
@@ -99,6 +110,10 @@ public final class FiringSystem extends System {
                         if (numberOfFrisbeesFiredInAutonomous <= maxFrisbeesToFireInAutonomous && loadingDelayTimer.get() >= Mappings.AUTONOMOUS_DELAY_BETWEEN_EACH_SHOT) {
                             loadingDelayTimer.reset();
                             loadingDelayTimer.stop();
+                            // We disable the indexing timer as during autonomous we do not want the indexing motor to stop.
+                            indexingTimer.reset();
+                            indexingTimer.stop();
+
                             systemState = INDEXING;
                         }
                     }
@@ -107,6 +122,7 @@ public final class FiringSystem extends System {
                     if ((robot.joystickSystem.getJoystick(1).getRawButton(Mappings.TRIGGER) && !triggerHeld) || firingAllFrisbees == true) {
                         indexingTimer.reset();
                         indexingTimer.start();
+
                         systemState = INDEXING;
                     }
                 }
@@ -116,7 +132,7 @@ public final class FiringSystem extends System {
                 index();
                 break;
             case LOADING:
-                if (robot.isAutonomous || firingAllFrisbees == true) {
+                if (robot.isAutonomous() || firingAllFrisbees == true) {
                     // Sets the motor speed to 100% for a small amount of time so as to allow for the wheel to spin back up to speed for firing.
                     launcherMotorSpeed = 1;
                 }
@@ -124,11 +140,9 @@ public final class FiringSystem extends System {
                 load();
                 break;
             case READY:
-                if (!robot.isAutonomous()) {
-                    // If the trigger has been pressed and is not being held, OR if we are firing all the frisbees in the robot, we handle frisbee firing.
-                    if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.TRIGGER) && !triggerHeld) {
-                        launchTimer.start();
-                    }
+                // If the trigger has been pressed and is not being held, OR if we are firing all the frisbees in the robot, we handle frisbee firing.
+                if (!robot.isAutonomous() && robot.joystickSystem.getJoystick(1).getRawButton(Mappings.TRIGGER) && !triggerHeld) {
+                    launchTimer.start();
                 }
 
                 ready();
@@ -162,8 +176,8 @@ public final class FiringSystem extends System {
 
         // If a frisbee triggers the limit switch while indexing, we begin LOADING.
         if (indexerLimitSwitch.get()) {
-            loadingDelayTimer.reset();
-            loadingDelayTimer.start();
+            frisbeeFallTimer.reset();
+            frisbeeFallTimer.start();
             systemState = LOADING;
         }
         // If a frisbee is entering the loader, or if we have passed the indexer waiting time, we disable the indexer motor, and stop and reset the timer.
@@ -177,20 +191,20 @@ public final class FiringSystem extends System {
 
                     systemState = IDLE;
                 }
-
-                // Reset the indexingTimer as we no longer have to monitor the time a frisbee has been indexing for until we enter this stage again.
-                indexingTimer.reset();
-                indexingTimer.stop();
             }
+
+            // Reset the indexingTimer as we no longer have to monitor the time a frisbee has been indexing for until we enter this stage again.
+            indexingTimer.reset();
+            indexingTimer.stop();
         }
     }
 
     private void load() {
-        // Assumes that once the loadingDelayTimer has reached the loadingDelay, there is a frisbee in the chamber.
-        if (loadingDelayTimer.get() >= Mappings.LOADING_DELAY) {
-            // Reset and stop the loadingDelayTimer as we are no longer using it to track the time between individual frisbees.
-            loadingDelayTimer.reset();
-            loadingDelayTimer.stop();
+        // Assumes that once the frisbeeFallTimer has reached the loadingDelay, there is a frisbee in the chamber.
+        if (frisbeeFallTimer.get() >= Mappings.FRISBEE_FALL_TIMER) {
+            // Reset and stop the frisbeeFallTimer as we are no longer using it to track the time between individual frisbees.
+            frisbeeFallTimer.reset();
+            frisbeeFallTimer.stop();
 
             launchTimer.reset();
 
@@ -210,6 +224,7 @@ public final class FiringSystem extends System {
             // Reset the speed of the launcher motor back to the target speed.
             launcherMotorSpeed = Mappings.DEFAULT_LAUNCHER_MOTOR_SPEED;
             launchTimer.reset();
+            launchTimer.start();
             systemState = FIRING;
         }
     }
@@ -307,6 +322,6 @@ public final class FiringSystem extends System {
     }
 
     public void setNumberOfFrisbeesToFireInAutonomous(int frisbees) {
-        maxFrisbeesToFireInAutonomous = frisbee;
+        maxFrisbeesToFireInAutonomous = frisbees;
     }
 }
