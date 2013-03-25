@@ -117,17 +117,21 @@ public final class FiringSystem extends System {
                 index();
                 break;
             case LOADING:
+                if (robot.isAutonomous || firingAllFrisbees == true) {
+                    // Sets the motor speed to 100% for a small amount of time so as to allow for the wheel to spin back up to speed for firing.
+                    launcherMotorSpeed = 1;
+                }
+
                 load();
                 break;
             case READY:
                 if (!robot.isAutonomous()) {
                     // If the trigger has been pressed and is not being held, OR if we are firing all the frisbees in the robot, we handle frisbee firing.
-                    if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.TRIGGER) && !triggerHeld || firingAllFrisbees == true) {
-                        // Sets the motor speed to 100% for a small amount of time so as to allow for the wheel to spin back up to speed for firing.
-                        launcherMotorSpeed = 1;
+                    if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.TRIGGER) && !triggerHeld) {
                         launchTimer.start();
                     }
                 }
+
                 ready();
                 break;
             case FIRING:
@@ -183,9 +187,6 @@ public final class FiringSystem extends System {
     }
 
     private void load() {
-        // Sets the motor speed to 100% for a small amount of time so as to allow for the wheel to spin back up to speed for firing.
-        launcherMotorSpeed = 1;
-
         // Assumes that once the loadingDelayTimer has reached the loadingDelay, there is a frisbee in the chamber.
         if (loadingDelayTimer.get() >= Mappings.LOADING_DELAY) {
             // Reset and stop the loadingDelayTimer as we are no longer using it to track the time between individual frisbees.
