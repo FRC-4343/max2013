@@ -308,6 +308,6 @@ public final class FiringSystem extends System {
     }
 
     public void setNumberOfFrisbeesToFireInAutonomous(int frisbees) {
-        maxFrisbeesToFireInAutonomous = 2;
+        maxFrisbeesToFireInAutonomous = frisbee;
     }
 }
