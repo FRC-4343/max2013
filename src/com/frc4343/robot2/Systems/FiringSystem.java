@@ -28,7 +28,6 @@ public final class FiringSystem extends System {
     boolean triggerHeld = false;
     boolean adjustedSpeed = false;
     // Autonomous-only variables
-    final double defaultLauncherMotorSpeed = 0.4;
     public boolean initialAutonomousDelayOver = false;
     byte maxFrisbeesToFireInAutonomous = 3;
     byte numberOfFrisbeesFiredInAutonomous = 0;
@@ -66,7 +65,7 @@ public final class FiringSystem extends System {
         isLauncherMotorRunning = true;
         isIndexerMotorRunning = false;
 
-        launcherMotorSpeed = defaultLauncherMotorSpeed;
+        launcherMotorSpeed = Mappings.DEFAULT_LAUNCHER_MOTOR_SPEED;
 
         // Reset the teleop auto-fire
         firingAllFrisbees = false;
@@ -105,7 +104,7 @@ public final class FiringSystem extends System {
                     }
                 } else {
                     // If the trigger has been pressed and is not being held, OR if we are firing all the frisbees in the robot, we begin the firing cycle.
-                    if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.TRIGGER) && !triggerHeld || firingAllFrisbees == true) {
+                    if ((robot.joystickSystem.getJoystick(1).getRawButton(Mappings.TRIGGER) && !triggerHeld) || firingAllFrisbees == true) {
                         indexingTimer.reset();
                         indexingTimer.start();
                         systemState = INDEXING;
@@ -209,7 +208,7 @@ public final class FiringSystem extends System {
     private void ready() {
         if (launchTimer.get() >= Mappings.ACCELERATION_DELAY) {
             // Reset the speed of the launcher motor back to the target speed.
-            launcherMotorSpeed = defaultLauncherMotorSpeed;
+            launcherMotorSpeed = Mappings.DEFAULT_LAUNCHER_MOTOR_SPEED;
             launchTimer.reset();
             systemState = FIRING;
         }

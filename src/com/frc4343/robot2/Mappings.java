@@ -20,6 +20,7 @@ public class Mappings {
     public final static byte FIRING_PISTON_SOLENOID_TWO = 2;
     public final static boolean FIRING_PISTON_EXTENDED_BY_DEFAULT = false;
     public final static byte INDEXER_LIMIT_SWITCH_PORT = 2;
+    public final static double DEFAULT_LAUNCHER_MOTOR_SPEED = 0.4;
     public final static double AUTONOMOUS_DELAY_BEFORE_FIRST_SHOT = 2;
     public final static double AUTONOMOUS_DELAY_BETWEEN_EACH_SHOT = 0;
     // Timeouts
