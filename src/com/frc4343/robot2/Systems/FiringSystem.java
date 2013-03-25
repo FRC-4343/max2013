@@ -141,7 +141,7 @@ public final class FiringSystem extends System {
                 break;
             case READY:
                 // If the trigger has been pressed and is not being held, OR if we are firing all the frisbees in the robot, we handle frisbee firing.
-                if (!robot.isAutonomous() && robot.joystickSystem.getJoystick(1).getRawButton(Mappings.TRIGGER) && !triggerHeld) {
+                if (robot.isOperatorControl() && robot.joystickSystem.getJoystick(1).getRawButton(Mappings.TRIGGER) && !triggerHeld) {
                     launchTimer.start();
                 }
 
@@ -157,7 +157,7 @@ public final class FiringSystem extends System {
                 break;
         }
 
-        if (!robot.isAutonomous()) {
+        if (robot.isOperatorControl()) {
             input();
         }
 
@@ -184,7 +184,7 @@ public final class FiringSystem extends System {
         if (indexerLimitSwitch.get() || indexingTimer.get() >= Mappings.INDEXER_TIMEOUT) {
             isIndexerMotorRunning = false;
 
-            if (!robot.isAutonomous()) {
+            if (robot.isOperatorControl()) {
                 if (indexingTimer.get() >= Mappings.INDEXER_TIMEOUT) {
                     // If we were automatically firing frisbees, we stop, as there are no more frisbees left.
                     firingAllFrisbees = false;
