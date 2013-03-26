@@ -92,8 +92,6 @@ public class DriveSystem extends System {
                         driveSpeed = 0;
                         turnSpeed = 0;
 
-                        // Causes the firingSystem to fire the frisbees contained once more.
-                        robot.firingSystem.isFiringAfterPickup = true;
                         robot.firingSystem.switchMode();
                         robot.firingSystem.setNumberOfFrisbeesToFireInAutonomous(2);
                         robot.firingSystem.initialAutonomousDelayOver = true;
