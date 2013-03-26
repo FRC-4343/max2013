@@ -87,7 +87,8 @@ public class RobotTemplate extends IterativeRobot {
         logger.clearWindow();
         // Prints the current gyro angle.
         logger.printLine(Line.kUser1, "Gyro value: " + (gyroSystem.gyro.getAngle()));
-        logger.printLine(Line.kUser2, "Color: " + firingSystem.getColorOfLauncherWheel());
+        logger.printLine(Line.kUser2, "RPM: " + firingSystem.getRPM());
+        logger.printLine(Line.kUser3, "Color: " + firingSystem.getColorOfLauncherWheel());
         // Prints State of Launcher Motor
         //logger.printLine(Line.kUser2, "Launcher Motor: " + (firingSystem.getLauncherMotorState() ? "ON" : "OFF"));
         // Prints State of Launcher Motor

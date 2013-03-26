@@ -15,6 +15,7 @@ public final class FiringSystem extends System {
     Timer loadingDelayTimer = new Timer();
     Timer frisbeeFallTimer = new Timer();
     Timer launchTimer = new Timer();
+    Timer colorTimer = new Timer();
 
     Jaguar launcherMotor = new Jaguar(Mappings.LAUNCHER_MOTOR_PORT);
     Jaguar indexerMotor = new Jaguar(Mappings.INDEXER_MOTOR_PORT);
@@ -27,6 +28,10 @@ public final class FiringSystem extends System {
     // Motor Booleans
     boolean isLauncherMotorRunning = false;
     boolean isIndexerMotorRunning = false;
+
+    double halfRotationTime = 0.0;
+    boolean isWheelColorWhite = true;
+
     // Button Checks
     boolean triggerHeld = false;
     boolean adjustedSpeed = false;
@@ -65,6 +70,8 @@ public final class FiringSystem extends System {
         frisbeeFallTimer.stop();
         launchTimer.reset();
         launchTimer.stop();
+        colorTimer.reset();
+        colorTimer.start();
 
         // Reset the piston to its default position.
         firingPiston.extend();
@@ -168,6 +175,12 @@ public final class FiringSystem extends System {
 
         if (robot.isOperatorControl()) {
             input();
+        }
+
+        if (isWheelColorWhite != isLauncherWheelColorWhite()) {
+            halfRotationTime = colorTimer.get();
+            colorTimer.reset();
+            isWheelColorWhite = isLauncherWheelColorWhite();
         }
 
         // Store the state of whether or not the buttons have been pressed, to know if they are being held down in the next iteration.
@@ -340,7 +353,15 @@ public final class FiringSystem extends System {
         maxFrisbeesToFireInAutonomous = frisbees;
     }
 
+    private boolean isLauncherWheelColorWhite() {
+        return (colorSensor.getRed() >= Mappings.COLOR_CUTOFF && colorSensor.getGreen() >= Mappings.COLOR_CUTOFF && colorSensor.getBlue() >= Mappings.COLOR_CUTOFF);
+    }
+
     public String getColorOfLauncherWheel() {
-        return ((colorSensor.getRed() >= Mappings.COLOR_CUTOFF && colorSensor.getGreen() >= Mappings.COLOR_CUTOFF && colorSensor.getBlue() >= Mappings.COLOR_CUTOFF) ? "White" : "Black");
+        return (isLauncherWheelColorWhite() ? "White" : "Black");
+    }
+
+    public int getRPM() {
+        return (int) (1/(halfRotationTime * 2) * 60);
     }
 }
