@@ -7,7 +7,7 @@ public class Logger {
     DriverStationLCD dsLCD = DriverStationLCD.getInstance();
 
     private void clearLine(DriverStationLCD.Line line) {
-        dsLCD.println(line, 1, "                                     ");
+        printLine(line, "                                     ");
     }
 
     public void clearWindow() {
