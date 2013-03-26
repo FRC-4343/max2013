@@ -8,8 +8,8 @@
 
 *suite*
 *sym
-/nbproject/private/
+nbproject/private/*
 *bak.xml
 
 .DS_Store
-/build/
+build/*
