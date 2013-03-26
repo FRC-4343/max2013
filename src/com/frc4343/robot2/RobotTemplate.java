@@ -6,6 +6,7 @@ import com.frc4343.robot2.Systems.GyroSystem;
 import com.frc4343.robot2.Systems.JoystickSystem;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStationLCD.Line;
+import edu.wpi.first.wpilibj.HiTechnicColorSensor;
 import edu.wpi.first.wpilibj.IterativeRobot;
 
 public class RobotTemplate extends IterativeRobot {
@@ -19,6 +20,7 @@ public class RobotTemplate extends IterativeRobot {
     Logger logger = new Logger();
     Piston climbingPiston = new Piston(Mappings.CLIMBING_PISTON_SOLENOID_ONE, Mappings.CLIMBING_PISTON_SOLENOID_TWO, Mappings.CLIMBING_PISTON_EXTENDED_BY_DEFAULT);
     Compressor compressor = new Compressor(1, 1);
+    HiTechnicColorSensor colorSensor = new HiTechnicColorSensor(1);
 
     private void resetRobot() {
         compressor.start();
@@ -85,11 +87,13 @@ public class RobotTemplate extends IterativeRobot {
         // Clears driverStation text.
         logger.clearWindow();
         // Prints the current gyro angle.
-        logger.printLine(Line.kUser1, "Gyro value: " + (gyroSystem.gyro.getAngle()));
+        //logger.printLine(Line.kUser1, "Gyro value: " + (gyroSystem.gyro.getAngle()));
+        logger.printLine(Line.kUser1, "R: " + colorSensor.getRed() + " G: " + colorSensor.getGreen() + " B: " + colorSensor.getBlue());
+        logger.printLine(Line.kUser2, "Color: " + ((colorSensor.getRed() >= Mappings.COLOR_CUTOFF && colorSensor.getGreen() >= Mappings.COLOR_CUTOFF && colorSensor.getBlue() >= Mappings.COLOR_CUTOFF) ? "White" : "Black"));
         // Prints State of Launcher Motor
-        logger.printLine(Line.kUser2, "Launcher Motor: " + (firingSystem.getLauncherMotorState() ? "ON" : "OFF"));
+        //logger.printLine(Line.kUser2, "Launcher Motor: " + (firingSystem.getLauncherMotorState() ? "ON" : "OFF"));
         // Prints State of Launcher Motor
-        logger.printLine(Line.kUser3, "Indexer Motor: " + (firingSystem.getIndexerMotorState() ? "ON" : "OFF"));
+        //logger.printLine(Line.kUser3, "Indexer Motor: " + (firingSystem.getIndexerMotorState() ? "ON" : "OFF"));
         // Print the speed of the launcher motor.
         //logger.printLine(Line.kUser4, "Launcher Speed: " + (byte) (firingSystem.getLauncherSpeed() * 100) + "%");
         // Print the tank pressurization state.
