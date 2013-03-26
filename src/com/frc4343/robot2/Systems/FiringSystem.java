@@ -4,10 +4,9 @@ import com.frc4343.robot2.Mappings;
 import com.frc4343.robot2.Piston;
 import com.frc4343.robot2.RobotTemplate;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.HiTechnicColorSensor;
 import edu.wpi.first.wpilibj.Jaguar;
-import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.Victor;
 
 public final class FiringSystem extends System {
 
@@ -22,6 +21,7 @@ public final class FiringSystem extends System {
     //Relay indexerMotor = new Relay(Mappings.INDEXER_MOTOR_PORT);
     Piston firingPiston = new Piston(Mappings.FIRING_PISTON_SOLENOID_ONE, Mappings.FIRING_PISTON_SOLENOID_TWO, Mappings.FIRING_PISTON_EXTENDED_BY_DEFAULT);
     DigitalInput indexerLimitSwitch = new DigitalInput(Mappings.INDEXER_LIMIT_SWITCH_PORT);
+    HiTechnicColorSensor colorSensor = new HiTechnicColorSensor(1);
     // The default speed for the launch motor to start at.
     double launcherMotorSpeed = 0.4;
     // Motor Booleans
@@ -338,5 +338,9 @@ public final class FiringSystem extends System {
 
     public void setNumberOfFrisbeesToFireInAutonomous(int frisbees) {
         maxFrisbeesToFireInAutonomous = frisbees;
+    }
+
+    public String getColorOfLauncherWheel() {
+        return ((colorSensor.getRed() >= Mappings.COLOR_CUTOFF && colorSensor.getGreen() >= Mappings.COLOR_CUTOFF && colorSensor.getBlue() >= Mappings.COLOR_CUTOFF) ? "White" : "Black");
     }
 }

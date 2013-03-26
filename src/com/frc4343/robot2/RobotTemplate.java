@@ -20,7 +20,6 @@ public class RobotTemplate extends IterativeRobot {
     Logger logger = new Logger();
     Piston climbingPiston = new Piston(Mappings.CLIMBING_PISTON_SOLENOID_ONE, Mappings.CLIMBING_PISTON_SOLENOID_TWO, Mappings.CLIMBING_PISTON_EXTENDED_BY_DEFAULT);
     Compressor compressor = new Compressor(1, 1);
-    HiTechnicColorSensor colorSensor = new HiTechnicColorSensor(1);
 
     private void resetRobot() {
         compressor.start();
@@ -87,9 +86,8 @@ public class RobotTemplate extends IterativeRobot {
         // Clears driverStation text.
         logger.clearWindow();
         // Prints the current gyro angle.
-        //logger.printLine(Line.kUser1, "Gyro value: " + (gyroSystem.gyro.getAngle()));
-        logger.printLine(Line.kUser1, "R: " + colorSensor.getRed() + " G: " + colorSensor.getGreen() + " B: " + colorSensor.getBlue());
-        logger.printLine(Line.kUser2, "Color: " + ((colorSensor.getRed() >= Mappings.COLOR_CUTOFF && colorSensor.getGreen() >= Mappings.COLOR_CUTOFF && colorSensor.getBlue() >= Mappings.COLOR_CUTOFF) ? "White" : "Black"));
+        logger.printLine(Line.kUser1, "Gyro value: " + (gyroSystem.gyro.getAngle()));
+        logger.printLine(Line.kUser2, "Color: " + firingSystem.getColorOfLauncherWheel());
         // Prints State of Launcher Motor
         //logger.printLine(Line.kUser2, "Launcher Motor: " + (firingSystem.getLauncherMotorState() ? "ON" : "OFF"));
         // Prints State of Launcher Motor
