@@ -86,9 +86,11 @@ public final class FiringSystem extends System {
             initialAutonomousDelayOver = false;
             // Enable the timer which will control the initial firing delay during autonomous.
             autonomousTimer.start();
+            // Set the state to indexing to load the first frisbee instantly.
+            systemState = INDEXING;
+        } else {
+            systemState = IDLE;
         }
-
-        systemState = IDLE;
     }
 
     public void run() {
@@ -114,7 +116,14 @@ public final class FiringSystem extends System {
                             indexingTimer.reset();
                             indexingTimer.stop();
 
-                            systemState = INDEXING;
+                            if (numberOfFrisbeesFiredInAutonomous == 0) {
+                                frisbeeFallTimer.reset();
+                                frisbeeFallTimer.start();
+
+                                systemState = LOADING;
+                            } else {
+                                systemState = INDEXING;
+                            }
                         }
                     }
                 } else {
@@ -180,6 +189,7 @@ public final class FiringSystem extends System {
             frisbeeFallTimer.start();
             systemState = LOADING;
         }
+
         // If a frisbee is entering the loader, or if we have passed the indexer waiting time, we disable the indexer motor, and stop and reset the timer.
         if (indexerLimitSwitch.get() || indexingTimer.get() >= Mappings.INDEXER_TIMEOUT) {
             isIndexerMotorRunning = false;
@@ -209,10 +219,15 @@ public final class FiringSystem extends System {
             launchTimer.reset();
 
             // If the robot is in autonomous mode, we instantly begin the READY state countdown as there is no user input before firing.
-            if (robot.isAutonomous()) {
-                launchTimer.start();
-            } else {
+            if (robot.isOperatorControl()) {
                 launchTimer.stop();
+            } else {
+                if (!initialAutonomousDelayOver) {
+                    systemState = IDLE;
+                    launchTimer.stop();
+                } else {
+                    launchTimer.start();
+                }
             }
 
             systemState = READY;
