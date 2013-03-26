@@ -8,9 +8,8 @@
 
 *suite*
 *sym
-/java/max2/build/
-/java/max2/nbproject/private/
-/max/build/
-/java/max/build/
+/nbproject/private/
+*bak.xml
 
 .DS_Store
+/build/
