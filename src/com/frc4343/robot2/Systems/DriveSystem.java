@@ -74,7 +74,7 @@ public class DriveSystem extends System {
                     if (pause.get() > pauseTime) {
                         pause.reset();
                         pause.stop();
-                        driveWithTimer(driveSpeed, turnSpeed, timerGoal);
+                        driveWithTimer(driveSpeed, turnSpeed, 1.0);
 
                         pauseTime = 0;
 
@@ -93,6 +93,7 @@ public class DriveSystem extends System {
                         turnSpeed = 0;
 
                         // Causes the firingSystem to fire the frisbees contained once more.
+                        robot.firingSystem.isFiringAfterPickup = true;
                         robot.firingSystem.switchMode();
                         robot.firingSystem.setNumberOfFrisbeesToFireInAutonomous((byte) 2);
                         systemState = DONE;
@@ -148,8 +149,8 @@ public class DriveSystem extends System {
 
     public void driveWithTimer(double speed, double turn, double seconds) {
         driveIndefinitely(speed, turn);
+        timer.reset();
         timer.start();
-
         timerGoal = seconds;
     }
 

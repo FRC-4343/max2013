@@ -30,6 +30,7 @@ public final class FiringSystem extends System {
     // Autonomous-only variables
     final double defaultLauncherMotorSpeed = 0.4;
     boolean initialAutonomousDelayOver = false;
+    boolean isFiringAfterPickup = false;
     byte maxFrisbeesToFireInAutonomous = 3;
     byte numberOfFrisbeesFiredInAutonomous = 0;
     // Teleop-only variables
@@ -71,14 +72,15 @@ public final class FiringSystem extends System {
 
         if (robot.isAutonomous()) {
             // Reset the number of fired frisbees in autonomous to zero.
+            maxFrisbeesToFireInAutonomous = isFiringAfterPickup ? (byte) 2 : (byte) 3;
             numberOfFrisbeesFiredInAutonomous = 0;
-            // Reset the total number of frisbees to fire.
-            maxFrisbeesToFireInAutonomous = 3;
-            // The delay which occurs at the beginning of autonomous must be reset.
-            initialAutonomousDelayOver = false;
-            systemState = INDEXING;
-            // Enable the timer which will control the initial firing delay during autonomous.
-            loadingDelayTimer.start();
+            if (!isFiringAfterPickup) {
+                // Reset the total number of frisbees to fire.
+                maxFrisbeesToFireInAutonomous = 3;
+                systemState = INDEXING;
+                // Enable the timer which will control the initial firing delay during autonomous.
+                loadingDelayTimer.start();
+            }
         } else {
             systemState = IDLE;
         }
@@ -89,12 +91,14 @@ public final class FiringSystem extends System {
             case IDLE:
                 if (robot.isAutonomous()) {
                     // If the number of frisbees already fired does not exceed the number of frisbees we want to fire during autonomous, and we have passed the delay between each shot, we attempt to load and fire another one.
-                    if (numberOfFrisbeesFiredInAutonomous <= maxFrisbeesToFireInAutonomous && loadingDelayTimer.get() >= Mappings.AUTONOMOUS_DELAY_BETWEEN_EACH_SHOT) {
+                    if (numberOfFrisbeesFiredInAutonomous != maxFrisbeesToFireInAutonomous && loadingDelayTimer.get() >= Mappings.AUTONOMOUS_DELAY_BETWEEN_EACH_SHOT) {
                         loadingDelayTimer.reset();
                         loadingDelayTimer.stop();
                         systemState = INDEXING;
                     }
                 } else {
+                    // Resets the autonomous as soon as teleop is in IDLE
+                    isFiringAfterPickup = false;
                     // If the trigger has been pressed and is not being held, OR if we are firing all the frisbees in the robot, we begin the firing cycle.
                     if (robot.joystickSystem.getJoystick((byte) 1).getRawButton(Mappings.TRIGGER) && !triggerHeld || firingAllFrisbees == true) {
                         indexingTimer.reset();
