@@ -16,7 +16,7 @@ public class JoystickSystem extends System {
         }
     }
 
-    public Joystick getJoystick(int joystickNumber) {
+    public Joystick getJoystick(byte joystickNumber) {
         return joysticks[joystickNumber - 1];
     }
 }
