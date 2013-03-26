@@ -6,6 +6,7 @@ import com.frc4343.robot2.Systems.GyroSystem;
 import com.frc4343.robot2.Systems.JoystickSystem;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStationLCD.Line;
+import edu.wpi.first.wpilibj.HiTechnicColorSensor;
 import edu.wpi.first.wpilibj.IterativeRobot;
 
 public class RobotTemplate extends IterativeRobot {
@@ -15,6 +16,7 @@ public class RobotTemplate extends IterativeRobot {
     public JoystickSystem joystickSystem = new JoystickSystem(this);
     public GyroSystem gyroSystem = new GyroSystem(this);
     public DriveSystem driveSystem = new DriveSystem(this);
+    public HiTechnicColorSensor cSensor = new HiTechnicColorSensor(1);
     // Miscellaneous robot components/helpers
     Logger logger = new Logger();
     Piston climbingPiston = new Piston(Mappings.CLIMBING_PISTON_SOLENOID_ONE, Mappings.CLIMBING_PISTON_SOLENOID_TWO, Mappings.CLIMBING_PISTON_EXTENDED_BY_DEFAULT);
@@ -85,18 +87,19 @@ public class RobotTemplate extends IterativeRobot {
         // Clears driverStation text.
         logger.clearWindow();
         // Prints State of Frisbee
-        logger.printLine(Line.kUser1, "FSS: " + firingSystem.getState());
+        logger.printLine(Line.kUser1, "F: " + firingSystem.getState());
         // Print the speed.
         //logger.printLine(Line.kUser2, "Launcher Speed: " + (byte) (firingSystem.getLauncherSpeed() * 100) + "%");
-        logger.printLine(Line.kUser2, "Gyro value: " + (gyroSystem.gyro.getAngle()));
+        //logger.printLine(Line.kUser2, "Gyro value: " + (gyroSystem.gyro.getAngle()));
+        logger.printLine(Line.kUser2, "R: " + cSensor.getRed() + " G: " + cSensor.getGreen() + " B: " + cSensor.getBlue());
         // Prints State of Launcher Motor
-        logger.printLine(Line.kUser3, "Launcher Motor: " + (firingSystem.getLauncherMotorState() ? "ON" : "OFF"));
+        logger.printLine(Line.kUser3, "Launcher: " + (firingSystem.getLauncherMotorState() ? "ON, " + firingSystem.getLauncherSpeed() * 100 : "OFF, " + firingSystem.getLauncherSpeed() * 100));
         // Prints State of Launcher Motor
         logger.printLine(Line.kUser4, "Indexer Motor: " + (firingSystem.getIndexerMotorState() ? "ON" : "OFF"));
         // Print the tank pressurization state.
         //logger.printLine(Line.kUser5, "Tanks Full: " + (compressor.getPressureSwitchValue() ? "YES" : "NO"));
-        logger.printLine(Line.kUser5, "GSS: " + gyroSystem.getState());
-        logger.printLine(Line.kUser6, "DSS: " + driveSystem.getState());
+        logger.printLine(Line.kUser5, "G: " + gyroSystem.getState());
+        logger.printLine(Line.kUser6, "D: " + driveSystem.getState());
         // Updates the output window.
         logger.updateLCD();
     }

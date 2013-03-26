@@ -23,10 +23,10 @@ public class Mappings {
     public final static double AUTONOMOUS_DELAY_BEFORE_FIRST_SHOT = 2;
     public final static double AUTONOMOUS_DELAY_BETWEEN_EACH_SHOT = 0;
     // Timeouts
-    public final static double INDEXER_TIMEOUT = 1.5;
+    public final static double FRISBEE_FALL_DELAY = 1.5;
     public final static double LOADING_DELAY = 0.5;
-    public final static double ACCELERATION_DELAY = 0.0;
-    public final static double PISTON_RETRACTION_DELAY = 0.3;
+    public final static double ACCELERATION_DELAY = 0.2;
+    public final static double PISTON_RETRACTION_DELAY = 0.2;
     public final static double PISTON_EXTENSION_DELAY = 0.2;
     // Drive Mappings
     public final static double AXIS_COMPENSATION = 0.5;
@@ -43,7 +43,7 @@ public class Mappings {
     public final static byte SPEED_INCREASE = 5;
     public final static byte LAUNCHER_MOTOR_ENABLE = 6;
     public final static byte LAUNCHER_MOTOR_DISABLE = 7;
-    public final static byte FLUSH_HOPPER = 8;
+    public final static byte MANUAL_EJECT_WITH_ACCELERATION = 8;
     public final static byte MANUAL_EJECT = 9;
     public final static byte ROTATE_CLOCKWISE = 10;
     public final static byte ROTATE_COUNTERCLOCKWISE = 11;
