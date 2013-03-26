@@ -112,7 +112,7 @@ public class DriveSystem extends System {
                     break;
                 case DRIVING:
                     if (isDrivingWithJoystick) {
-                        double sumOfYAxes = robot.joystickSystem.getJoystick((byte) 2).getAxis(Joystick.AxisType.kY) + (robot.joystickSystem.getJoystick((byte) 1).getAxis(Joystick.AxisType.kY) * 0.5);
+                        double sumOfYAxes = robot.joystickSystem.getJoystick((byte) 2).getAxis(Joystick.AxisType.kY) + (robot.joystickSystem.getJoystick((byte) 1).getAxis(Joystick.AxisType.kY) * Mappings.PRECISION_COMPENSATION);
                         double sumOfXAxes = -robot.joystickSystem.getJoystick((byte) 2).getAxis(Joystick.AxisType.kX) * Mappings.AXIS_COMPENSATION + (-robot.joystickSystem.getJoystick((byte) 1).getAxis(Joystick.AxisType.kX) * Mappings.PRECISION_COMPENSATION);
                         // Floor the values of the combined js in case they are above 1 or below -1.
                         sumOfYAxes = sumOfYAxes > 1 ? 1 : sumOfYAxes < -1 ? -1 : sumOfYAxes;
