@@ -116,7 +116,7 @@ public final class FiringSystem extends System {
                         }
                     } else {
                         // If the number of frisbees already fired does not exceed the number of frisbees we want to fire during autonomous, and we have passed the delay between each shot, we attempt to load and fire another one.
-                        if (numberOfFrisbeesFiredInAutonomous <= maxFrisbeesToFireInAutonomous && loadingDelayTimer.get() >= Mappings.AUTONOMOUS_DELAY_BETWEEN_EACH_SHOT) {
+                        if (numberOfFrisbeesFiredInAutonomous < maxFrisbeesToFireInAutonomous && loadingDelayTimer.get() >= Mappings.AUTONOMOUS_DELAY_BETWEEN_EACH_SHOT) {
                             loadingDelayTimer.reset();
                             loadingDelayTimer.stop();
                             // We disable the indexing timer as during autonomous we do not want the indexing motor to stop.
