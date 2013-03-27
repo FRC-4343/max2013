@@ -37,7 +37,7 @@ public class Mappings {
     public final static double AUTONOMOUS_TIME_SPENT_DRIVING_BACK = 1;
     public final static double AUTONOMOUS_TIME_BEFORE_DRIVING_FORWARD = 1;
     public final static double AUTONOMOUS_TIME_SPENT_DRIVING_FORWARD = 1;
-    public final static double AUTONOMOUS_DRIVE_SPEED = 0.3;
+    public final static double AUTONOMOUS_DRIVE_SPEED = 0.6;
     // Button mappings
     public final static byte TRIGGER = 1;
     public final static byte RETRACT_CLIMBING_PISTONS = 2;

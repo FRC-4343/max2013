@@ -307,9 +307,9 @@ public final class FiringSystem extends System {
         // If the buttons are not being held down or pressed together, increase or decrease the speed of the launcherMotor motor.
         if (!adjustedSpeed) {
             if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.SPEED_INCREASE)) {
-                launcherMotorSpeed += 0.001;
+                launcherMotorSpeed += 1;
             } else if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.SPEED_DECREASE)) {
-                launcherMotorSpeed -= 0.001;
+                launcherMotorSpeed -= 1;
             }
         }
     }
