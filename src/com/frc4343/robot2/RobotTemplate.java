@@ -79,6 +79,8 @@ public class RobotTemplate extends IterativeRobot {
             climbingPiston.extend();
         } else if (joystickSystem.getJoystick(1).getRawButton(Mappings.RETRACT_CLIMBING_PISTONS)) {
             climbingPiston.retract();
+        } else if (m_ds.getMatchTime() >= Mappings.AUTO_CLIMB_TIME) {
+            climbingPiston.retract();
         }
     }
 
