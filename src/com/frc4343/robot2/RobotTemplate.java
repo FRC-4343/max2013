@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStationLCD.Line;
 import edu.wpi.first.wpilibj.HiTechnicColorSensor;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Timer;
 
 public class RobotTemplate extends IterativeRobot {
 
@@ -20,6 +21,7 @@ public class RobotTemplate extends IterativeRobot {
     Logger logger = new Logger();
     Piston climbingPiston = new Piston(Mappings.CLIMBING_PISTON_SOLENOID_ONE, Mappings.CLIMBING_PISTON_SOLENOID_TWO, Mappings.CLIMBING_PISTON_EXTENDED_BY_DEFAULT);
     Compressor compressor = new Compressor(1, 1);
+    Timer climbTimer = new Timer();
 
     private void resetRobot() {
         compressor.start();
@@ -33,6 +35,9 @@ public class RobotTemplate extends IterativeRobot {
 
     public void teleopInit() {
         resetRobot();
+
+        climbTimer.reset();
+        climbTimer.start();
     }
 
     public void autonomousInit() {
