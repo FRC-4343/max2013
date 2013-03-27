@@ -232,8 +232,12 @@ public final class FiringSystem extends System {
             launchTimer.reset();
 
             // If the robot is in autonomous mode, we instantly begin the READY state countdown as there is no user input before firing.
-            if (robot.isOperatorControl()) {
-                launchTimer.stop();
+            if (!robot.isOperatorControl()) {
+                if (firingAllFrisbees) {
+                    launchTimer.start();
+                } else {
+                    launchTimer.stop();
+                }
             } else {
                 if (!initialAutonomousDelayOver) {
                     systemState = IDLE;
@@ -248,7 +252,7 @@ public final class FiringSystem extends System {
     }
 
     private void ready() {
-        if (launchTimer.get() >= Mappings.ACCELERATION_DELAY) {
+        if (launchTimer.get() > Mappings.ACCELERATION_DELAY || firingAllFrisbees) {
             // Reset the speed of the launcher motor back to the target speed.
             launcherMotorSpeed = Mappings.DEFAULT_LAUNCHER_MOTOR_SPEED;
             launchTimer.reset();
@@ -278,6 +282,7 @@ public final class FiringSystem extends System {
             // Start the loading delay timer to measure the time between launched frisbees.
             loadingDelayTimer.reset();
             loadingDelayTimer.start();
+            launchTimer.stop();
             // After giving the piston a small amount of time to retract, we are ready to commence the cycle once more.
             systemState = IDLE;
         }
