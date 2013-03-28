@@ -17,8 +17,7 @@ public class Mappings {
     public final static double ANGLE_TO_ROTATE_BY = 40;
     public final static double DISTANCE_FROM_WALL_IN_INCHES = 210;
     // Firing Mappings
-    //public final static byte INDEXER_MOTOR_PORT = 2;
-    public final static byte INDEXER_MOTOR_PORT = 4;
+    public final static byte INDEXER_MOTOR_PORT = 2;
     public final static byte LAUNCHER_MOTOR_PORT = 3;
     public final static byte FIRING_PISTON_SOLENOID_ONE = 1;
     public final static byte FIRING_PISTON_SOLENOID_TWO = 2;
