@@ -20,14 +20,16 @@ public class DriveSystem extends System {
     static final byte IDLE = 0;
     // DRIVING indicates that the robot is moving.
     static final byte DRIVING = 1;
-    // PAUSED indicates that the robot is waiting for a timer to complete before it begins moving.
-    static final byte PAUSED = 2;
     // TIMED indicates that the robot is the robot is under a timed driving state.
-    static final byte TIMED = 3;
-    // DRIVE_BACK indicates that the robot has fired its shots and is driving back to pickup more frisbees.
-    static final byte DRIVE_BACK = 4;
-    // DRIVE_FORWARD indicates that the robot has picked up extra frisbees and is moving back to its original position.
-    static final byte DRIVE_FORWARD = 5;
+    static final byte TIMED = 2;
+    // DRIVE_TO_CENTER indicates that the robot has fired its shots and is driving back to the center.
+    static final byte DRIVE_TO_CENTER = 3;
+    // ROTATING_TO_SIDE indicates that the robot is turning.
+    static final byte ROTATING_TO_SIDE = 4;
+    // DRIVE_BACKWARD indicates that the robot is at the centre line and is moving backwards to the side of the field.
+    static final byte DRIVE_BACKWARD = 5;
+    // ROTATING_TO_PICKUP indicates that the robot is turning towards the feeder station.
+    static final byte ROTATING_TO_PICKUP = 6;
     // DONE indicates that the robot has finished moving for the state.
     static final byte DONE = 6;
 
@@ -52,10 +54,10 @@ public class DriveSystem extends System {
                 case IDLE:
                     if (robot.firingSystem.isFinishedFiring()) {
                         driveWithTimer(-Mappings.AUTONOMOUS_DRIVE_SPEED, 0.0, Mappings.AUTONOMOUS_TIME_SPENT_DRIVING_BACK);
-                        systemState = DRIVE_BACK;
+                        systemState = DRIVE_TO_CENTER;
                     }
                     break;
-                case DRIVE_BACK:
+                case DRIVE_TO_CENTER:
                     drive.arcadeDrive(driveSpeed, turnSpeed);
 
                     if (timer.get() > timerGoal) {
@@ -66,22 +68,19 @@ public class DriveSystem extends System {
                         driveSpeed = 0;
                         turnSpeed = 0;
 
-                        driveAfterPause(Mappings.AUTONOMOUS_DRIVE_SPEED, 0.0, Mappings.AUTONOMOUS_TIME_SPENT_DRIVING_FORWARD, Mappings.AUTONOMOUS_TIME_BEFORE_DRIVING_FORWARD);
-                        systemState = PAUSED;
+                        robot.gyroSystem.rotate(-45);
+
+                        systemState = ROTATING_TO_SIDE;
                     }
                     break;
-                case PAUSED:
-                    if (pause.get() > pauseTime) {
-                        pause.reset();
-                        pause.stop();
-                        driveWithTimer(driveSpeed, turnSpeed, 1.0);
+                case ROTATING_TO_SIDE:
+                    if (isDrivingWithJoystick) {
+                        driveWithTimer(-1.0, 0.0, 2.0);
 
-                        pauseTime = 0;
-
-                        systemState = DRIVE_FORWARD;
+                        systemState = DRIVE_BACKWARD;
                     }
                     break;
-                case DRIVE_FORWARD:
+                case DRIVE_BACKWARD:
                     drive.arcadeDrive(driveSpeed, turnSpeed);
 
                     if (timer.get() > timerGoal) {
@@ -92,9 +91,13 @@ public class DriveSystem extends System {
                         driveSpeed = 0;
                         turnSpeed = 0;
 
-                        robot.firingSystem.switchMode();
-                        robot.firingSystem.setNumberOfFrisbeesToFireInAutonomous(2);
-                        robot.firingSystem.initialAutonomousDelayOver = true;
+                        robot.gyroSystem.rotate(-45);
+
+                        systemState = ROTATING_TO_PICKUP;
+                    }
+                    break;
+                case ROTATING_TO_PICKUP:
+                    if (isDrivingWithJoystick) {
                         systemState = DONE;
                     }
                     break;
@@ -172,9 +175,9 @@ public class DriveSystem extends System {
             case 3:
                 return "TIMED";
             case 4:
-                return "DRIVE_BACK";
+                return "DRIVE_TO_CENTER";
             case 5:
-                return "DRIVE_FORWARD";
+                return "DRIVE_BACKWARD";
             case 6:
                 return "DONE";
             default:
