@@ -6,6 +6,7 @@ import com.frc4343.robot2.RobotTemplate;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.HiTechnicColorSensor;
 import edu.wpi.first.wpilibj.Jaguar;
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Timer;
 
 public final class FiringSystem extends System {
@@ -16,10 +17,8 @@ public final class FiringSystem extends System {
     Timer frisbeeFallTimer = new Timer();
     Timer launchTimer = new Timer();
     Timer colorTimer = new Timer();
-
     Jaguar launcherMotor = new Jaguar(Mappings.LAUNCHER_MOTOR_PORT);
-    Jaguar indexerMotor = new Jaguar(Mappings.INDEXER_MOTOR_PORT);
-    //Relay indexerMotor = new Relay(Mappings.INDEXER_MOTOR_PORT);
+    Relay indexerMotor = new Relay(Mappings.INDEXER_MOTOR_PORT);
     Piston firingPiston = new Piston(Mappings.FIRING_PISTON_SOLENOID_ONE, Mappings.FIRING_PISTON_SOLENOID_TWO, Mappings.FIRING_PISTON_EXTENDED_BY_DEFAULT);
     DigitalInput indexerLimitSwitch = new DigitalInput(Mappings.INDEXER_LIMIT_SWITCH_PORT);
     HiTechnicColorSensor colorSensor = new HiTechnicColorSensor(1);
@@ -28,10 +27,8 @@ public final class FiringSystem extends System {
     // Motor Booleans
     boolean isLauncherMotorRunning = false;
     boolean isIndexerMotorRunning = false;
-
     double halfRotationTime = 0.0;
     boolean isWheelColorWhite = true;
-
     // Button Checks
     boolean triggerHeld = false;
     boolean adjustedSpeed = false;
@@ -188,8 +185,7 @@ public final class FiringSystem extends System {
         adjustedSpeed = robot.joystickSystem.getJoystick(1).getRawButton(Mappings.SPEED_INCREASE) ^ robot.joystickSystem.getJoystick(1).getRawButton(Mappings.SPEED_DECREASE);
 
         // Set the state of the motors based on the values of the booleans controlling them.
-        //indexerMotor.set(isIndexerMotorRunning ? Relay.Value.kForward : Relay.Value.kOff);
-        indexerMotor.set(isIndexerMotorRunning ? 0.2 : 0);
+        indexerMotor.set(isIndexerMotorRunning ? Relay.Value.kForward : Relay.Value.kOff);
         launcherMotor.set(isLauncherMotorRunning ? launcherMotorSpeed : 0);
     }
 
@@ -367,6 +363,6 @@ public final class FiringSystem extends System {
     }
 
     public int getRPM() {
-        return (int) (1/(halfRotationTime * 2) * 60);
+        return (int) (1 / (halfRotationTime * 2) * 60);
     }
 }
