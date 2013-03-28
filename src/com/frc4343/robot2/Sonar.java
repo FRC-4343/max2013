@@ -10,11 +10,11 @@ public class Sonar {
         rangeSensor = new AnalogChannel(moduleNumber, channel);
     }
 
-    public float getDistanceInInches() {
-        float volt;
+    public double getDistanceInInches() {
+        double volt;
         volt = rangeSensor.getVoltage();
 
-        float inches;
+        double inches;
         inches = volt * 100;
 
         return inches;

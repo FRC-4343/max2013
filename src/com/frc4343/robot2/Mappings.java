@@ -11,8 +11,11 @@ public class Mappings {
     public final static byte COLOR_CUTOFF = 50;
     // Gyro Mappings
     public final static byte GYRO_PORT = 1;
+    public final static double DRIVE_SPEED = 1.0;
     public final static double ROTATE_SPEED = 0.7;
-    public final static double ANGLE_TO_ROTATE_BY = 45;
+    public final static double DISTANCE_DEADZONE_IN_INCHES = 1;
+    public final static double ANGLE_TO_ROTATE_BY = 40;
+    public final static double DISTANCE_FROM_WALL_IN_INCHES = 210;
     // Firing Mappings
     //public final static byte INDEXER_MOTOR_PORT = 2;
     public final static byte INDEXER_MOTOR_PORT = 4;
@@ -48,6 +51,6 @@ public class Mappings {
     public final static byte LAUNCHER_MOTOR_DISABLE = 7;
     public final static byte FLUSH_HOPPER = 8;
     public final static byte MANUAL_EJECT = 9;
-    public final static byte ROTATE_CLOCKWISE = 10;
-    public final static byte ROTATE_COUNTERCLOCKWISE = 11;
+    public final static byte ALIGN_TO_CENTER_GOAL_CLOCKWISE = 10;
+    public final static byte ALIGN_TO_CENTER_GOAL_COUNTERCLOCKWISE = 11;
 }
