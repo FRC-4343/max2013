@@ -46,11 +46,6 @@ public class GyroSystem extends System {
                 case IDLE:
                     if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.ALIGN_TO_CENTER_GOAL_CLOCKWISE) || robot.joystickSystem.getJoystick(1).getRawButton(Mappings.ALIGN_TO_CENTER_GOAL_COUNTERCLOCKWISE)) {
                         isRotatingClockwise = robot.joystickSystem.getJoystick(1).getRawButton(Mappings.ALIGN_TO_CENTER_GOAL_CLOCKWISE) ? true : false;
-                        if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.ALIGN_TO_CENTER_GOAL_CLOCKWISE)) {
-                            robot.driveSystem.driveIndefinitely(1.0, 0.0);
-                        } else if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.ALIGN_TO_CENTER_GOAL_COUNTERCLOCKWISE)) {
-                            robot.driveSystem.driveIndefinitely(-1.0, 0.0);
-                        }
 
                         initialDistance = sonar.getDistanceInInches();
                         robot.driveSystem.isDrivingWithJoystick = false;

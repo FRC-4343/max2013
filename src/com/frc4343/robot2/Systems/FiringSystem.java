@@ -73,7 +73,7 @@ public final class FiringSystem extends System {
         // Reset the piston to its default position.
         firingPiston.extend();
         // Launcher motor will be enabled and reset to the default speed in case the drivers forget.
-        isLauncherMotorRunning = true;
+        isLauncherMotorRunning = robot.getFMSConnection() ? true : false;
         isIndexerMotorRunning = false;
 
         launcherMotorSpeed = Mappings.DEFAULT_LAUNCHER_MOTOR_SPEED;
