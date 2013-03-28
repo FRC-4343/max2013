@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStationLCD.Line;
 import edu.wpi.first.wpilibj.HiTechnicColorSensor;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Timer;
 
 public class RobotTemplate extends IterativeRobot {
 
@@ -20,6 +21,7 @@ public class RobotTemplate extends IterativeRobot {
     Logger logger = new Logger();
     Piston climbingPiston = new Piston(Mappings.CLIMBING_PISTON_SOLENOID_ONE, Mappings.CLIMBING_PISTON_SOLENOID_TWO, Mappings.CLIMBING_PISTON_EXTENDED_BY_DEFAULT);
     Compressor compressor = new Compressor(1, 1);
+    Timer climbTimer = new Timer();
 
     private void resetRobot() {
         compressor.start();
@@ -33,6 +35,9 @@ public class RobotTemplate extends IterativeRobot {
 
     public void teleopInit() {
         resetRobot();
+
+        climbTimer.reset();
+        climbTimer.start();
     }
 
     public void autonomousInit() {
@@ -79,29 +84,30 @@ public class RobotTemplate extends IterativeRobot {
             climbingPiston.extend();
         } else if (joystickSystem.getJoystick(1).getRawButton(Mappings.RETRACT_CLIMBING_PISTONS)) {
             climbingPiston.retract();
+        } else if (m_ds.getMatchTime() >= Mappings.AUTO_CLIMB_TIME) {
+            climbingPiston.retract();
         }
     }
 
     private void printConsoleOutput() {
         // Clears driverStation text.
         logger.clearWindow();
-        // Prints the current gyro angle.
-        logger.printLine(Line.kUser1, "Gyro value: " + (gyroSystem.gyro.getAngle()));
-        logger.printLine(Line.kUser2, "RPM: " + firingSystem.getRPM());
-        logger.printLine(Line.kUser3, "Color: " + firingSystem.getColorOfLauncherWheel());
         // Prints State of Launcher Motor
-        //logger.printLine(Line.kUser2, "Launcher Motor: " + (firingSystem.getLauncherMotorState() ? "ON" : "OFF"));
-        // Prints State of Launcher Motor
-        //logger.printLine(Line.kUser3, "Indexer Motor: " + (firingSystem.getIndexerMotorState() ? "ON" : "OFF"));
+        logger.printLine(Line.kUser1, "Indexer Motor: " + (firingSystem.getIndexerMotorState() ? "ON" : "OFF"));
         // Print the speed of the launcher motor.
-        //logger.printLine(Line.kUser4, "Launcher Speed: " + (byte) (firingSystem.getLauncherSpeed() * 100) + "%");
-        // Print the tank pressurization state.
-        //logger.printLine(Line.kUser5, "Tanks Full: " + (compressor.getPressureSwitchValue() ? "YES" : "NO"));
+        logger.printLine(Line.kUser2, "Launcher Speed: " + (byte) (firingSystem.getLauncherSpeed() * 100) + "%");
         // Prints the state of various systems
-        logger.printLine(Line.kUser4, "FSS: " + firingSystem.getState());
-        logger.printLine(Line.kUser5, "GSS: " + gyroSystem.getState());
-        logger.printLine(Line.kUser6, "DSS: " + driveSystem.getState());
+        logger.printLine(Line.kUser3, "FSS: " + firingSystem.getState());
+        logger.printLine(Line.kUser4, "GSS: " + gyroSystem.getState());
+        logger.printLine(Line.kUser5, "DSS: " + driveSystem.getState());
         // Updates the output window.
         logger.updateLCD();
+        // Prints the current gyro angle.
+        //logger.printLine(Line.kUser1, "Gyro value: " + (gyroSystem.gyro.getAngle()));
+        //logger.printLine(Line.kUser2, "RPM: " + firingSystem.getRPM());
+        // Prints State of Launcher Motor
+        //logger.printLine(Line.kUser2, "Launcher Motor: " + (firingSystem.getLauncherMotorState() ? "ON" : "OFF"));
+        // Print the tank pressurization state.
+        //logger.printLine(Line.kUser5, "Tanks Full: " + (compressor.getPressureSwitchValue() ? "YES" : "NO"));
     }
 }

@@ -6,6 +6,7 @@ import com.frc4343.robot2.RobotTemplate;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.HiTechnicColorSensor;
 import edu.wpi.first.wpilibj.Jaguar;
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Timer;
 
 public final class FiringSystem extends System {
@@ -16,10 +17,8 @@ public final class FiringSystem extends System {
     Timer frisbeeFallTimer = new Timer();
     Timer launchTimer = new Timer();
     Timer colorTimer = new Timer();
-
     Jaguar launcherMotor = new Jaguar(Mappings.LAUNCHER_MOTOR_PORT);
-    Jaguar indexerMotor = new Jaguar(Mappings.INDEXER_MOTOR_PORT);
-    //Relay indexerMotor = new Relay(Mappings.INDEXER_MOTOR_PORT);
+    Relay indexerMotor = new Relay(Mappings.INDEXER_MOTOR_PORT);
     Piston firingPiston = new Piston(Mappings.FIRING_PISTON_SOLENOID_ONE, Mappings.FIRING_PISTON_SOLENOID_TWO, Mappings.FIRING_PISTON_EXTENDED_BY_DEFAULT);
     DigitalInput indexerLimitSwitch = new DigitalInput(Mappings.INDEXER_LIMIT_SWITCH_PORT);
     HiTechnicColorSensor colorSensor = new HiTechnicColorSensor(1);
@@ -28,10 +27,8 @@ public final class FiringSystem extends System {
     // Motor Booleans
     boolean isLauncherMotorRunning = false;
     boolean isIndexerMotorRunning = false;
-
     double halfRotationTime = 0.0;
     boolean isWheelColorWhite = true;
-
     // Button Checks
     boolean triggerHeld = false;
     boolean adjustedSpeed = false;
@@ -116,7 +113,7 @@ public final class FiringSystem extends System {
                         }
                     } else {
                         // If the number of frisbees already fired does not exceed the number of frisbees we want to fire during autonomous, and we have passed the delay between each shot, we attempt to load and fire another one.
-                        if (numberOfFrisbeesFiredInAutonomous <= maxFrisbeesToFireInAutonomous && loadingDelayTimer.get() >= Mappings.AUTONOMOUS_DELAY_BETWEEN_EACH_SHOT) {
+                        if (numberOfFrisbeesFiredInAutonomous < maxFrisbeesToFireInAutonomous && loadingDelayTimer.get() >= Mappings.AUTONOMOUS_DELAY_BETWEEN_EACH_SHOT) {
                             loadingDelayTimer.reset();
                             loadingDelayTimer.stop();
                             // We disable the indexing timer as during autonomous we do not want the indexing motor to stop.
@@ -188,8 +185,7 @@ public final class FiringSystem extends System {
         adjustedSpeed = robot.joystickSystem.getJoystick(1).getRawButton(Mappings.SPEED_INCREASE) ^ robot.joystickSystem.getJoystick(1).getRawButton(Mappings.SPEED_DECREASE);
 
         // Set the state of the motors based on the values of the booleans controlling them.
-        //indexerMotor.set(isIndexerMotorRunning ? Relay.Value.kForward : Relay.Value.kOff);
-        indexerMotor.set(isIndexerMotorRunning ? 0.2 : 0);
+        indexerMotor.set(isIndexerMotorRunning ? Relay.Value.kForward : Relay.Value.kOff);
         launcherMotor.set(isLauncherMotorRunning ? launcherMotorSpeed : 0);
     }
 
@@ -232,8 +228,12 @@ public final class FiringSystem extends System {
             launchTimer.reset();
 
             // If the robot is in autonomous mode, we instantly begin the READY state countdown as there is no user input before firing.
-            if (robot.isOperatorControl()) {
-                launchTimer.stop();
+            if (!robot.isOperatorControl()) {
+                if (firingAllFrisbees) {
+                    launchTimer.start();
+                } else {
+                    launchTimer.stop();
+                }
             } else {
                 if (!initialAutonomousDelayOver) {
                     systemState = IDLE;
@@ -248,7 +248,7 @@ public final class FiringSystem extends System {
     }
 
     private void ready() {
-        if (launchTimer.get() >= Mappings.ACCELERATION_DELAY) {
+        if (launchTimer.get() > Mappings.ACCELERATION_DELAY || firingAllFrisbees) {
             // Reset the speed of the launcher motor back to the target speed.
             launcherMotorSpeed = Mappings.DEFAULT_LAUNCHER_MOTOR_SPEED;
             launchTimer.reset();
@@ -278,6 +278,7 @@ public final class FiringSystem extends System {
             // Start the loading delay timer to measure the time between launched frisbees.
             loadingDelayTimer.reset();
             loadingDelayTimer.start();
+            launchTimer.stop();
             // After giving the piston a small amount of time to retract, we are ready to commence the cycle once more.
             systemState = IDLE;
         }
@@ -307,9 +308,9 @@ public final class FiringSystem extends System {
         // If the buttons are not being held down or pressed together, increase or decrease the speed of the launcherMotor motor.
         if (!adjustedSpeed) {
             if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.SPEED_INCREASE)) {
-                launcherMotorSpeed += 0.001;
+                launcherMotorSpeed += 1;
             } else if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.SPEED_DECREASE)) {
-                launcherMotorSpeed -= 0.001;
+                launcherMotorSpeed -= 1;
             }
         }
     }
@@ -362,6 +363,6 @@ public final class FiringSystem extends System {
     }
 
     public int getRPM() {
-        return (int) (1/(halfRotationTime * 2) * 60);
+        return (int) (1 / (halfRotationTime * 2) * 60);
     }
 }
