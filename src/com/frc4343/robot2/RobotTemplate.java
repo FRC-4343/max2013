@@ -110,4 +110,8 @@ public class RobotTemplate extends IterativeRobot {
         // Print the tank pressurization state.
         //logger.printLine(Line.kUser5, "Tanks Full: " + (compressor.getPressureSwitchValue() ? "YES" : "NO"));
     }
+
+    public boolean getFMSConnection() {
+        return m_ds.isFMSAttached();
+    }
 }

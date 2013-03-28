@@ -299,10 +299,12 @@ public final class FiringSystem extends System {
         }
 
         // Manually control the state of the launcherMotor motor. (Not intended to be used in competition)
-        if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.LAUNCHER_MOTOR_ENABLE) || robot.joystickSystem.getJoystick(2).getRawButton(Mappings.LAUNCHER_MOTOR_ENABLE)) {
-            isLauncherMotorRunning = true;
-        } else if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.LAUNCHER_MOTOR_DISABLE) || robot.joystickSystem.getJoystick(2).getRawButton(Mappings.LAUNCHER_MOTOR_DISABLE)) {
-            isLauncherMotorRunning = false;
+        if (!robot.getFMSConnection()) {
+            if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.LAUNCHER_MOTOR_ENABLE) || robot.joystickSystem.getJoystick(2).getRawButton(Mappings.LAUNCHER_MOTOR_ENABLE)) {
+                isLauncherMotorRunning = true;
+            } else if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.LAUNCHER_MOTOR_DISABLE) || robot.joystickSystem.getJoystick(2).getRawButton(Mappings.LAUNCHER_MOTOR_DISABLE)) {
+                isLauncherMotorRunning = false;
+            }
         }
 
         // If the buttons are not being held down or pressed together, increase or decrease the speed of the launcherMotor motor.
