@@ -108,7 +108,7 @@ public class GyroSystem extends System {
     public void rotate(double angle) {
         initialAngle = gyro.getAngle();
         rotationAmount = angle;
-        isDrivingWithJoystick = false;
+        robot.driveSystem.isDrivingWithJoystick = false;
 
         robot.driveSystem.driveIndefinitely(0.0, angle > 0 ? Mappings.ROTATE_SPEED : -Mappings.ROTATE_SPEED);
 
