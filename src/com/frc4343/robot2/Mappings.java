@@ -34,6 +34,7 @@ public class Mappings {
     public final static double ACCELERATION_DELAY = 0.0;
     public final static double EXTEND_TIME = 0.3;
     public final static double RETRACT_TIME = 0.2;
+    public final static double AUTO_CLIMB_TIME = 119;
     // Drive Mappings
     public final static double AXIS_COMPENSATION = 0.5;
     public final static double PRECISION_COMPENSATION = 0.4;
