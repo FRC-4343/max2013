@@ -31,7 +31,7 @@ public class DriveSystem extends System {
     // ROTATING_TO_PICKUP indicates that the robot is turning towards the feeder station.
     static final byte ROTATING_TO_PICKUP = 6;
     // DONE indicates that the robot has finished moving for the state.
-    static final byte DONE = 6;
+    static final byte DONE = 7;
 
     public DriveSystem(RobotTemplate robot) {
         super(robot);
