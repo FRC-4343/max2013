@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 public class GyroSystem extends System {
 
     public Gyro gyro = new Gyro(Mappings.GYRO_PORT);
+    Sonar sonar = new Sonar(1, 1);
     Timer timer = new Timer();
     double initialAngle = 0;
     boolean isButtonPressed = false;
