@@ -21,7 +21,7 @@ public final class FiringSystem extends System {
     Relay indexerMotor = new Relay(Mappings.INDEXER_MOTOR_PORT);
     Piston firingPiston = new Piston(Mappings.FIRING_PISTON_SOLENOID_ONE, Mappings.FIRING_PISTON_SOLENOID_TWO, Mappings.FIRING_PISTON_EXTENDED_BY_DEFAULT);
     DigitalInput indexerLimitSwitch = new DigitalInput(Mappings.INDEXER_LIMIT_SWITCH_PORT);
-    HiTechnicColorSensor colorSensor = new HiTechnicColorSensor(1);
+    //HiTechnicColorSensor colorSensor = new HiTechnicColorSensor(1);
     // The default speed for the launch motor to start at.
     double launcherMotorSpeed = 0.4;
     // Motor Booleans
@@ -357,11 +357,13 @@ public final class FiringSystem extends System {
     }
 
     private boolean isLauncherWheelColorWhite() {
-        return (colorSensor.getRed() >= Mappings.COLOR_CUTOFF && colorSensor.getGreen() >= Mappings.COLOR_CUTOFF && colorSensor.getBlue() >= Mappings.COLOR_CUTOFF);
+        //return (colorSensor.getRed() >= Mappings.COLOR_CUTOFF && colorSensor.getGreen() >= Mappings.COLOR_CUTOFF && colorSensor.getBlue() >= Mappings.COLOR_CUTOFF);
+        return false;
     }
 
     public String getColorOfLauncherWheel() {
-        return (isLauncherWheelColorWhite() ? "White" : "Black");
+        //return (isLauncherWheelColorWhite() ? "White" : "Black");
+        return "ERROR";
     }
 
     public int getRPM() {
