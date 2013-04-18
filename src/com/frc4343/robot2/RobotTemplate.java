@@ -1,4 +1,4 @@
-package edu.wpi.first.wpilibj.templates;
+package com.frc4343.robot2;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
