@@ -26,6 +26,7 @@ public class Mappings {
     // Constants
     public final static double DEFAULT_LAUNCHER_SPEED = 0.4;
     public final static double AXIS_COMPENSATION = 0.8;
+    public final static double ALTERNATE_COMPENSATION = 0.5;
     public final static double INDEXER_TIMEOUT = 1.5;
     // Autonomous
     public final static double AUTOMATIC_CLIMB_TIME = 119.9;

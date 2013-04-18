@@ -1,11 +1,13 @@
 package com.frc4343.robot2;
 
+import com.frc4343.robot2.Systems.JoystickSystem;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStationLCD;
 import edu.wpi.first.wpilibj.DriverStationLCD.Line;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -16,14 +18,12 @@ public class RobotTemplate extends IterativeRobot {
 
     Logger logger = new Logger();
     Piston climbingPiston = new Piston(Mappings.CLIMBING_PISTON_SOLENOID_ONE, Mappings.CLIMBING_PISTON_SOLENOID_TWO, Mappings.CLIMBING_PISTON_EXTENDED_BY_DEFAULT);
+    JoystickSystem joystickSystem = new JoystickSystem(this);
     // Timers
     Timer timer = new Timer();
     Timer climbTimer = new Timer();
     Timer indexerReverseDelayTimer = new Timer();
     Timer autonomousDriveTimer = new Timer();
-    // Joystick Objects
-    Joystick joystick = new Joystick(1);
-    Joystick joystick2 = new Joystick(2);
     // Non-Drive Motors
     Victor launcherMotor = new Victor(Mappings.LAUNCH_MOTOR_RELAY_PORT);
     Relay indexerMotor = new Relay(Mappings.INDEX_MOTOR_RELAY_PORT);
@@ -40,7 +40,6 @@ public class RobotTemplate extends IterativeRobot {
     boolean isLauncherMotorRunning = false;
     boolean isIndexerMotorRunning = false;
     boolean isFrisbeeLoaded = false;
-    boolean[] buttonHeld = new boolean[17];
     boolean isFrisbeeStuck = false;
     boolean driveBack = false;
     boolean turn180 = false;
@@ -63,10 +62,8 @@ public class RobotTemplate extends IterativeRobot {
     public void teleopPeriodic() {
         // This combines the axes in order to allow for both joysticks to control the robot's movement.
         // One of the joysticks will be made less sensitive to allow for precision control.
-        //double sumOfYAxes = joystick2.getAxis(Joystick.AxisType.kY) + (joystick.getAxis(Joystick.AxisType.kY) * 0.5);
-        //double sumOfXAxes = -joystick2.getAxis(Joystick.AxisType.kX) * Mappings.AXIS_COMPENSATION;
-        double sumOfYAxes = joystick.getRawAxis(2) + (joystick2.getRawAxis(2) * 0.5);
-        double sumOfXAxes = -joystick.getRawAxis(3) * Mappings.AXIS_COMPENSATION;
+        double sumOfYAxes = joystickSystem.getAxis(1, AxisType.kX) + (joystickSystem.getAxis(2, AxisType.kX) * Mappings.ALTERNATE_COMPENSATION);
+        double sumOfXAxes = -joystickSystem.getAxis(1, AxisType.kY) * Mappings.AXIS_COMPENSATION;
         // Floor the values of the combined joysticks in case they are above 1 or below -1.
         sumOfYAxes = sumOfYAxes > 1 ? 1 : sumOfYAxes < -1 ? -1 : sumOfYAxes;
         sumOfXAxes = sumOfXAxes > 1 ? 1 : sumOfXAxes < -1 ? -1 : sumOfXAxes;
@@ -184,7 +181,7 @@ public class RobotTemplate extends IterativeRobot {
 
     private void handleHopperAndLauncherControls() {
         // If the trigger is pressed.
-        if (isButtonPressed(joystick, Mappings.INDEX_AND_FIRE)) {
+        if (joystickSystem.isButtonPressed(1, Mappings.INDEX_AND_FIRE)) {
             timer.start();
             if (isFrisbeeLoaded) {
                 // If there is a frisbee in the launcher, then it launches it.
@@ -193,7 +190,7 @@ public class RobotTemplate extends IterativeRobot {
             } else {
                 isIndexerMotorRunning = true;
             }
-        } else if (joystick.getRawButton(Mappings.EJECT_STUCK_FRISBEE)) {
+        } else if (joystickSystem.getButton(1, Mappings.EJECT_STUCK_FRISBEE)) {
             isFrisbeeStuck = true;
             indexerMotor.set(Relay.Value.kReverse);
             indexerReverseDelayTimer.start();
@@ -208,16 +205,16 @@ public class RobotTemplate extends IterativeRobot {
 
     private void handleLauncherMotorSettings() {
         // Check if the motor is being run.
-        if (joystick.getRawButton(Mappings.LAUNCHER_MOTOR_ENABLE) || joystick2.getRawButton(Mappings.LAUNCHER_MOTOR_ENABLE)) {
+        if (joystickSystem.getButton(1, Mappings.LAUNCHER_MOTOR_ENABLE) || joystickSystem.getButton(2, Mappings.LAUNCHER_MOTOR_ENABLE)) {
             isLauncherMotorRunning = true;
-        } else if (joystick.getRawButton(Mappings.LAUNCHER_MOTOR_DISABLE) || joystick2.getRawButton(Mappings.LAUNCHER_MOTOR_DISABLE)) {
+        } else if (joystickSystem.getButton(1, Mappings.LAUNCHER_MOTOR_DISABLE) || joystickSystem.getButton(2, Mappings.LAUNCHER_MOTOR_DISABLE)) {
             isLauncherMotorRunning = false;
-        } else if (isButtonPressed(joystick, Mappings.MANUAL_EJECT)) { // Manually eject the frisbee
+        } else if (joystickSystem.isButtonPressed(1, Mappings.MANUAL_EJECT)) { // Manually eject the frisbee
             setPistonExtended(false);
             timer.start();
-        } else if (isButtonPressed(joystick, Mappings.LAUNCHER_SPEED_INCREASE)) { // Handle the speed change.
+        } else if (joystickSystem.isButtonPressed(1, Mappings.LAUNCHER_SPEED_INCREASE)) { // Handle the speed change.
             launcherSpeed += 0.01;
-        } else if (isButtonPressed(joystick, Mappings.LAUNCHER_SPEED_DECREASE)) {
+        } else if (joystickSystem.isButtonPressed(1, Mappings.LAUNCHER_SPEED_DECREASE)) {
             launcherSpeed -= 0.01;
         }
     }
@@ -234,9 +231,9 @@ public class RobotTemplate extends IterativeRobot {
         if (climbTimer.get() < 0) {
             climbTimer.stop();
         }
-        if (joystick.getRawButton(Mappings.L3)) {
+        if (joystickSystem.getButton(1, Mappings.L3)) {
             setPistonExtended(false);
-        } else if (joystick.getRawButton(Mappings.R3)) {
+        } else if (joystickSystem.getButton(1, Mappings.R3)) {
             setPistonExtended(true);
         }
 
@@ -248,20 +245,10 @@ public class RobotTemplate extends IterativeRobot {
         solenoids[1].set(!extended);
     }
 
-    private boolean isButtonPressed(Joystick x, byte y) {
-        if (x.getRawButton(y) && !buttonHeld[y]) {
-            buttonHeld[y] = x.getRawButton(y);
-            return true;
-        } else {
-            buttonHeld[y] = x.getRawButton(y);
-            return false;
-        }
-    }
-
     private void climbingHandler() {
-        if (joystick.getRawButton(Mappings.EXTEND_CLIMBING_PISTONS)) {
+        if (joystickSystem.getButton(1, Mappings.EXTEND_CLIMBING_PISTONS)) {
             climbingPiston.extend();
-        } else if (joystick.getRawButton(Mappings.RETRACT_CLIMBING_PISTONS)) {
+        } else if (joystickSystem.getButton(1, Mappings.RETRACT_CLIMBING_PISTONS)) {
             climbingPiston.retract();
         }
     }
