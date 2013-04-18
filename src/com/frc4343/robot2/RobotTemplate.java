@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.Victor;
 
 public class RobotTemplate extends IterativeRobot {
 
-    DriverStationLCD dsLCD = DriverStationLCD.getInstance();
+    Logger logger = new Logger();
     // Timers
     Timer timer = new Timer();
     Timer climbTimer = new Timer();
@@ -301,33 +301,20 @@ public class RobotTemplate extends IterativeRobot {
         }
     }
 
-    private void clearLine(Line line) {
-        dsLCD.println(line, 1, "                                     ");
-    }
-
-    private void clearWindow() {
-        clearLine(Line.kUser1);
-        clearLine(Line.kUser2);
-        clearLine(Line.kUser3);
-        clearLine(Line.kUser4);
-        clearLine(Line.kUser5);
-        clearLine(Line.kUser6);
-    }
-
     private void updateLCD() {
         // Clears driverStation text.
-        clearWindow();
+        logger.clearWindow();
         // Prints State of Frisbee
-        dsLCD.println(Line.kUser1, 1, "Ready To Fire: " + (isFrisbeeLoaded ? "YES" : "NO"));
+        logger.printLine(Line.kUser1, "Ready To Fire: " + (isFrisbeeLoaded ? "YES" : "NO"));
         // Print the speed, and launcher status.
-        dsLCD.println(Line.kUser2, 1, "Launcher: " + (isLauncherMotorRunning ? "ON, " : "OFF, ") + (launcherSpeed * 100));
+        logger.printLine(Line.kUser2, "Launcher: " + (isLauncherMotorRunning ? "ON, " : "OFF, ") + (launcherSpeed * 100));
         // Prints State of Launcher Motor
-        dsLCD.println(Line.kUser3, 1, "Indexer: " + (isIndexerMotorRunning ? "ON" : "OFF"));
+        logger.printLine(Line.kUser3, "Indexer: " + (isIndexerMotorRunning ? "ON" : "OFF"));
         // Print the tank pressurization state.
-        dsLCD.println(Line.kUser4, 1, "Tanks Full? " + (compressor.getPressureSwitchValue() ? "YES" : "NO"));
+        logger.printLine(Line.kUser4, "Tanks Full? " + (compressor.getPressureSwitchValue() ? "YES" : "NO"));
         // Auto hang timeout
-        dsLCD.println(Line.kUser5, 1, "AutoHang: " + (climbTimer.get() >= 0 ? 120 - climbTimer.get() : 0));
+        logger.printLine(Line.kUser5, "AutoHang: " + (climbTimer.get() >= 0 ? 120 - climbTimer.get() : 0));
         // Updates the output window.
-        dsLCD.updateLCD();
+        logger.updateLCD();
     }
 }
