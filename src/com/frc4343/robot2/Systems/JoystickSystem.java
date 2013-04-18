@@ -27,7 +27,9 @@ public class JoystickSystem extends System {
     }
 
     public double getAxis(int joystickNumber, AxisType axis) {
-        return getJoystick(joystickNumber).getRawAxis(axis);
+        int rawAxis = (axis == AxisType.kX) ? 1 : (axis == AxisType.kY) ? 2 : (axis == AxisType.kZ) ? 3 : 0;
+
+        return getJoystick(joystickNumber).getRawAxis(rawAxis);
     }
 
     public boolean isButtonPressed(int joystickNumber, int buttonNumber) {
