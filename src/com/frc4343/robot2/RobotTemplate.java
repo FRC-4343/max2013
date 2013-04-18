@@ -16,24 +16,29 @@ import edu.wpi.first.wpilibj.Victor;
 
 public class RobotTemplate extends IterativeRobot {
 
+    // Systems and subsystems
     Logger logger = new Logger();
     Piston climbingPiston = new Piston(Mappings.CLIMBING_PISTON_SOLENOID_ONE, Mappings.CLIMBING_PISTON_SOLENOID_TWO, Mappings.CLIMBING_PISTON_EXTENDED_BY_DEFAULT);
     Piston firingPiston = new Piston(Mappings.FIRING_PISTON_SOLENOID_ONE, Mappings.FIRING_PISTON_SOLENOID_TWO, Mappings.FIRING_PISTON_EXTENDED_BY_DEFAULT);
     JoystickSystem joystickSystem = new JoystickSystem(this);
+    // Compressor
+    Compressor compressor = new Compressor(Mappings.COMPRESSOR_DIGITAL_IO, Mappings.COMPRESSOR_RELAY);
+
     // Timers
     Timer timer = new Timer();
     Timer climbTimer = new Timer();
     Timer indexerReverseDelayTimer = new Timer();
     Timer autonomousDriveTimer = new Timer();
-    // Non-Drive Motors
+
+    // Drive motors
+    RobotDrive robotDrive = new RobotDrive(1, 2);
+    // Non-drive motors
     Victor launcherMotor = new Victor(Mappings.LAUNCH_MOTOR_RELAY_PORT);
     Relay indexerMotor = new Relay(Mappings.INDEX_MOTOR_RELAY_PORT);
-    // Drive Motors
-    RobotDrive robotDrive = new RobotDrive(1, 2);
-    // Compressor
-    Compressor compressor = new Compressor(Mappings.COMPRESSOR_DIGITAL_IO, Mappings.COMPRESSOR_RELAY);
-    // DigitalInput - Limit Switches
+
+    // Limit switches
     DigitalInput indexerLimitSwitch = new DigitalInput(Mappings.INDEX_LIMIT_SWITCH);
+
     double launcherSpeed = Mappings.DEFAULT_LAUNCHER_SPEED;
     // Whether or not the launch speed launcherMotor buttons are being pressed.
     boolean isLauncherMotorRunning = false;
