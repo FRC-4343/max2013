@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 
 public class RobotTemplate extends IterativeRobot {
+
     DriverStationLCD dsLCD = DriverStationLCD.getInstance();
     // Timers
     Timer timer = new Timer();
@@ -79,7 +80,7 @@ public class RobotTemplate extends IterativeRobot {
     final byte FRISBEES_TO_FIRE_IN_AUTONOMOUS = 3;
     final double autonomousDelayBetweenEachShot = 3;
     final double autonomousDelayBeforeFirstShot = 1;
-    final double delayToPistonRetraction = 0.3; // can play around with this 
+    final double delayToPistonRetraction = 0.3; // can play around with this
     final double AUTONOMOUS_REVERSE_DURATION = 1.3;
     final double AUTONOMOUS_ROTATE_DURATION = 0.79;
 
@@ -258,7 +259,7 @@ public class RobotTemplate extends IterativeRobot {
     }
 
     private void handleSolenoids() {
-         // If the piston retraction delay has passed, begin to retract the piston.
+        // If the piston retraction delay has passed, begin to retract the piston.
         if (timer.get() > delayToPistonRetraction && timer.get() < (delayToPistonRetraction + 0.2)) {
             setPistonExtended(true);
             if (isOperatorControl()) {
@@ -289,7 +290,7 @@ public class RobotTemplate extends IterativeRobot {
         solenoids[2].set(extended);
         solenoids[3].set(!extended);
     }
-    
+
     private boolean isButtonPressed(Joystick x, byte y) {
         if (x.getRawButton(y) && !buttonHeld[y]) {
             buttonHeld[y] = x.getRawButton(y);
@@ -299,7 +300,7 @@ public class RobotTemplate extends IterativeRobot {
             return false;
         }
     }
-    
+
     private void clearLine(Line line) {
         dsLCD.println(line, 1, "                                     ");
     }
@@ -319,7 +320,7 @@ public class RobotTemplate extends IterativeRobot {
         // Prints State of Frisbee
         dsLCD.println(Line.kUser1, 1, "Ready To Fire: " + (isFrisbeeLoaded ? "YES" : "NO"));
         // Print the speed, and launcher status.
-        dsLCD.println(Line.kUser2, 1, "Launcher: " + (isLauncherMotorRunning ? "ON, " : "OFF, ") + launcherSpeed * 100));
+        dsLCD.println(Line.kUser2, 1, "Launcher: " + (isLauncherMotorRunning ? "ON, " : "OFF, ") + (launcherSpeed * 100));
         // Prints State of Launcher Motor
         dsLCD.println(Line.kUser3, 1, "Indexer: " + (isIndexerMotorRunning ? "ON" : "OFF"));
         // Print the tank pressurization state.
