@@ -17,6 +17,11 @@ public class Mappings {
     public final static byte COMPRESSOR_DIGITAL_IO = 1;
     public final static byte COMPRESSOR_RELAY = 1;
 
+    // Pistons
+    public final static byte CLIMBING_PISTON_SOLENOID_ONE = 3;
+    public final static byte CLIMBING_PISTON_SOLENOID_TWO = 4;
+    public final static boolean CLIMBING_PISTON_EXTENDED_BY_DEFAULT = true;
+
 
     // Constants
     public final static byte DEFAULT_LAUNCHER_SPEED = 0.4;
@@ -34,29 +39,29 @@ public class Mappings {
 
     // Button Mappings
     // PS3
-    final byte TRIANGLE = 13;
-    final byte CIRCLE = 14;
-    final byte CROSS = 15;
-    final byte SQUARE = 16;
-    final byte L1 = 11;
-    final byte R1 = 12;
-    final byte L2 = 9;
-    final byte R2 = 10;
-    final byte SELECT = 1;
-    final byte L3 = 2;
-    final byte R3 = 3;
-    final byte START = 4;
-    final byte DPAD_UP = 5;
-    final byte DPAD_DOWN = 7;
-    final byte PSBUTTON = 17;
+    public final static byte TRIANGLE = 13;
+    public final static byte CIRCLE = 14;
+    public final static byte CROSS = 15;
+    public final static byte SQUARE = 16;
+    public final static byte L1 = 11;
+    public final static byte R1 = 12;
+    public final static byte L2 = 9;
+    public final static byte R2 = 10;
+    public final static byte SELECT = 1;
+    public final static byte L3 = 2;
+    public final static byte R3 = 3;
+    public final static byte START = 4;
+    public final static byte DPAD_UP = 5;
+    public final static byte DPAD_DOWN = 7;
+    public final static byte PSBUTTON = 17;
     // Joystick
-    final byte INDEX_AND_FIRE = R1;
-    final byte FRISBEE_MANUAL_EJECT = R2;
-    final byte LAUNCHER_SPEED_DECREASE = L2;
-    final byte LAUNCHER_SPEED_INCREASE = L1;
-    final byte LAUNCHER_MOTOR_ENABLE = START;
-    final byte LAUNCHER_MOTOR_DISABLE = SELECT;
-    final byte EXTEND_CLIMBING_PISTONS = DPAD_UP;
-    final byte RETRACT_CLIMBING_PISTONS = DPAD_DOWN;
-    final byte FRISBEE_STUCK_EJECT = SQUARE;
+    public final static byte INDEX_AND_FIRE = R1;
+    public final static byte FRISBEE_MANUAL_EJECT = R2;
+    public final static byte LAUNCHER_SPEED_DECREASE = L2;
+    public final static byte LAUNCHER_SPEED_INCREASE = L1;
+    public final static byte LAUNCHER_MOTOR_ENABLE = START;
+    public final static byte LAUNCHER_MOTOR_DISABLE = SELECT;
+    public final static byte EXTEND_CLIMBING_PISTONS = DPAD_UP;
+    public final static byte RETRACT_CLIMBING_PISTONS = DPAD_DOWN;
+    public final static byte FRISBEE_STUCK_EJECT = SQUARE;
 }

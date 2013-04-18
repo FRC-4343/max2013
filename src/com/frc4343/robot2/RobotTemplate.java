@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Victor;
 public class RobotTemplate extends IterativeRobot {
 
     Logger logger = new Logger();
+    Piston climbingPiston = new Piston(Mappings.CLIMBING_PISTON_SOLENOID_ONE, Mappings.CLIMBING_PISTON_SOLENOID_TWO, Mappings.CLIMBING_PISTON_EXTENDED_BY_DEFAULT);
     // Timers
     Timer timer = new Timer();
     Timer climbTimer = new Timer();
@@ -35,7 +36,6 @@ public class RobotTemplate extends IterativeRobot {
     // DigitalInput - Limit Switches
     DigitalInput indexerLimitSwitch = new DigitalInput(Mappings.INDEX_LIMIT_SWITCH);
     double launcherSpeed = Mappings.DEFAULT_LAUNCHER_SPEED;
-
     // Whether or not the launch speed launcherMotor buttons are being pressed.
     boolean isLauncherMotorRunning = false;
     boolean isIndexerMotorRunning = false;
@@ -86,7 +86,6 @@ public class RobotTemplate extends IterativeRobot {
     private void init() {
         compressor.start();
         setPistonExtended(true); // Extend launcher piston
-        setClimbingPistonExtended(true); // Extend climbing pistons
         numberOfFrisbeesFired = 0; // Allow re-enabling of autonomous
         isFrisbeeLoaded = false; // Assume no frisbees are loaded
         // Reset the timer if coming from autonomous.
@@ -239,21 +238,14 @@ public class RobotTemplate extends IterativeRobot {
             setPistonExtended(false);
         } else if (joystick.getRawButton(R3)) {
             setPistonExtended(true);
-        } else if (joystick.getRawButton(EXTEND_CLIMBING_PISTONS)) {
-            setClimbingPistonExtended(true);
-        } else if (joystick.getRawButton(RETRACT_CLIMBING_PISTONS) || (climbTimer.get() >= Mappings.AUTOMATIC_CLIMB_TIME && climbTimer.get() >= 0)) {
-            setClimbingPistonExtended(false);
         }
+
+        climbingHandler();
     }
 
     private void setPistonExtended(boolean extended) {
         solenoids[0].set(extended);
         solenoids[1].set(!extended);
-    }
-
-    private void setClimbingPistonExtended(boolean extended) {
-        solenoids[2].set(extended);
-        solenoids[3].set(!extended);
     }
 
     private boolean isButtonPressed(Joystick x, byte y) {
@@ -263,6 +255,14 @@ public class RobotTemplate extends IterativeRobot {
         } else {
             buttonHeld[y] = x.getRawButton(y);
             return false;
+        }
+    }
+
+    private void climbingHandler() {
+        if (joystick.getRawButton(Mappings.EXTEND_CLIMBING_PISTONS)) {
+            climbingPiston.extend();
+        } else if (joystick.getRawButton(Mappings.RETRACT_CLIMBING_PISTONS)) {
+            climbingPiston.retract();
         }
     }
 
