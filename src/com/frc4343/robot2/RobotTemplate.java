@@ -184,7 +184,7 @@ public class RobotTemplate extends IterativeRobot {
 
     private void handleHopperAndLauncherControls() {
         // If the trigger is pressed.
-        if (isButtonPressed(joystick, INDEX_AND_FIRE)) {
+        if (isButtonPressed(joystick, Mappings.INDEX_AND_FIRE)) {
             timer.start();
             if (isFrisbeeLoaded) {
                 // If there is a frisbee in the launcher, then it launches it.
@@ -193,7 +193,7 @@ public class RobotTemplate extends IterativeRobot {
             } else {
                 isIndexerMotorRunning = true;
             }
-        } else if (joystick.getRawButton(FRISBEE_STUCK_EJECT)) {
+        } else if (joystick.getRawButton(Mappings.EJECT_STUCK_FRISBEE)) {
             isFrisbeeStuck = true;
             indexerMotor.set(Relay.Value.kReverse);
             indexerReverseDelayTimer.start();
@@ -208,16 +208,16 @@ public class RobotTemplate extends IterativeRobot {
 
     private void handleLauncherMotorSettings() {
         // Check if the motor is being run.
-        if (joystick.getRawButton(LAUNCHER_MOTOR_ENABLE) || joystick2.getRawButton(LAUNCHER_MOTOR_ENABLE)) {
+        if (joystick.getRawButton(Mappings.LAUNCHER_MOTOR_ENABLE) || joystick2.getRawButton(Mappings.LAUNCHER_MOTOR_ENABLE)) {
             isLauncherMotorRunning = true;
-        } else if (joystick.getRawButton(LAUNCHER_MOTOR_DISABLE) || joystick2.getRawButton(LAUNCHER_MOTOR_DISABLE)) {
+        } else if (joystick.getRawButton(Mappings.LAUNCHER_MOTOR_DISABLE) || joystick2.getRawButton(Mappings.LAUNCHER_MOTOR_DISABLE)) {
             isLauncherMotorRunning = false;
-        } else if (isButtonPressed(joystick, FRISBEE_MANUAL_EJECT)) { // Manually eject the frisbee
+        } else if (isButtonPressed(joystick, Mappings.MANUAL_EJECT)) { // Manually eject the frisbee
             setPistonExtended(false);
             timer.start();
-        } else if (isButtonPressed(joystick, LAUNCHER_SPEED_INCREASE)) { // Handle the speed change.
+        } else if (isButtonPressed(joystick, Mappings.LAUNCHER_SPEED_INCREASE)) { // Handle the speed change.
             launcherSpeed += 0.01;
-        } else if (isButtonPressed(joystick, LAUNCHER_SPEED_DECREASE)) {
+        } else if (isButtonPressed(joystick, Mappings.LAUNCHER_SPEED_DECREASE)) {
             launcherSpeed -= 0.01;
         }
     }
@@ -234,9 +234,9 @@ public class RobotTemplate extends IterativeRobot {
         if (climbTimer.get() < 0) {
             climbTimer.stop();
         }
-        if (joystick.getRawButton(L3)) {
+        if (joystick.getRawButton(Mappings.L3)) {
             setPistonExtended(false);
-        } else if (joystick.getRawButton(R3)) {
+        } else if (joystick.getRawButton(Mappings.R3)) {
             setPistonExtended(true);
         }
 

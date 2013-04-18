@@ -24,7 +24,7 @@ public class Mappings {
 
 
     // Constants
-    public final static byte DEFAULT_LAUNCHER_SPEED = 0.4;
+    public final static double DEFAULT_LAUNCHER_SPEED = 0.4;
     public final static double AXIS_COMPENSATION = 0.8;
     public final static double INDEXER_TIMEOUT = 1.5;
     // Autonomous
@@ -56,12 +56,12 @@ public class Mappings {
     public final static byte PSBUTTON = 17;
     // Joystick
     public final static byte INDEX_AND_FIRE = R1;
-    public final static byte FRISBEE_MANUAL_EJECT = R2;
+    public final static byte MANUAL_EJECT = R2;
     public final static byte LAUNCHER_SPEED_DECREASE = L2;
     public final static byte LAUNCHER_SPEED_INCREASE = L1;
     public final static byte LAUNCHER_MOTOR_ENABLE = START;
     public final static byte LAUNCHER_MOTOR_DISABLE = SELECT;
     public final static byte EXTEND_CLIMBING_PISTONS = DPAD_UP;
     public final static byte RETRACT_CLIMBING_PISTONS = DPAD_DOWN;
-    public final static byte FRISBEE_STUCK_EJECT = SQUARE;
+    public final static byte EJECT_STUCK_FRISBEE = SQUARE;
 }
