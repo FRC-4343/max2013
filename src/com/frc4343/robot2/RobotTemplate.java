@@ -18,6 +18,7 @@ public class RobotTemplate extends IterativeRobot {
 
     Logger logger = new Logger();
     Piston climbingPiston = new Piston(Mappings.CLIMBING_PISTON_SOLENOID_ONE, Mappings.CLIMBING_PISTON_SOLENOID_TWO, Mappings.CLIMBING_PISTON_EXTENDED_BY_DEFAULT);
+    Piston firingPiston = new Piston(Mappings.FIRING_PISTON_SOLENOID_ONE, Mappings.FIRING_PISTON_SOLENOID_TWO, Mappings.FIRING_PISTON_EXTENDED_BY_DEFAULT);
     JoystickSystem joystickSystem = new JoystickSystem(this);
     // Timers
     Timer timer = new Timer();
@@ -29,8 +30,6 @@ public class RobotTemplate extends IterativeRobot {
     Relay indexerMotor = new Relay(Mappings.INDEX_MOTOR_RELAY_PORT);
     // Drive Motors
     RobotDrive robotDrive = new RobotDrive(1, 2);
-    // Solenoids
-    Solenoid[] solenoids = new Solenoid[Mappings.SOLENOID_COUNT];
     // Compressor
     Compressor compressor = new Compressor(Mappings.COMPRESSOR_DIGITAL_IO, Mappings.COMPRESSOR_RELAY);
     // DigitalInput - Limit Switches
@@ -49,10 +48,6 @@ public class RobotTemplate extends IterativeRobot {
     byte numberOfFrisbeesFired = 0;
 
     public void robotInit() {
-        // Initialize solenoids
-        for (byte i = 0; i < solenoids.length; i++) {
-            solenoids[i] = new Solenoid(i + 1);
-        }
     }
 
     public void teleopInit() {
@@ -82,7 +77,7 @@ public class RobotTemplate extends IterativeRobot {
 
     private void init() {
         compressor.start();
-        setPistonExtended(true); // Extend launcher piston
+        firingPiston.extend(); // Extend launcher piston
         numberOfFrisbeesFired = 0; // Allow re-enabling of autonomous
         isFrisbeeLoaded = false; // Assume no frisbees are loaded
         // Reset the timer if coming from autonomous.
@@ -113,7 +108,7 @@ public class RobotTemplate extends IterativeRobot {
             if (timer.get() >= Mappings.DELAY_BETWEEN_SHOTS && isFrisbeeLoaded) {
                 // Increment the frisbee count, retract the piston, and reset the timer.
                 numberOfFrisbeesFired++;
-                setPistonExtended(false);
+                firingPiston.retract();
                 timer.reset();
             }
         }
@@ -185,7 +180,7 @@ public class RobotTemplate extends IterativeRobot {
             timer.start();
             if (isFrisbeeLoaded) {
                 // If there is a frisbee in the launcher, then it launches it.
-                setPistonExtended(false);
+                firingPiston.retract();
                 launcherSpeed = 0.6;
             } else {
                 isIndexerMotorRunning = true;
@@ -210,7 +205,7 @@ public class RobotTemplate extends IterativeRobot {
         } else if (joystickSystem.getButton(1, Mappings.LAUNCHER_MOTOR_DISABLE) || joystickSystem.getButton(2, Mappings.LAUNCHER_MOTOR_DISABLE)) {
             isLauncherMotorRunning = false;
         } else if (joystickSystem.isButtonPressed(1, Mappings.MANUAL_EJECT)) { // Manually eject the frisbee
-            setPistonExtended(false);
+            firingPiston.retract();
             timer.start();
         } else if (joystickSystem.isButtonPressed(1, Mappings.LAUNCHER_SPEED_INCREASE)) { // Handle the speed change.
             launcherSpeed += 0.01;
@@ -222,7 +217,7 @@ public class RobotTemplate extends IterativeRobot {
     private void handleSolenoids() {
         // If the piston retraction delay has passed, begin to retract the piston.
         if (timer.get() > Mappings.DELAY_TO_PISTON_RETRACTION && timer.get() < (Mappings.DELAY_TO_PISTON_RETRACTION + 0.2)) {
-            setPistonExtended(true);
+            firingPiston.extend();
             if (isOperatorControl()) {
                 launcherSpeed = 0.4;
             }
@@ -232,17 +227,12 @@ public class RobotTemplate extends IterativeRobot {
             climbTimer.stop();
         }
         if (joystickSystem.getButton(1, Mappings.L3)) {
-            setPistonExtended(false);
+            firingPiston.retract();
         } else if (joystickSystem.getButton(1, Mappings.R3)) {
-            setPistonExtended(true);
+            firingPiston.extend();
         }
 
         climbingHandler();
-    }
-
-    private void setPistonExtended(boolean extended) {
-        solenoids[0].set(extended);
-        solenoids[1].set(!extended);
     }
 
     private void climbingHandler() {

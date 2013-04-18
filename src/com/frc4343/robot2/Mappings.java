@@ -5,9 +5,6 @@ public class Mappings {
     // Joystick
     public final static byte JOYSTICK_COUNT = 2;
 
-    // Solenoids
-    public final static byte SOLENOID_COUNT = 4;
-
     // Firing System
     public final static byte LAUNCH_MOTOR_RELAY_PORT = 3;
     public final static byte INDEX_MOTOR_RELAY_PORT = 2;
@@ -18,6 +15,9 @@ public class Mappings {
     public final static byte COMPRESSOR_RELAY = 1;
 
     // Pistons
+    public final static byte FIRING_PISTON_SOLENOID_ONE = 1;
+    public final static byte FIRING_PISTON_SOLENOID_TWO = 2;
+    public final static boolean FIRING_PISTON_EXTENDED_BY_DEFAULT = true;
     public final static byte CLIMBING_PISTON_SOLENOID_ONE = 3;
     public final static byte CLIMBING_PISTON_SOLENOID_TWO = 4;
     public final static boolean CLIMBING_PISTON_EXTENDED_BY_DEFAULT = true;
