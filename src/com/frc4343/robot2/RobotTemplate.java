@@ -82,12 +82,13 @@ public class RobotTemplate extends IterativeRobot {
 
     private void init() {
         compressor.start();
-        firingPiston.extend(); // Extend launcher piston
-        numberOfFrisbeesFired = 0; // Allow re-enabling of autonomous
-        isFrisbeeLoaded = false; // Assume no frisbees are loaded
-        // Reset the timer if coming from autonomous.
+        firingPiston.extend();
+        numberOfFrisbeesFired = 0;
+        isFrisbeeLoaded = false; // BUG: This can probably cause double-indexing upon state switch.
+
         timer.reset();
         timer.stop();
+
         if (isAutonomous()) {
             isInitialAutonomousDelayOver = false;
             isLauncherMotorRunning = true;
@@ -180,11 +181,9 @@ public class RobotTemplate extends IterativeRobot {
     }
 
     private void handleHopperAndLauncherControls() {
-        // If the trigger is pressed.
         if (joystickSystem.isButtonPressed(1, Mappings.INDEX_AND_FIRE)) {
             timer.start();
             if (isFrisbeeLoaded) {
-                // If there is a frisbee in the launcher, then it launches it.
                 firingPiston.retract();
                 launcherSpeed = 0.6;
             } else {
@@ -209,10 +208,10 @@ public class RobotTemplate extends IterativeRobot {
             isLauncherMotorRunning = true;
         } else if (joystickSystem.getButton(1, Mappings.LAUNCHER_MOTOR_DISABLE) || joystickSystem.getButton(2, Mappings.LAUNCHER_MOTOR_DISABLE)) {
             isLauncherMotorRunning = false;
-        } else if (joystickSystem.isButtonPressed(1, Mappings.MANUAL_EJECT)) { // Manually eject the frisbee
+        } else if (joystickSystem.isButtonPressed(1, Mappings.MANUAL_EJECT)) {
             firingPiston.retract();
             timer.start();
-        } else if (joystickSystem.isButtonPressed(1, Mappings.LAUNCHER_SPEED_INCREASE)) { // Handle the speed change.
+        } else if (joystickSystem.isButtonPressed(1, Mappings.LAUNCHER_SPEED_INCREASE)) {
             launcherSpeed += 0.01;
         } else if (joystickSystem.isButtonPressed(1, Mappings.LAUNCHER_SPEED_DECREASE)) {
             launcherSpeed -= 0.01;
