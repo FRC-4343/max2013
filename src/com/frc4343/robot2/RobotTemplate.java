@@ -1,16 +1,16 @@
 package com.frc4343.robot2;
 
+import com.frc4343.robot2.Systems.DriveSystem;
+import com.frc4343.robot2.Systems.FiringSystem;
+import com.frc4343.robot2.Systems.GyroSystem;
 import com.frc4343.robot2.Systems.JoystickSystem;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStationLCD;
 import edu.wpi.first.wpilibj.DriverStationLCD.Line;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 
@@ -20,12 +20,16 @@ public class RobotTemplate extends IterativeRobot {
     Logger logger = new Logger();
     Piston climbingPiston = new Piston(Mappings.CLIMBING_PISTON_SOLENOID_ONE, Mappings.CLIMBING_PISTON_SOLENOID_TWO, Mappings.CLIMBING_PISTON_EXTENDED_BY_DEFAULT);
     Piston firingPiston = new Piston(Mappings.FIRING_PISTON_SOLENOID_ONE, Mappings.FIRING_PISTON_SOLENOID_TWO, Mappings.FIRING_PISTON_EXTENDED_BY_DEFAULT);
-    JoystickSystem joystickSystem = new JoystickSystem(this);
+    public JoystickSystem joystickSystem = new JoystickSystem(this);
+    public DriveSystem driveSystem = new DriveSystem(this);
+    public FiringSystem firingSystem = new FiringSystem(this);
+    public GyroSystem gyroSystem = new GyroSystem(this);
     // Compressor
     Compressor compressor = new Compressor(Mappings.COMPRESSOR_DIGITAL_IO, Mappings.COMPRESSOR_RELAY);
 
     // Timers
-    Timer timer = new Timer();
+    Timer fireTimer = new Timer();
+    Timer autonomousInitialDelayTimer = new Timer();
     Timer climbTimer = new Timer();
     Timer indexerReverseDelayTimer = new Timer();
     Timer autonomousDriveTimer = new Timer();
@@ -52,7 +56,61 @@ public class RobotTemplate extends IterativeRobot {
     boolean readyToIndexNextFrisbee = false;
     byte numberOfFrisbeesFired = 0;
 
-    public void robotInit() {
+    private void init() {
+        compressor.start();
+        firingPiston.extend();
+        numberOfFrisbeesFired = 0;
+        isFrisbeeLoaded = false; // BUG: This can probably cause double-indexing upon state switch.
+        isLauncherMotorRunning = true;
+        isInitialAutonomousDelayOver = false;
+        launcherSpeed = Mappings.DEFAULT_LAUNCHER_SPEED;
+
+        fireTimer.reset();
+        fireTimer.stop();
+        autonomousInitialDelayTimer.reset();
+        autonomousInitialDelayTimer.stop();
+        climbTimer.reset();
+        climbTimer.stop();
+        indexerReverseDelayTimer.reset();
+        indexerReverseDelayTimer.stop();
+        autonomousDriveTimer.reset();
+        autonomousDriveTimer.stop();
+
+        if (isAutonomous()) {
+            isIndexerMotorRunning = true;
+            autonomousInitialDelayTimer.start();
+        } else if (isOperatorControl()) {
+            isIndexerMotorRunning = false;
+            climbTimer.start();
+        }
+    }
+
+    public void autonomousInit() {
+        init();
+    }
+
+    public void autonomousPeriodic() {
+        if (!isInitialAutonomousDelayOver && autonomousInitialDelayTimer.get() >= Mappings.DELAY_BEFORE_FIRST_SHOT) {
+            isInitialAutonomousDelayOver = true;
+
+            autonomousInitialDelayTimer.reset();
+            autonomousInitialDelayTimer.stop();
+            fireTimer.start();
+        } else if (isInitialAutonomousDelayOver && numberOfFrisbeesFired < Mappings.FRISBEES_TO_FIRE) {
+            // Once the delay per shot has been reached, fire the next frisbee.
+            if (fireTimer.get() >= Mappings.DELAY_BETWEEN_SHOTS && isFrisbeeLoaded) {
+                // Increment the frisbee count, retract the piston, and reset the fireTimer.
+                numberOfFrisbeesFired++;
+                firingPiston.retract();
+                fireTimer.reset();
+            }
+        }
+
+        driveInAutonomous();
+
+        handleIndexer();
+        handleSolenoids();
+        handleConsoleOutputAndMotorBooleans();
     }
 
     public void teleopInit() {
@@ -69,56 +127,10 @@ public class RobotTemplate extends IterativeRobot {
         sumOfXAxes = sumOfXAxes > 1 ? 1 : sumOfXAxes < -1 ? -1 : sumOfXAxes;
 
         robotDrive.arcadeDrive(sumOfYAxes, sumOfXAxes);
+
         handleHopperAndLauncherControls();
-        handleIndexer();
         handleLauncherMotorSettings();
-        handleSolenoids();
-        handleConsoleOutputAndMotorBooleans();
-    }
 
-    public void autonomousInit() {
-        init();
-    }
-
-    private void init() {
-        compressor.start();
-        firingPiston.extend();
-        numberOfFrisbeesFired = 0;
-        isFrisbeeLoaded = false; // BUG: This can probably cause double-indexing upon state switch.
-
-        timer.reset();
-        timer.stop();
-
-        if (isAutonomous()) {
-            isInitialAutonomousDelayOver = false;
-            isLauncherMotorRunning = true;
-            isIndexerMotorRunning = true;
-            launcherSpeed = 0.5;
-            timer.start();
-        } else if (isOperatorControl()) {
-            climbTimer.reset();
-            climbTimer.start();
-            isLauncherMotorRunning = true;
-            isIndexerMotorRunning = false;
-        }
-    }
-
-    public void autonomousPeriodic() {
-        // If the autonomous delay has not finished previously and the is now over, set the boolean and reset the timer.
-        if (timer.get() >= Mappings.DELAY_BEFORE_FIRST_SHOT && !isInitialAutonomousDelayOver) {
-            launcherSpeed = 0.4;
-            isInitialAutonomousDelayOver = true;
-            timer.reset();
-        } else if (isInitialAutonomousDelayOver && numberOfFrisbeesFired < Mappings.FRISBEES_TO_FIRE) {
-            // Once the delay per shot has been reached, fire the next frisbee.
-            if (timer.get() >= Mappings.DELAY_BETWEEN_SHOTS && isFrisbeeLoaded) {
-                // Increment the frisbee count, retract the piston, and reset the timer.
-                numberOfFrisbeesFired++;
-                firingPiston.retract();
-                timer.reset();
-            }
-        }
-        driveInAutonomous();
         handleIndexer();
         handleSolenoids();
         handleConsoleOutputAndMotorBooleans();
@@ -126,29 +138,29 @@ public class RobotTemplate extends IterativeRobot {
 
     private void handleIndexer() {
         // If 0.4 s has passed since the piston retracted, we can index the next frisbee, if there is still one left.
-        // If there are no frisbees left, we do not attempt to index another, but rather reset and stop the the timer.
-        if (timer.get() > Mappings.DELAY_TO_PISTON_RETRACTION + 0.4 && isInitialAutonomousDelayOver && !isFrisbeeLoaded && isAutonomous() && numberOfFrisbeesFired != Mappings.FRISBEES_TO_FIRE) {
+        // If there are no frisbees left, we do not attempt to index another, but rather reset and stop the the fireTimer.
+        if (isInitialAutonomousDelayOver && fireTimer.get() > Mappings.DELAY_TO_PISTON_RETRACTION + Mappings.TIME_FOR_FRISBEE_TO_FALL && !isFrisbeeLoaded && isAutonomous()) {
             isIndexerMotorRunning = true;
         }
-        if (indexerLimitSwitch.get()) { // If frisbee hits limitswitch
+        if (indexerLimitSwitch.get()) {
             isIndexerMotorRunning = false;
             isFrisbeeLoaded = true;
             if (isOperatorControl()) {
-                timer.reset();
-                timer.stop();
+                fireTimer.reset();
+                fireTimer.stop();
             }
-        } else if (timer.get() >= Mappings.INDEXER_TIMEOUT && isOperatorControl()) {
+        } else if (fireTimer.get() >= Mappings.INDEXER_TIMEOUT && isOperatorControl()) {
             isIndexerMotorRunning = false;
-            timer.reset();
-            timer.stop();
+            fireTimer.reset();
+            fireTimer.stop();
         }
     }
 
     private void driveInAutonomous() {
         if (numberOfFrisbeesFired == Mappings.FRISBEES_TO_FIRE) {
+            fireTimer.reset();
+            fireTimer.stop();
             autonomousDriveTimer.start();
-            timer.reset();
-            timer.stop();
         }
         if (!driveBack && !turn180 && autonomousDriveTimer.get() > 0.15 && autonomousDriveTimer.get() < 0.45) {
             driveBack = true;
@@ -182,7 +194,7 @@ public class RobotTemplate extends IterativeRobot {
 
     private void handleHopperAndLauncherControls() {
         if (joystickSystem.isButtonPressed(1, Mappings.INDEX_AND_FIRE)) {
-            timer.start();
+            fireTimer.start();
             if (isFrisbeeLoaded) {
                 firingPiston.retract();
                 launcherSpeed = 0.6;
@@ -210,7 +222,7 @@ public class RobotTemplate extends IterativeRobot {
             isLauncherMotorRunning = false;
         } else if (joystickSystem.isButtonPressed(1, Mappings.MANUAL_EJECT)) {
             firingPiston.retract();
-            timer.start();
+            fireTimer.start();
         } else if (joystickSystem.isButtonPressed(1, Mappings.LAUNCHER_SPEED_INCREASE)) {
             launcherSpeed += 0.01;
         } else if (joystickSystem.isButtonPressed(1, Mappings.LAUNCHER_SPEED_DECREASE)) {
@@ -220,7 +232,7 @@ public class RobotTemplate extends IterativeRobot {
 
     private void handleSolenoids() {
         // If the piston retraction delay has passed, begin to retract the piston.
-        if (timer.get() > Mappings.DELAY_TO_PISTON_RETRACTION && timer.get() < (Mappings.DELAY_TO_PISTON_RETRACTION + 0.2)) {
+        if (fireTimer.get() > Mappings.DELAY_TO_PISTON_RETRACTION && fireTimer.get() < (Mappings.DELAY_TO_PISTON_RETRACTION + 0.2)) {
             firingPiston.extend();
             if (isOperatorControl()) {
                 launcherSpeed = 0.4;

@@ -28,6 +28,7 @@ public class Mappings {
     public final static double AXIS_COMPENSATION = 0.8;
     public final static double ALTERNATE_COMPENSATION = 0.5;
     public final static double INDEXER_TIMEOUT = 1.5;
+    public final static double TIME_FOR_FRISBEE_TO_FALL = 0.4;
     // Autonomous
     public final static double AUTOMATIC_CLIMB_TIME = 119.9;
     public final static byte FRISBEES_TO_FIRE = 3;
@@ -36,6 +37,15 @@ public class Mappings {
     public final static double DELAY_TO_PISTON_RETRACTION = 0.3;
     public final static double REVERSE_DURATION = 1.3;
     public final static double ROTATE_DURATION = 0.79;
+    public final static double AUTONOMOUS_DRIVE_SPEED = 0.4;
+
+
+    // Gyro system
+    public final static byte GYRO_PORT = 1;
+    public final static double ROTATE_SPEED = 0.3;
+    public final static byte DISTANCE_FROM_WALL_IN_INCHES = 100;
+    public final static byte DISTANCE_DEADZONE_IN_INCHES = 10;
+    public final static byte ANGLE_TO_ROTATE_BY = 90;
 
 
     // Button Mappings
@@ -64,5 +74,11 @@ public class Mappings {
     public final static byte LAUNCHER_MOTOR_DISABLE = SELECT;
     public final static byte EXTEND_CLIMBING_PISTONS = DPAD_UP;
     public final static byte RETRACT_CLIMBING_PISTONS = DPAD_DOWN;
+    public final static byte FLUSH_HOPPER = PSBUTTON;
     public final static byte EJECT_STUCK_FRISBEE = SQUARE;
+
+
+    // Temporary
+    public final static byte ALIGN_TO_CENTER_GOAL_CLOCKWISE = SQUARE;
+    public final static byte ALIGN_TO_CENTER_GOAL_COUNTERCLOCKWISE = CIRCLE;
 }
