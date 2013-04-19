@@ -68,17 +68,6 @@ public class RobotTemplate extends IterativeRobot {
         printConsoleOutput();
     }
 
-    public void testPeriodic() {
-        firingSystem.run();
-        navigationSystem.run();
-        driveSystem.run();
-
-        climbingHandler();
-
-        // Print the debug output the the DriverStation console.
-        printConsoleOutput();
-    }
-
     private void climbingHandler() {
         if (joystickSystem.getButton(1, Mappings.EXTEND_CLIMBING_PISTONS)) {
             climbingPiston.extend();
