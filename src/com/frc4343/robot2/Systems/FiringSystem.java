@@ -132,7 +132,7 @@ public final class FiringSystem extends System {
                     }
                 } else {
                     // If the trigger has been pressed and is not being held, OR if we are firing all the frisbees in the robot, we begin the firing cycle.
-                    if ((robot.joystickSystem.getJoystick(1).getRawButton(Mappings.TRIGGER) && !triggerHeld) || firingAllFrisbees == true) {
+                    if ((robot.joystickSystem.getButton(1, Mappings.TRIGGER) && !triggerHeld) || firingAllFrisbees == true) {
                         indexingTimer.reset();
                         indexingTimer.start();
 
@@ -154,7 +154,7 @@ public final class FiringSystem extends System {
                 break;
             case READY:
                 // If the trigger has been pressed and is not being held, OR if we are firing all the frisbees in the robot, we handle frisbee firing.
-                if (robot.isOperatorControl() && robot.joystickSystem.getJoystick(1).getRawButton(Mappings.TRIGGER) && !triggerHeld) {
+                if (robot.isOperatorControl() && robot.joystickSystem.getButton(1, Mappings.TRIGGER) && !triggerHeld) {
                     launchTimer.start();
                 }
 
@@ -181,8 +181,8 @@ public final class FiringSystem extends System {
         }
 
         // Store the state of whether or not the buttons have been pressed, to know if they are being held down in the next iteration.
-        triggerHeld = robot.joystickSystem.getJoystick(1).getRawButton(Mappings.TRIGGER);
-        adjustedSpeed = robot.joystickSystem.getJoystick(1).getRawButton(Mappings.SPEED_INCREASE) ^ robot.joystickSystem.getJoystick(1).getRawButton(Mappings.SPEED_DECREASE);
+        triggerHeld = robot.joystickSystem.getButton(1, Mappings.TRIGGER);
+        adjustedSpeed = robot.joystickSystem.getButton(1, Mappings.SPEED_INCREASE) ^ robot.joystickSystem.getButton(1, Mappings.SPEED_DECREASE);
 
         // Set the state of the motors based on the values of the booleans controlling them.
         indexerMotor.set(isIndexerMotorRunning ? Relay.Value.kForward : Relay.Value.kOff);
@@ -286,7 +286,7 @@ public final class FiringSystem extends System {
 
     private void input() {
         // Handle forced (manual) ejection of a loaded frisbee.
-        if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.MANUAL_EJECT)) {
+        if (robot.joystickSystem.getButton(1, Mappings.MANUAL_EJECT)) {
             launchTimer.reset();
             launchTimer.start();
 
@@ -294,24 +294,24 @@ public final class FiringSystem extends System {
         }
 
         // Attempt to fire all frisbees contained in the hopper.
-        if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.FLUSH_HOPPER)) {
+        if (robot.joystickSystem.getButton(1, Mappings.FLUSH_HOPPER)) {
             firingAllFrisbees = true;
         }
 
         // Manually control the state of the launcherMotor motor. (Not intended to be used in competition)
         if (!robot.getFMSConnection()) {
-            if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.LAUNCHER_MOTOR_ENABLE) || robot.joystickSystem.getJoystick(2).getRawButton(Mappings.LAUNCHER_MOTOR_ENABLE)) {
+            if (robot.joystickSystem.getButton(1, Mappings.LAUNCHER_MOTOR_ENABLE) || robot.joystickSystem.getButton(2, Mappings.LAUNCHER_MOTOR_ENABLE)) {
                 isLauncherMotorRunning = true;
-            } else if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.LAUNCHER_MOTOR_DISABLE) || robot.joystickSystem.getJoystick(2).getRawButton(Mappings.LAUNCHER_MOTOR_DISABLE)) {
+            } else if (robot.joystickSystem.getButton(1, Mappings.LAUNCHER_MOTOR_DISABLE) || robot.joystickSystem.getButton(2, Mappings.LAUNCHER_MOTOR_DISABLE)) {
                 isLauncherMotorRunning = false;
             }
         }
 
         // If the buttons are not being held down or pressed together, increase or decrease the speed of the launcherMotor motor.
         if (!adjustedSpeed) {
-            if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.SPEED_INCREASE)) {
+            if (robot.joystickSystem.getButton(1, Mappings.SPEED_INCREASE)) {
                 launcherMotorSpeed += 1;
-            } else if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.SPEED_DECREASE)) {
+            } else if (robot.joystickSystem.getButton(1, Mappings.SPEED_DECREASE)) {
                 launcherMotorSpeed -= 1;
             }
         }

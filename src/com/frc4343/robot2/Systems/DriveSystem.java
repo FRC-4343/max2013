@@ -3,6 +3,7 @@ package com.frc4343.robot2.Systems;
 import com.frc4343.robot2.Mappings;
 import com.frc4343.robot2.RobotTemplate;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -113,8 +114,8 @@ public class DriveSystem extends System {
                     break;
                 case DRIVING:
                     if (isDrivingWithJoystick) {
-                        double sumOfYAxes = robot.joystickSystem.getJoystick((byte) 2).getAxis(Joystick.AxisType.kY) + (robot.joystickSystem.getJoystick((byte) 1).getAxis(Joystick.AxisType.kY) * Mappings.PRECISION_COMPENSATION);
-                        double sumOfXAxes = -robot.joystickSystem.getJoystick((byte) 2).getAxis(Joystick.AxisType.kX) * Mappings.AXIS_COMPENSATION + (-robot.joystickSystem.getJoystick((byte) 1).getAxis(Joystick.AxisType.kX) * Mappings.PRECISION_COMPENSATION);
+                        double sumOfYAxes = robot.joystickSystem.getAxis(2, AxisType.kY) + (robot.joystickSystem.getAxis(1, AxisType.kY) * Mappings.PRECISION_COMPENSATION);
+                        double sumOfXAxes = -robot.joystickSystem.getAxis(2, AxisType.kX) * Mappings.AXIS_COMPENSATION + (-robot.joystickSystem.getAxis(1, AxisType.kX) * Mappings.PRECISION_COMPENSATION);
                         // Floor the values of the combined js in case they are above 1 or below -1.
                         sumOfYAxes = sumOfYAxes > 1 ? 1 : sumOfYAxes < -1 ? -1 : sumOfYAxes;
                         sumOfXAxes = sumOfXAxes > 1 ? 1 : sumOfXAxes < -1 ? -1 : sumOfXAxes;
