@@ -69,7 +69,7 @@ public class DriveSystem extends System {
                         driveSpeed = 0;
                         turnSpeed = 0;
 
-                        robot.gyroSystem.rotate(-45);
+                        robot.navigationSystem.rotate(-45);
 
                         systemState = ROTATING_TO_SIDE;
                     }
@@ -92,7 +92,7 @@ public class DriveSystem extends System {
                         driveSpeed = 0;
                         turnSpeed = 0;
 
-                        robot.gyroSystem.rotate(-45);
+                        robot.navigationSystem.rotate(-45);
 
                         systemState = ROTATING_TO_PICKUP;
                     }

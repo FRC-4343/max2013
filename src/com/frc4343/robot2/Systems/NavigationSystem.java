@@ -6,7 +6,7 @@ import com.frc4343.robot2.Sonar;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Timer;
 
-public class GyroSystem extends System {
+public class NavigationSystem extends System {
 
     public Gyro gyro = new Gyro(Mappings.GYRO_PORT);
     Sonar sonar = new Sonar(1, 1);
@@ -24,7 +24,7 @@ public class GyroSystem extends System {
     // DISTANCING indicates that the robot is calculating and correcting the distance from the pyramid.
     static final byte DISTANCING = 3;
 
-    public GyroSystem(RobotTemplate robot) {
+    public NavigationSystem(RobotTemplate robot) {
         super(robot);
     }
 

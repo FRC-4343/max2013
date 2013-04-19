@@ -2,7 +2,7 @@ package com.frc4343.robot2;
 
 import com.frc4343.robot2.Systems.DriveSystem;
 import com.frc4343.robot2.Systems.FiringSystem;
-import com.frc4343.robot2.Systems.GyroSystem;
+import com.frc4343.robot2.Systems.NavigationSystem;
 import com.frc4343.robot2.Systems.JoystickSystem;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStationLCD.Line;
@@ -15,7 +15,7 @@ public class RobotTemplate extends IterativeRobot {
     // Various systems
     public FiringSystem firingSystem = new FiringSystem(this);
     public JoystickSystem joystickSystem = new JoystickSystem(this);
-    public GyroSystem gyroSystem = new GyroSystem(this);
+    public NavigationSystem navigationSystem = new NavigationSystem(this);
     public DriveSystem driveSystem = new DriveSystem(this);
     // Miscellaneous robot components/helpers
     Logger logger = new Logger();
@@ -29,7 +29,7 @@ public class RobotTemplate extends IterativeRobot {
         climbingPiston.extend();
         // Initialize and/or reset the various systems.
         firingSystem.switchMode();
-        gyroSystem.switchMode();
+        navigationSystem.switchMode();
         driveSystem.switchMode();
     }
 
@@ -50,7 +50,7 @@ public class RobotTemplate extends IterativeRobot {
 
     public void teleopPeriodic() {
         firingSystem.run();
-        gyroSystem.run();
+        navigationSystem.run();
         driveSystem.run();
 
         climbingHandler();
@@ -61,7 +61,7 @@ public class RobotTemplate extends IterativeRobot {
 
     public void autonomousPeriodic() {
         firingSystem.run();
-        gyroSystem.run();
+        navigationSystem.run();
         driveSystem.run();
 
         // Print the debug output the the DriverStation console.
@@ -70,7 +70,7 @@ public class RobotTemplate extends IterativeRobot {
 
     public void testPeriodic() {
         firingSystem.run();
-        gyroSystem.run();
+        navigationSystem.run();
         driveSystem.run();
 
         climbingHandler();
@@ -98,7 +98,7 @@ public class RobotTemplate extends IterativeRobot {
         logger.printLine(Line.kUser2, "Launcher Speed: " + (byte) (firingSystem.getLauncherSpeed() * 100) + "%");
         // Prints the state of various systems
         logger.printLine(Line.kUser3, "FSS: " + firingSystem.getState());
-        logger.printLine(Line.kUser4, "GSS: " + gyroSystem.getState());
+        logger.printLine(Line.kUser4, "GSS: " + navigationSystem.getState());
         logger.printLine(Line.kUser5, "DSS: " + driveSystem.getState());
         // Updates the output window.
         logger.updateLCD();
