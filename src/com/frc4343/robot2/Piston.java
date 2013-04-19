@@ -3,8 +3,8 @@ package com.frc4343.robot2;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public final class Piston {
-    // Initialize an array of two solenoids to handle the solenoids controlling the piston.
 
+    // Initialize an array of two solenoids to handle the solenoids controlling the piston.
     Solenoid[] solenoids = new Solenoid[2];
 
     // The constructor which takes all the values required to define and operate a piston.
