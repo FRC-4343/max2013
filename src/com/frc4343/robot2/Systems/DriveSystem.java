@@ -10,22 +10,26 @@ public class DriveSystem extends System {
 
     RobotDrive drive = new RobotDrive(1, 2);
     Timer timer = new Timer();
+    Timer autonomousDriveTimer = new Timer();
     Timer pause = new Timer();
     double driveSpeed = 1.0;
     double turnSpeed = 1.0;
     double timerGoal = 0.0;
     double pauseTime = 0.0;
+
+    final double AUTONOMOUS_REVERSE_DURATION = 1.3;
+    final double AUTONOMOUS_ROTATE_DURATION = 0.79;
     public boolean isDrivingWithJoystick = true;
     // IDLE indicates no activity.
     static final byte IDLE = 0;
     // DRIVING indicates that the robot is moving.
     static final byte DRIVING = 1;
     // PAUSED indicates that the robot is waiting for a timer to complete before it begins moving.
-    static final byte PAUSED = 2;
+    static final byte TURN_180 = 2;
     // TIMED indicates that the robot is the robot is under a timed driving state.
     static final byte TIMED = 3;
     // DRIVE_BACK indicates that the robot has fired its shots and is driving back to pickup more frisbees.
-    static final byte DRIVE_BACK = 4;
+    static final byte DRIVE_REVERSE = 4;
     // DRIVE_FORWARD indicates that the robot has picked up extra frisbees and is moving back to its original position.
     static final byte DRIVE_FORWARD = 5;
     // DONE indicates that the robot has finished moving for the state.
@@ -51,34 +55,26 @@ public class DriveSystem extends System {
             switch (systemState) {
                 case IDLE:
                     if (robot.firingSystem.isFinishedFiring()) {
-                        driveWithTimer(-Mappings.AUTONOMOUS_DRIVE_SPEED, 0.0, Mappings.AUTONOMOUS_TIME_SPENT_DRIVING_BACK);
-                        systemState = DRIVE_BACK;
+                        systemState = DRIVE_REVERSE;
                     }
                     break;
-                case DRIVE_BACK:
-                    drive.arcadeDrive(driveSpeed, turnSpeed);
-
-                    if (timer.get() > timerGoal) {
-                        timer.reset();
-                        timer.stop();
-
-                        timerGoal = 0;
-                        driveSpeed = 0;
-                        turnSpeed = 0;
-
-                        driveAfterPause(Mappings.AUTONOMOUS_DRIVE_SPEED, 0.0, Mappings.AUTONOMOUS_TIME_SPENT_DRIVING_FORWARD, Mappings.AUTONOMOUS_TIME_BEFORE_DRIVING_FORWARD);
-                        systemState = PAUSED;
+                case DRIVE_REVERSE:
+                    if (autonomousDriveTimer.get() <= AUTONOMOUS_REVERSE_DURATION) {
+                        drive.arcadeDrive(1.0, 0.0);
+                    } else if (autonomousDriveTimer.get() > AUTONOMOUS_REVERSE_DURATION) {
+                        drive.arcadeDrive(0.0, 0.0);
+                        autonomousDriveTimer.reset();
+                        systemState = TURN_180;
                     }
                     break;
-                case PAUSED:
-                    if (pause.get() > pauseTime) {
-                        pause.reset();
-                        pause.stop();
-                        driveWithTimer(driveSpeed, turnSpeed, 1.0);
-
-                        pauseTime = 0;
-
-                        systemState = DRIVE_FORWARD;
+                case TURN_180:
+                    if (autonomousDriveTimer.get() >= 0.1 && autonomousDriveTimer.get() <= AUTONOMOUS_ROTATE_DURATION) {
+                        drive.tankDrive(-1.0, 1.0);
+                    } else if (autonomousDriveTimer.get() > AUTONOMOUS_ROTATE_DURATION + 0.5) {
+                        drive.arcadeDrive(0.0, 0.0);
+                        autonomousDriveTimer.reset();
+                        autonomousDriveTimer.stop();
+                        systemState = DONE;
                     }
                     break;
                 case DRIVE_FORWARD:
@@ -93,8 +89,8 @@ public class DriveSystem extends System {
                         turnSpeed = 0;
 
                         robot.firingSystem.switchMode();
-                        robot.firingSystem.setNumberOfFrisbeesToFireInAutonomous(2);
-                        robot.firingSystem.initialAutonomousDelayOver = true;
+                        //robot.firingSystem.setNumberOfFrisbeesToFireInAutonomous(2);
+                        //robot.firingSystem.initialAutonomousDelayOver = true;
                         systemState = DONE;
                     }
                     break;
@@ -138,6 +134,7 @@ public class DriveSystem extends System {
         }
     }
 
+
     public void driveIndefinitely(double speed, double turn) {
         timer.reset();
         timer.stop();
@@ -168,7 +165,7 @@ public class DriveSystem extends System {
             case 1:
                 return "DRIVING";
             case 2:
-                return "PAUSE";
+                return "TURN_180";
             case 3:
                 return "TIMED";
             case 4:

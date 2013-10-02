@@ -9,6 +9,8 @@ public class Mappings {
     public final static byte CLIMBING_PISTON_SOLENOID_TWO = 4;
     public final static boolean CLIMBING_PISTON_EXTENDED_BY_DEFAULT = true;
     public final static byte COLOR_CUTOFF = 50;
+    public final static double PISTON_EXTENSION_LATENCY = 0.1;
+    public final static double PISTON_RETRACTION_LATENCY = 0.1;
     // Gyro Mappings
     public final static byte GYRO_PORT = 1;
     public final static double ROTATE_SPEED = 0.7;
@@ -29,10 +31,10 @@ public class Mappings {
     public final static double LOADING_DELAY = 0.5;
     public final static double FRISBEE_FALL_TIMER = 0.5;
     public final static double ACCELERATION_DELAY = 0.0;
-    public final static double EXTEND_TIME = 0.3;
-    public final static double RETRACT_TIME = 0.2;
+    public final static double EXTEND_TIME = 0.15;
+    public final static double RETRACT_TIME = 0.15;
     // Drive Mappings
-    public final static double AXIS_COMPENSATION = 0.5;
+    public final static double AXIS_COMPENSATION = 0.8;
     public final static double PRECISION_COMPENSATION = 0.4;
     public final static double AUTONOMOUS_TIME_SPENT_DRIVING_BACK = 1;
     public final static double AUTONOMOUS_TIME_BEFORE_DRIVING_FORWARD = 1;
