@@ -7,7 +7,7 @@ public class Logger {
     DriverStationLCD dsLCD = DriverStationLCD.getInstance();
 
     private void clearLine(DriverStationLCD.Line line) {
-        printLine(line, "                                     ");
+        printLine(line, "                     "); // WPILIB only supports 21 lines printing
     }
 
     public void clearWindow() {

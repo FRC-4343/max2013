@@ -111,6 +111,8 @@ public final class FiringSystem extends System {
                             isLauncherMotorWarmUpFinished = true;
                             firingAllFrisbees = true;
                         }
+                    } else if (isFinishedFiring()) {
+                        firingAllFrisbees = false;
                     } else {
                         if (numberOfFrisbeesFiredInAutonomous >= 1) { // After first index
                             indexingTimer.reset();

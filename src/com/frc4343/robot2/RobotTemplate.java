@@ -82,9 +82,7 @@ public class RobotTemplate extends IterativeRobot {
     private void climbingHandler() {
         if (joystickSystem.getJoystick(1).getRawButton(Mappings.EXTEND_CLIMBING_PISTONS)) {
             climbingPiston.extend();
-        } else if (joystickSystem.getJoystick(1).getRawButton(Mappings.RETRACT_CLIMBING_PISTONS)) {
-            climbingPiston.retract();
-        } else if (climbTimer.get() >= Mappings.AUTO_CLIMB_TIME) {
+        } else if (joystickSystem.getJoystick(1).getRawButton(Mappings.RETRACT_CLIMBING_PISTONS) || climbTimer.get() >= Mappings.AUTO_CLIMB_TIME && m_ds.isFMSAttached()) {
             climbingPiston.retract();
         }
     }
@@ -92,21 +90,19 @@ public class RobotTemplate extends IterativeRobot {
     private void printConsoleOutput() {
         // Clears driverStation text.
         logger.clearWindow();
-        // Prints State of Launcher Motor
-        logger.printLine(Line.kUser1, "Indexer Motor: " + (firingSystem.getIndexerMotorState() ? "ON" : "OFF"));
-        // Print the speed of the launcher motor.
-        logger.printLine(Line.kUser2, "Launcher Speed: " + (byte) (firingSystem.getLauncherSpeed() * 100) + "%");
+        // Prints Information Concerning The Launcher Motor
+        logger.printLine(Line.kUser1, "Launcher: " + (firingSystem.getLauncherMotorState() ? "ON [" : "OFF[") + (byte) (firingSystem.getLauncherSpeed() * 100) + "%]");
+        logger.printLine(Line.kUser2, "Auto Hang ETA: " + (m_ds.isFMSAttached() ? ((byte) (Mappings.AUTO_CLIMB_TIME - climbTimer.get()) + "s") : "DISABLED"));
+        logger.printLine(Line.kUser3, "Tanks: " + (compressor.getPressureSwitchValue() ? "FULL" : "COMPRESSING"));
         // Prints the state of various systems
-        logger.printLine(Line.kUser3, "FSS: " + firingSystem.getState());
-        logger.printLine(Line.kUser4, "GSS: " + gyroSystem.getState());
-        logger.printLine(Line.kUser5, "DSS: " + driveSystem.getState());
+        logger.printLine(Line.kUser5, "FSS: " + firingSystem.getState());
+        logger.printLine(Line.kUser6, "GSS: " + gyroSystem.getState());
+        //logger.printLine(Line.kUser6, "DSS: " + driveSystem.getState());
         // Updates the output window.
         logger.updateLCD();
         // Prints the current gyro angle.
         //logger.printLine(Line.kUser1, "Gyro value: " + (gyroSystem.gyro.getAngle()));
         //logger.printLine(Line.kUser2, "RPM: " + firingSystem.getRPM());
-        // Prints State of Launcher Motor
-        //logger.printLine(Line.kUser2, "Launcher Motor: " + (firingSystem.getLauncherMotorState() ? "ON" : "OFF"));
         // Print the tank pressurization state.
         //logger.printLine(Line.kUser5, "Tanks Full: " + (compressor.getPressureSwitchValue() ? "YES" : "NO"));
     }
