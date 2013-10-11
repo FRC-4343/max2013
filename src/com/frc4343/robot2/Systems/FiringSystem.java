@@ -23,7 +23,7 @@ public final class FiringSystem extends System {
     DigitalInput indexerLimitSwitch = new DigitalInput(Mappings.INDEXER_LIMIT_SWITCH_PORT);
     //HiTechnicColorSensor colorSensor = new HiTechnicColorSensor(1);
     // The default speed for the launch motor to start at.
-    double launcherMotorSpeed = 0.4;
+    double launcherMotorSpeed = Mappings.DEFAULT_LAUNCHER_MOTOR_SPEED;
     // Motor Booleans
     boolean isLauncherMotorRunning = false;
     boolean isIndexerMotorRunning = false;
@@ -34,7 +34,7 @@ public final class FiringSystem extends System {
     boolean adjustedSpeed = false;
     // Autonomous-only variables
     public boolean isLauncherMotorWarmUpFinished = false;
-    int maxFrisbeesToFireInAutonomous = 3;
+    byte maxFrisbeesToFireInAutonomous = 3;
     byte numberOfFrisbeesFiredInAutonomous = 0;
     // Teleop-only variables
     boolean firingAllFrisbees = false;
@@ -73,8 +73,8 @@ public final class FiringSystem extends System {
         // Reset the piston to its default position.
         firingPiston.extend();
         // Launcher motor will be enabled and reset to the default speed in case the drivers forget.
-        //isLauncherMotorRunning = robot.getFMSConnection() ? true : false;
-        isLauncherMotorRunning = true;
+        isLauncherMotorRunning = robot.getFMSConnection() ? true : false;
+        //isLauncherMotorRunning = true; // Disabled for Compressing
         isIndexerMotorRunning = false;
 
         launcherMotorSpeed = Mappings.DEFAULT_LAUNCHER_MOTOR_SPEED;
@@ -135,7 +135,7 @@ public final class FiringSystem extends System {
             case LOADING:
                 if (robot.isAutonomous() || firingAllFrisbees == true) {
                     // Sets the motor speed to 100% for a small amount of time so as to allow for the wheel to spin back up to speed for firing.
-                    launcherMotorSpeed = 1;
+                    launcherMotorSpeed = 0.8; // Can be reset to 1
                 }
 
                 load();
@@ -340,7 +340,7 @@ public final class FiringSystem extends System {
         return numberOfFrisbeesFiredInAutonomous == maxFrisbeesToFireInAutonomous;
     }
 
-    public void setNumberOfFrisbeesToFireInAutonomous(int frisbees) {
+    public void setNumberOfFrisbeesToFireInAutonomous(byte frisbees) {
         maxFrisbeesToFireInAutonomous = frisbees;
     }
 
