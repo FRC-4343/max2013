@@ -91,11 +91,8 @@ public final class FiringSystem extends System {
             isLauncherMotorWarmUpFinished = false;
             // Enable the timer which will control the initial firing delay during autonomous.
             autonomousTimer.start();
-            // Set the state to indexing to load the first frisbee instantly.
-            systemState = INDEXING;
-        } else {
-            systemState = IDLE;
         }
+        systemState = IDLE;
     }
 
     public void run() {
@@ -107,21 +104,20 @@ public final class FiringSystem extends System {
                         if (autonomousTimer.get() >= Mappings.AUTONOMOUS_DELAY_BEFORE_FIRST_SHOT) {
                             autonomousTimer.reset();
                             autonomousTimer.stop();
-                            
+
                             isLauncherMotorWarmUpFinished = true;
                             firingAllFrisbees = true;
                         }
-                    } else if (isFinishedFiring()) {
-                        firingAllFrisbees = false;
                     } else {
-                        if (numberOfFrisbeesFiredInAutonomous >= 1) { // After first index
+                        if (firingAllFrisbees = true) {
                             indexingTimer.reset();
                             indexingTimer.start();
                             systemState = INDEXING;
-                        } else {
-                            systemState = READY;
                         }
-                    } 
+                    }
+                    if (isFinishedFiring()) {
+                        firingAllFrisbees = false;
+                    }
                 } else {
                     // If the trigger has been pressed and is not being held, OR if we are firing all the frisbees in the robot, we begin the firing cycle.
                     if ((robot.joystickSystem.getJoystick(1).getRawButton(Mappings.TRIGGER) && !triggerHeld) || firingAllFrisbees == true) {
@@ -195,14 +191,14 @@ public final class FiringSystem extends System {
         if (indexerLimitSwitch.get() || indexingTimer.get() >= Mappings.INDEXER_TIMEOUT) {
             isIndexerMotorRunning = false;
 
-            if (robot.isOperatorControl()) {
+            if (robot.isOperatorControl() || firingAllFrisbees) {
                 if (indexingTimer.get() >= Mappings.INDEXER_TIMEOUT) {
                     // If we were automatically firing frisbees, we stop, as there are no more frisbees left.
                     firingAllFrisbees = false;
 
                     systemState = IDLE;
                 }
-            } 
+            }
 
             // Reset the indexingTimer as we no longer have to monitor the time a frisbee has been indexing for until we enter this stage again.
             indexingTimer.reset();
@@ -222,7 +218,7 @@ public final class FiringSystem extends System {
             // If the robot is in autonomous mode, we instantly begin the READY state countdown as there is no user input before firing.
             if (robot.isAutonomous() && !isLauncherMotorWarmUpFinished) {
                 systemState = IDLE;
-                    //launchTimer.stop();
+                //launchTimer.stop();
             } else {
                 if (firingAllFrisbees) {
                     launchTimer.start();
@@ -238,7 +234,7 @@ public final class FiringSystem extends System {
     }
 
     private void ready() {
-        if (launchTimer.get() > Mappings.ACCELERATION_DELAY || firingAllFrisbees) {
+        if (launchTimer.get() > Mappings.ACCELERATION_DELAY /*|| firingAllFrisbees*/) { // if autonomous does not work then remove the */'s
             // Reset the speed of the launcher motor back to the target speed.
             launcherMotorSpeed = Mappings.DEFAULT_LAUNCHER_MOTOR_SPEED;
             launchTimer.reset();
@@ -298,11 +294,13 @@ public final class FiringSystem extends System {
         }
 
         // If the buttons are not being held down or pressed together, increase or decrease the speed of the launcherMotor motor.
-        if (!adjustedSpeed) {
-            if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.SPEED_INCREASE)) {
-                launcherMotorSpeed += 1;
-            } else if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.SPEED_DECREASE)) {
-                launcherMotorSpeed -= 1;
+        if (!robot.getFMSConnection()) {
+            if (!adjustedSpeed) {
+                if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.SPEED_INCREASE)) {
+                    launcherMotorSpeed += 1;
+                } else if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.SPEED_DECREASE)) {
+                    launcherMotorSpeed -= 1;
+                }
             }
         }
     }

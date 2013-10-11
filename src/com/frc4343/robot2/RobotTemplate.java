@@ -6,7 +6,7 @@ import com.frc4343.robot2.Systems.GyroSystem;
 import com.frc4343.robot2.Systems.JoystickSystem;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStationLCD.Line;
-import edu.wpi.first.wpilibj.HiTechnicColorSensor;
+//import edu.wpi.first.wpilibj.HiTechnicColorSensor;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -92,19 +92,18 @@ public class RobotTemplate extends IterativeRobot {
         logger.clearWindow();
         // Prints Information Concerning The Launcher Motor
         logger.printLine(Line.kUser1, "Launcher: " + (firingSystem.getLauncherMotorState() ? "ON [" : "OFF[") + (byte) (firingSystem.getLauncherSpeed() * 100) + "%]");
-        logger.printLine(Line.kUser2, "Auto Hang ETA: " + (m_ds.isFMSAttached() ? ((byte) (Mappings.AUTO_CLIMB_TIME - climbTimer.get()) + "s") : "DISABLED"));
+        logger.printLine(Line.kUser2, "Auto Hang ETA: " + (m_ds.isFMSAttached() ? ((byte) (Mappings.AUTO_CLIMB_TIME - climbTimer.get()) + "s") : "N/A"));
+        // Print the tank pressurization state.
         logger.printLine(Line.kUser3, "Tanks: " + (compressor.getPressureSwitchValue() ? "FULL" : "COMPRESSING"));
         // Prints the state of various systems
-        logger.printLine(Line.kUser5, "FSS: " + firingSystem.getState());
-        logger.printLine(Line.kUser6, "GSS: " + gyroSystem.getState());
-        //logger.printLine(Line.kUser6, "DSS: " + driveSystem.getState());
+        logger.printLine(Line.kUser4, "FSS: " + firingSystem.getState());
+        logger.printLine(Line.kUser5, "GSS: " + gyroSystem.getState());
+        logger.printLine(Line.kUser6, "DSS: " + driveSystem.getState());
         // Updates the output window.
         logger.updateLCD();
         // Prints the current gyro angle.
         //logger.printLine(Line.kUser1, "Gyro value: " + (gyroSystem.gyro.getAngle()));
         //logger.printLine(Line.kUser2, "RPM: " + firingSystem.getRPM());
-        // Print the tank pressurization state.
-        //logger.printLine(Line.kUser5, "Tanks Full: " + (compressor.getPressureSwitchValue() ? "YES" : "NO"));
     }
 
     public boolean getFMSConnection() {

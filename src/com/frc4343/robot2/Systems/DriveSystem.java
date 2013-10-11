@@ -53,7 +53,7 @@ public class DriveSystem extends System {
             switch (systemState) {
                 case IDLE:
                     if (robot.firingSystem.isFinishedFiring()) {
-                        driveWithTimer(-Mappings.AUTONOMOUS_DRIVE_SPEED, 0.0, Mappings.AUTONOMOUS_TIME_SPENT_DRIVING_BACK);
+                        driveWithTimer(Mappings.AUTONOMOUS_DRIVE_SPEED, 0.0, Mappings.AUTONOMOUS_TIME_SPENT_DRIVING_BACK);
                         systemState = DRIVE_TO_CENTER;
                     }
                     break;
@@ -68,16 +68,16 @@ public class DriveSystem extends System {
                         driveSpeed = 0;
                         turnSpeed = 0;
 
-                        robot.gyroSystem.rotate(-45);
+                        //robot.gyroSystem.rotate(-45);
 
                         systemState = ROTATING_TO_SIDE;
                     }
                     break;
                 case ROTATING_TO_SIDE:
                     if (isDrivingWithJoystick) {
-                        driveWithTimer(-1.0, 0.0, 2.0);
+                        driveWithTimer(0.0, 0.5, 1.5);
 
-                        systemState = DRIVE_BACKWARD;
+                        //systemState = DRIVE_BACKWARD;
                     }
                     break;
                 case DRIVE_BACKWARD:

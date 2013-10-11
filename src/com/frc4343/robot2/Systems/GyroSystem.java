@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.Timer;
 public class GyroSystem extends System {
 
     public Gyro gyro = new Gyro(Mappings.GYRO_PORT);
-    Sonar sonar = new Sonar(1, 1);
+    //Sonar sonar = new Sonar(1, 1);
     double initialAngle = 0;
     double initialDistance = 0;
     boolean isRotatingClockwise = true;
@@ -47,23 +47,23 @@ public class GyroSystem extends System {
                     if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.ALIGN_TO_CENTER_GOAL_CLOCKWISE) || robot.joystickSystem.getJoystick(1).getRawButton(Mappings.ALIGN_TO_CENTER_GOAL_COUNTERCLOCKWISE)) {
                         isRotatingClockwise = robot.joystickSystem.getJoystick(1).getRawButton(Mappings.ALIGN_TO_CENTER_GOAL_CLOCKWISE) ? true : false;
 
-                        initialDistance = sonar.getDistanceInInches();
+                        //initialDistance = sonar.getDistanceInInches();
                         robot.driveSystem.isDrivingWithJoystick = false;
 
                         systemState = DISTANCING;
                     }
                     break;
                 case DISTANCING:
-                    if (sonar.getDistanceInInches() > Mappings.DISTANCE_FROM_WALL_IN_INCHES + (Mappings.DISTANCE_DEADZONE_IN_INCHES / 2)) {
-                        robot.driveSystem.driveIndefinitely(1.0, 0.0);
-                    } else if (sonar.getDistanceInInches() < Mappings.DISTANCE_FROM_WALL_IN_INCHES - (Mappings.DISTANCE_DEADZONE_IN_INCHES / 2)) {
-                        robot.driveSystem.driveIndefinitely(-1.0, 0.0);
-                    } else {
+                    //if (sonar.getDistanceInInches() > Mappings.DISTANCE_FROM_WALL_IN_INCHES + (Mappings.DISTANCE_DEADZONE_IN_INCHES / 2)) {
+                     //   robot.driveSystem.driveIndefinitely(1.0, 0.0);
+                    //} else if (sonar.getDistanceInInches() < Mappings.DISTANCE_FROM_WALL_IN_INCHES - (Mappings.DISTANCE_DEADZONE_IN_INCHES / 2)) {
+                    //    robot.driveSystem.driveIndefinitely(-1.0, 0.0);
+                   // } else {
                         initialAngle = gyro.getAngle();
                         robot.driveSystem.driveIndefinitely(0.0, isRotatingClockwise ? Mappings.ROTATE_SPEED : -Mappings.ROTATE_SPEED);
 
                         systemState = ROTATING;
-                    }
+                   // }
                 case ROTATING:
                     if (gyro.getAngle() >= initialAngle + Mappings.ANGLE_TO_ROTATE_BY || gyro.getAngle() <= initialAngle - Mappings.ANGLE_TO_ROTATE_BY) {
                         switchMode();
