@@ -44,14 +44,14 @@ public class GyroSystem extends System {
         if (!robot.isAutonomous()) {
             switch (systemState) {
                 case IDLE:
-                    if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.ALIGN_TO_CENTER_GOAL_CLOCKWISE) || robot.joystickSystem.getJoystick(1).getRawButton(Mappings.ALIGN_TO_CENTER_GOAL_COUNTERCLOCKWISE)) {
-                        isRotatingClockwise = robot.joystickSystem.getJoystick(1).getRawButton(Mappings.ALIGN_TO_CENTER_GOAL_CLOCKWISE) ? true : false;
+                    //if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.ALIGN_TO_CENTER_GOAL_CLOCKWISE) || robot.joystickSystem.getJoystick(1).getRawButton(Mappings.ALIGN_TO_CENTER_GOAL_COUNTERCLOCKWISE)) {
+                        //isRotatingClockwise = robot.joystickSystem.getJoystick(1).getRawButton(Mappings.ALIGN_TO_CENTER_GOAL_CLOCKWISE) ? true : false;
 
                         //initialDistance = sonar.getDistanceInInches();
-                        robot.driveSystem.isDrivingWithJoystick = false;
+                        //robot.driveSystem.isDrivingWithJoystick = false;
 
-                        systemState = DISTANCING;
-                    }
+                        //systemState = DISTANCING;
+                    //}
                     break;
                 case DISTANCING:
                     //if (sonar.getDistanceInInches() > Mappings.DISTANCE_FROM_WALL_IN_INCHES + (Mappings.DISTANCE_DEADZONE_IN_INCHES / 2)) {

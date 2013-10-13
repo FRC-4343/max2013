@@ -23,19 +23,19 @@ public class Mappings {
     public final static byte FIRING_PISTON_SOLENOID_TWO = 2;
     public final static boolean FIRING_PISTON_EXTENDED_BY_DEFAULT = false;
     public final static byte INDEXER_LIMIT_SWITCH_PORT = 2;
-    public final static double DEFAULT_LAUNCHER_MOTOR_SPEED = 0.4;
+    public final static double DEFAULT_LAUNCHER_MOTOR_SPEED = 0.38;
     public final static double AUTONOMOUS_DELAY_BEFORE_FIRST_SHOT = 5;
     public final static double AUTONOMOUS_DELAY_BETWEEN_EACH_SHOT = 0;
     // Timeouts
     public final static double INDEXER_TIMEOUT = 1.5;
     public final static double LOADING_DELAY = 0.5;
     public final static double FRISBEE_FALL_TIMER = 0.5;
-    public final static double ACCELERATION_DELAY = 0.0;
-    public final static double EXTEND_TIME = 0.3;
-    public final static double RETRACT_TIME = 0.2;
-    public final static double AUTO_CLIMB_TIME = 119;
+    public final static double ACCELERATION_DELAY = 0.6;
+    public final static double EXTEND_TIME = 0.45;
+    public final static double RETRACT_TIME = 0.45;
+    public final static double AUTO_CLIMB_TIME = 119.9;
     // Drive Mappings
-    public final static double AXIS_COMPENSATION = 0.5;
+    public final static double AXIS_COMPENSATION = 0.9;
     public final static double PRECISION_COMPENSATION = 0.4;
     public final static double AUTONOMOUS_TIME_SPENT_DRIVING_BACK = 3;
     public final static double AUTONOMOUS_TIME_BEFORE_DRIVING_FORWARD = 1;

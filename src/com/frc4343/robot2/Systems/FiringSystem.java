@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Victor;
 
 public final class FiringSystem extends System {
 
@@ -17,7 +18,7 @@ public final class FiringSystem extends System {
     Timer frisbeeFallTimer = new Timer();
     Timer launchTimer = new Timer();
     Timer colorTimer = new Timer();
-    Jaguar launcherMotor = new Jaguar(Mappings.LAUNCHER_MOTOR_PORT);
+    Victor launcherMotor = new Victor(Mappings.LAUNCHER_MOTOR_PORT);
     Relay indexerMotor = new Relay(Mappings.INDEXER_MOTOR_PORT);
     Piston firingPiston = new Piston(Mappings.FIRING_PISTON_SOLENOID_ONE, Mappings.FIRING_PISTON_SOLENOID_TWO, Mappings.FIRING_PISTON_EXTENDED_BY_DEFAULT);
     DigitalInput indexerLimitSwitch = new DigitalInput(Mappings.INDEXER_LIMIT_SWITCH_PORT);
@@ -117,6 +118,7 @@ public final class FiringSystem extends System {
                     }
                     if (isFinishedFiring()) {
                         firingAllFrisbees = false;
+                        isIndexerMotorRunning = false;
                     }
                 } else {
                     // If the trigger has been pressed and is not being held, OR if we are firing all the frisbees in the robot, we begin the firing cycle.
@@ -133,9 +135,9 @@ public final class FiringSystem extends System {
                 index();
                 break;
             case LOADING:
-                if (robot.isAutonomous() || firingAllFrisbees == true) {
+                if (firingAllFrisbees == true) {
                     // Sets the motor speed to 100% for a small amount of time so as to allow for the wheel to spin back up to speed for firing.
-                    launcherMotorSpeed = 0.8; // Can be reset to 1
+                    launcherMotorSpeed = 0.8;
                 }
 
                 load();
@@ -272,7 +274,7 @@ public final class FiringSystem extends System {
 
     private void input() {
         // Handle forced (manual) ejection of a loaded frisbee.
-        if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.MANUAL_EJECT)) {
+        if (robot.joystickSystem.getJoystick(1).getRawButton(Mappings.MANUAL_EJECT) && !firingAllFrisbees) {
             launchTimer.reset();
             launchTimer.start();
 
